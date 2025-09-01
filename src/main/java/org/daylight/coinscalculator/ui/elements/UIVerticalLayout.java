@@ -19,6 +19,12 @@ public class UIVerticalLayout extends UIPanel {
     }
 
     @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        layoutElements();
+    }
+
+    @Override
     public int getPreferredWidth() {
         int maxWidth = 0;
         for (UIElement child : children) {
@@ -31,14 +37,18 @@ public class UIVerticalLayout extends UIPanel {
     public int getPreferredHeight() {
         int totalHeight = padding * 2;
         for (UIElement child : children) {
+            if(!child.isEnabled()) continue;
+//            System.out.println(getId() + " child height: " + child.getPreferredHeight());
             totalHeight += child.getPreferredHeight() + spacing;
         }
         if (!children.isEmpty()) totalHeight -= spacing;
+        System.out.println(getId() + " getPreferredHeight: " + totalHeight);
         return totalHeight;
     }
 
     @Override
     public void layoutElements() {
+        super.layoutElements();
 //        CoinsCalculator.LOGGER.info(getClass().getSimpleName() +
 //                " layoutElements -> panel x: " + x + ", y: " + y + ", width: " + width + ", height: " + height);
 
@@ -53,7 +63,16 @@ public class UIVerticalLayout extends UIPanel {
             currentY += (availableHeight - (totalHeight - padding * 2));
         }
 
+        if(isElementsCollapsed()) return;
+
         for (UIElement child : children) {
+            if(!child.isEnabled()) {
+                child.updateInternalVisibility(false);
+                continue;
+            }
+//            System.out.println("child: " + child.getId());
+            if(child instanceof UIPanel) ((UIPanel) child).layoutElements();
+
             int childWidth = child.getPreferredWidth();
             int childHeight = child.getPreferredHeight();
 
@@ -65,8 +84,12 @@ public class UIVerticalLayout extends UIPanel {
             }
 
             child.setBounds(childX, currentY, childWidth, childHeight);
+//            child.setBounds(child.getX(), child.getY(), child.getWidth(), child.getPreferredHeight()); // may be important
+            child.updateInternalVisibility(true);
             currentY += childHeight + spacing;
         }
+
+        height = getPreferredHeight();
     }
 }
 

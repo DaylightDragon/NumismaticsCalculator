@@ -44,8 +44,16 @@ public class UIEditBox extends UIElement {
     }
 
     @Override
+    public void updateInternalVisibility(boolean value) {
+        super.updateInternalVisibility(value);
+        setBounds(x, y, width, height);
+        editBox.setVisible(value);
+//        if(value) setBounds(x, y, width, height);
+    }
+
+    @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // EditBox сам себя рендерит через Minecraft
+        // EditBox renders by itself
 //        System.out.println("Rendering " + this.getClass().getSimpleName() +
 //                " at x=" + x + ", y=" + y + ", width=" + width + ", height=" + height);
 //        System.out.println("Real coords: " + editBox.getX() + ", " + editBox.getY() + " width: " + editBox.getWidth() + " height: " + editBox.getHeight());

@@ -36,7 +36,14 @@ public class UIHorizontalLayout extends UIPanel {
     }
 
     @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        layoutElements();
+    }
+
+    @Override
     public void layoutElements() {
+        super.layoutElements();
         int totalWidth = getPreferredWidth() - padding * 2;
         int availableWidth = width - padding * 2;
         int currentX = x + padding;
@@ -48,7 +55,12 @@ public class UIHorizontalLayout extends UIPanel {
             currentX += (availableWidth - (totalWidth - padding * 2));
         }
 
+        if(isElementsCollapsed()) return;
+
         for (UIElement child : children) {
+            if(!child.isEnabled()) continue;
+            if(child instanceof UIPanel) ((UIPanel) child).layoutElements();
+
             int childWidth = child.getPreferredWidth();
             int childHeight = child.getPreferredHeight();
 

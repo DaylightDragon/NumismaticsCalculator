@@ -59,71 +59,96 @@ public class MainEvents {
 
     private static final int PANEL_WIDTH = 80;
     private static final int PANEL_HEIGHT = 120;
-    private UIPanel vLayout;
+    private UIPanel pagesPanel;
+    private UIPanel page1VLayout;
+    private UIPanel page2VLayout;
 
     @SubscribeEvent
     public void onScreenRender(ScreenEvent.Render.Post event) {
         if (event.getScreen() instanceof InventoryScreen screen) {
-//            GuiGraphics graphics = event.getGuiGraphics();
-//            int panelX = screen.getGuiLeft() / 2 - PANEL_WIDTH - 5;
-//            int panelY = screen.getRectangle().height() / 2 - PANEL_HEIGHT / 2;
-//
-//            // Рисуем фон
-//            graphics.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0x885c5c5c);
-//            graphics.drawString(screen.getMinecraft().font, "Test Text", panelX + 5, panelY + 5, 0xFFFFFF);
+            if(pagesPanel != null) pagesPanel.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+        } else {}
+    }
 
-            if(vLayout != null) vLayout.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
-        } else {
-//            CoinsCalculator.LOGGER.info("Rendering method 2 on non InventoryScreen");
-//            GuiGraphics graphics = event.getGuiGraphics();
-//            graphics.fill(20, 20, 40, 100, 0x885c5c5c);
+    private void togglePanelPages() {
+        if(pagesPanel != null) {
+            if(page1VLayout.isEnabled()) {
+                page1VLayout.setEnabled(false);
+                page2VLayout.setEnabled(true);
+            } else {
+                page1VLayout.setEnabled(true);
+                page2VLayout.setEnabled(false);
+            }
+            pagesPanel.layoutElements();
         }
     }
 
     @SubscribeEvent
     public void onScreenInit(ScreenEvent.Init.Post event) {
-//        if (event.getScreen() instanceof InventoryScreen screen) {
-//            int panelX = screen.getGuiLeft() / 2 - PANEL_WIDTH - 5;
-//            int panelY = screen.getRectangle().height() / 2 - PANEL_HEIGHT / 2;
-//
-//            // Добавляем кнопку
-//            event.addListener(Button.builder(Component.literal("Click"), btn -> {
-//                System.out.println("Clicked!");
-//            }).bounds(panelX + 5, panelY + 20, 70, 20).build());
-//        }
         if (event.getScreen() instanceof InventoryScreen screen) {
             int invLeft = screen.getGuiLeft();
             Font font = screen.getMinecraft().font;
 
-            vLayout = new UIVerticalLayout();
-            vLayout.setPosition(invLeft - 120, screen.getGuiTop());
-            vLayout.setBackgroundVisible(true);
+            pagesPanel = new UIVerticalLayout();
+            pagesPanel.setId("Main Pages Panel");
+            pagesPanel.setPosition(invLeft - 120, screen.getGuiTop());
+            pagesPanel.setBackgroundVisible(true);
 
-            vLayout.addElement(new UIText("Coins: 123", font));
-            vLayout.addElement(new UIButton("Click", font, () -> System.out.println("Clicked!")));
-            vLayout.addElement(new UIButton("Meow", font, () -> System.out.println("Meow!")));
-            UIEditBox input = new UIEditBox(font);
-            vLayout.addElement(input);
+            pagesPanel.addElement(new UIButton("Change mode", font, this::togglePanelPages));
 
-            int prefW = vLayout.getPreferredWidth();
-            int prefH = vLayout.getPreferredHeight();
-            vLayout.setBounds(invLeft - prefW - 10, screen.getGuiTop(), prefW, prefH);
+            page1VLayout = new UIVerticalLayout();
+            page1VLayout.setId("Page 1");
+            page1VLayout.addElement(new UIText("Total Available: 124 ¤", font));
+            page1VLayout.addElement(new UiSpace(0, 5 ));
+            page1VLayout.addElement(new UIText("Selected: 50 ¤", font));
+            page1VLayout.addElement(new UIButton("Select", font, () -> System.out.println("Selecting...")));
+            pagesPanel.addElement(page1VLayout);
 
-            vLayout.layoutElements();
+            page2VLayout = new UIVerticalLayout();
+            page2VLayout.setId("Page 2");
+            page2VLayout.setEnabled(false);
+            page2VLayout.addElement(new UIText("Convert ¤ to coins", font));
 
-            event.addListener(input.getEditBox());
+            UIEditBox conversionInput = new UIEditBox(font);
+            event.addListener(conversionInput.getEditBox());
+            page2VLayout.addElement(conversionInput);
 
-//            CoinsCalculator.LOGGER.info("Before layout: panel width=" + vLayout.width + ", height=" + vLayout.height);
-//            CoinsCalculator.LOGGER.info("After layout: panel width=" + vLayout.width + ", height=" + vLayout.height);
+            page2VLayout.addElement(new UIText("2 Cog", font));
+            page2VLayout.addElement(new UIText("5 Sprocket", font));
+            page2VLayout.addElement(new UIText("1 Bevel", font));
+            pagesPanel.addElement(page2VLayout);
+
+//            int prefWPage1 = pagesPanel.getPreferredWidth();
+//            int prefHPage1 = pagesPanel.getPreferredHeight();
+//
+//            int prefWPage2 = pagesPanel.getPreferredWidth();
+//            int prefHPage2 = pagesPanel.getPreferredHeight();
+
+            // Math.max(0,
+
+//            page1VLayout.setBounds(invLeft - prefWPage1 - 10, screen.getGuiTop(), prefWPage1, prefHPage1);
+//            page2VLayout.setBounds(invLeft - prefWPage2 - 10, screen.getGuiTop(), prefWPage2, prefHPage2);
+
+//            pagesPanel.setBounds(invLeft - prefWGlobal - 10, screen.getGuiTop(), prefWGlobal, prefHGlobal);
+
+//            CoinsCalculator.LOGGER.info("Before layout: panel width=" + page1VLayout.width + ", height=" + page1VLayout.height);
+//            page1VLayout.layoutElements();
+            pagesPanel.layoutElements();
+//            CoinsCalculator.LOGGER.info("After layout: panel width=" + page1VLayout.width + ", height=" + page1VLayout.height);
+
+            int prefWGlobal = pagesPanel.getPreferredWidth();
+            int prefHGlobal = pagesPanel.getPreferredHeight();
+            pagesPanel.setBounds(invLeft - prefWGlobal - 10, (int) (screen.getGuiTop() + prefHGlobal * 0.4), prefWGlobal, prefHGlobal);
+
         }
     }
 
     @SubscribeEvent
     public void onMouseClick(ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof InventoryScreen screen) {
-            if (vLayout != null) {
+            if (pagesPanel != null) {
 //                System.out.println("General click");
-                vLayout.onClick(event.getMouseX(), event.getMouseY());
+                pagesPanel.onClick(event.getMouseX(), event.getMouseY());
 //                event.setCanceled(true);
             }
         }

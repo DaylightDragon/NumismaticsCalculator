@@ -5,7 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UIPanel extends UIElement {
+public abstract class UIPanel extends UIElement {
     public enum HorizontalAlignment {
         LEFT, CENTER, RIGHT
     }
@@ -19,6 +19,16 @@ public class UIPanel extends UIElement {
 
     protected List<UIElement> children = new ArrayList<>();
     protected int padding = 4;
+
+    protected boolean elementsCollapsed = false;
+
+    public boolean isElementsCollapsed() {
+        return elementsCollapsed;
+    }
+
+    public void setElementsCollapsed(boolean elementsCollapsed) {
+        this.elementsCollapsed = elementsCollapsed;
+    }
 
     public void addElement(UIElement element) {
         children.add(element);
@@ -50,10 +60,32 @@ public class UIPanel extends UIElement {
         return backgroundVisible;
     }
 
-    public void layoutElements() {}
+    public void layoutElements() {
+//        System.out.println(getClass().getName() + " layoutElements: " + getId());
+    }
+
+//    @Override
+//    public void setEnabled(boolean enabled) {
+//        super.setEnabled(enabled);
+//        for(UIElement child : children) {
+//            child.setEnabled(enabled); // bad idea
+//            if(child instanceof UIEditBox editBox) editBox.updateInternalVisibility();
+//        }
+//    }
+
+    @Override
+    public void updateInternalVisibility(boolean value) {
+        super.updateInternalVisibility(value);
+        for(UIElement child : children) {
+            child.updateInternalVisibility(isVisible() && isEnabled());
+        }
+    }
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+//        System.out.println(shouldBeRendered() + " " + children.size());
+        if(!shouldBeRendered()) return;
+
         if(backgroundVisible) {
             g.fill(x, y, x + width, y + height, bgColor);
         }

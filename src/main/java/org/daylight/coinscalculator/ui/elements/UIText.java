@@ -19,6 +19,7 @@ public class UIText extends UIElement {
 
     @Override
     public int getPreferredHeight() {
+        System.out.println(getId() + " getPreferredHeight: " + font.lineHeight);
         return font.lineHeight;
     }
 
@@ -30,6 +31,7 @@ public class UIText extends UIElement {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        if(!shouldBeRendered()) return;
         graphics.drawString(font, text, x, y, 0xFFFFFF);
     }
 
