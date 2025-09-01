@@ -17,62 +17,92 @@ public class UIHorizontalLayout extends UIPanel {
     }
 
     @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        layoutElements(); // как и в вертикальном
+    }
+
+    @Override
     public int getPreferredWidth() {
-        int totalWidth = padding * 2;
+        // Сумма ширин enabled-детей + spacing между ними + padding*2
+        int total = 0;
+        int enabledCount = 0;
         for (UIElement child : children) {
-            totalWidth += child.getPreferredWidth() + spacing;
+            if (!child.isEnabled()) continue;
+            total += child.getPreferredWidth();
+            enabledCount++;
         }
-        if (!children.isEmpty()) totalWidth -= spacing; // убираем последний gap
-        return totalWidth;
+        if (enabledCount > 1) total += spacing * (enabledCount - 1);
+        int result = total + padding * 2;
+//        System.out.println(getId() + " getPreferredWidth: " + result);
+        return result;
     }
 
     @Override
     public int getPreferredHeight() {
-        int maxHeight = 0;
+        // Максимальная высота среди детей (как у вертикального maxWidth) + padding*2
+        int maxH = 0;
         for (UIElement child : children) {
-            maxHeight = Math.max(maxHeight, child.getPreferredHeight());
+            maxH = Math.max(maxH, child.getPreferredHeight());
         }
-        return maxHeight + padding * 2;
-    }
-
-    @Override
-    public void setBounds(int x, int y, int width, int height) {
-        super.setBounds(x, y, width, height);
-        layoutElements();
+        return maxH + padding * 2;
     }
 
     @Override
     public void layoutElements() {
         super.layoutElements();
-        int totalWidth = getPreferredWidth() - padding * 2;
-        int availableWidth = width - padding * 2;
+
+        // Предварительно посчитаем ширину контента (только enabled), чтобы корректно выровнять по hAlign
+        int contentW = 0;
+        int enabledCount = 0;
+        for (UIElement child : children) {
+            if (!child.isEnabled()) continue;
+            contentW += child.getPreferredWidth();
+            enabledCount++;
+        }
+        if (enabledCount > 1) contentW += spacing * (enabledCount - 1);
+
+        int availableW = Math.max(0, width - padding * 2);
         int currentX = x + padding;
 
-        // Выравнивание по горизонтали
+        // Горизонтальное выравнивание ряда
         if (hAlign == HorizontalAlignment.CENTER) {
-            currentX += (availableWidth - (totalWidth - padding * 2)) / 2;
+            currentX += (availableW - contentW) / 2;
         } else if (hAlign == HorizontalAlignment.RIGHT) {
-            currentX += (availableWidth - (totalWidth - padding * 2));
+            currentX += (availableW - contentW);
         }
 
-        if(isElementsCollapsed()) return;
+        if (isElementsCollapsed()) return;
 
         for (UIElement child : children) {
-            if(!child.isEnabled()) continue;
-            if(child instanceof UIPanel) ((UIPanel) child).layoutElements();
-
-            int childWidth = child.getPreferredWidth();
-            int childHeight = child.getPreferredHeight();
-
-            int childY = y + padding;
-            if (vAlign == VerticalAlignment.MIDDLE) {
-                childY += (height - padding * 2 - childHeight) / 2;
-            } else if (vAlign == VerticalAlignment.BOTTOM) {
-                childY += (height - padding * 2 - childHeight);
+            if (!child.isEnabled()) {
+                child.updateInternalVisibility(false);
+                continue;
             }
 
-            child.setBounds(currentX, childY, childWidth, childHeight);
-            currentX += childWidth + spacing;
+            // Вложенные панели — сначала их внутренний layout (как у вертикального)
+            if (child instanceof UIPanel) {
+                ((UIPanel) child).layoutElements();
+            }
+
+            int childW = child.getPreferredWidth();
+            int childH = child.getPreferredHeight();
+
+            // Вертикальное выравнивание каждого элемента в своей "колонке"
+            int childY = y + padding;
+            int innerH = Math.max(0, height - padding * 2);
+            if (vAlign == VerticalAlignment.MIDDLE) {
+                childY += (innerH - childH) / 2;
+            } else if (vAlign == VerticalAlignment.BOTTOM) {
+                childY += (innerH - childH);
+            }
+
+            child.setBounds(currentX, childY, childW, childH);
+            child.updateInternalVisibility(true);
+            currentX += childW + spacing;
         }
+
+        // Как в вертикальном: фиксируем "гибкую" меру контейнера под контент
+        width = getPreferredWidth();
     }
 }

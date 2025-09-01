@@ -59,27 +59,29 @@ public class MainEvents {
 
     private static final int PANEL_WIDTH = 80;
     private static final int PANEL_HEIGHT = 120;
-    private UIPanel pagesPanel;
+    private UIPanel mainFloatingPanel;
+    private UIStackLayout pagesStackPanel;
     private UIPanel page1VLayout;
     private UIPanel page2VLayout;
 
     @SubscribeEvent
     public void onScreenRender(ScreenEvent.Render.Post event) {
         if (event.getScreen() instanceof InventoryScreen screen) {
-            if(pagesPanel != null) pagesPanel.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+            if(mainFloatingPanel != null) mainFloatingPanel.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
         } else {}
     }
 
     private void togglePanelPages() {
-        if(pagesPanel != null) {
-            if(page1VLayout.isEnabled()) {
-                page1VLayout.setEnabled(false);
-                page2VLayout.setEnabled(true);
-            } else {
-                page1VLayout.setEnabled(true);
-                page2VLayout.setEnabled(false);
-            }
-            pagesPanel.layoutElements();
+        if(mainFloatingPanel != null) {
+//            if(page1VLayout.isEnabled()) {
+//                page1VLayout.setEnabled(false);
+//                page2VLayout.setEnabled(true);
+//            } else {
+//                page1VLayout.setEnabled(true);
+//                page2VLayout.setEnabled(false);
+//            }
+            pagesStackPanel.setNextIndex();
+            mainFloatingPanel.layoutElements();
         }
     }
 
@@ -89,12 +91,16 @@ public class MainEvents {
             int invLeft = screen.getGuiLeft();
             Font font = screen.getMinecraft().font;
 
-            pagesPanel = new UIVerticalLayout();
-            pagesPanel.setId("Main Pages Panel");
-            pagesPanel.setPosition(invLeft - 120, screen.getGuiTop());
-            pagesPanel.setBackgroundVisible(true);
+            mainFloatingPanel = new UIVerticalLayout();
+            mainFloatingPanel.setId("Main Pages VERTICAL Panel");
+            mainFloatingPanel.setPosition(invLeft - 120, screen.getGuiTop());
+            mainFloatingPanel.setBackgroundVisible(true);
 
-            pagesPanel.addElement(new UIButton("Change mode", font, this::togglePanelPages));
+            pagesStackPanel = new UIStackLayout();
+            pagesStackPanel.setId("Main Pages STACK Panel");
+
+            mainFloatingPanel.addElement(new UIButton("Change mode", font, this::togglePanelPages));
+            mainFloatingPanel.addElement(pagesStackPanel);
 
             page1VLayout = new UIVerticalLayout();
             page1VLayout.setId("Page 1");
@@ -102,11 +108,11 @@ public class MainEvents {
             page1VLayout.addElement(new UiSpace(0, 5 ));
             page1VLayout.addElement(new UIText("Selected: 50 ¤", font));
             page1VLayout.addElement(new UIButton("Select", font, () -> System.out.println("Selecting...")));
-            pagesPanel.addElement(page1VLayout);
+            pagesStackPanel.addElement(page1VLayout);
 
             page2VLayout = new UIVerticalLayout();
             page2VLayout.setId("Page 2");
-            page2VLayout.setEnabled(false);
+//            page2VLayout.setEnabled(false);
             page2VLayout.addElement(new UIText("Convert ¤ to coins", font));
 
             UIEditBox conversionInput = new UIEditBox(font);
@@ -116,7 +122,7 @@ public class MainEvents {
             page2VLayout.addElement(new UIText("2 Cog", font));
             page2VLayout.addElement(new UIText("5 Sprocket", font));
             page2VLayout.addElement(new UIText("1 Bevel", font));
-            pagesPanel.addElement(page2VLayout);
+            pagesStackPanel.addElement(page2VLayout);
 
 //            int prefWPage1 = pagesPanel.getPreferredWidth();
 //            int prefHPage1 = pagesPanel.getPreferredHeight();
@@ -133,12 +139,12 @@ public class MainEvents {
 
 //            CoinsCalculator.LOGGER.info("Before layout: panel width=" + page1VLayout.width + ", height=" + page1VLayout.height);
 //            page1VLayout.layoutElements();
-            pagesPanel.layoutElements();
+            mainFloatingPanel.layoutElements();
 //            CoinsCalculator.LOGGER.info("After layout: panel width=" + page1VLayout.width + ", height=" + page1VLayout.height);
 
-            int prefWGlobal = pagesPanel.getPreferredWidth();
-            int prefHGlobal = pagesPanel.getPreferredHeight();
-            pagesPanel.setBounds(invLeft - prefWGlobal - 10, (int) (screen.getGuiTop() + prefHGlobal * 0.4), prefWGlobal, prefHGlobal);
+            int prefWGlobal = mainFloatingPanel.getPreferredWidth();
+            int prefHGlobal = mainFloatingPanel.getPreferredHeight();
+            mainFloatingPanel.setBounds(invLeft - prefWGlobal - 10, (int) (screen.getGuiTop() + prefHGlobal * 0.4), prefWGlobal, prefHGlobal);
 
         }
     }
@@ -146,9 +152,9 @@ public class MainEvents {
     @SubscribeEvent
     public void onMouseClick(ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof InventoryScreen screen) {
-            if (pagesPanel != null) {
+            if (mainFloatingPanel != null) {
 //                System.out.println("General click");
-                pagesPanel.onClick(event.getMouseX(), event.getMouseY());
+                mainFloatingPanel.onClick(event.getMouseX(), event.getMouseY());
 //                event.setCanceled(true);
             }
         }

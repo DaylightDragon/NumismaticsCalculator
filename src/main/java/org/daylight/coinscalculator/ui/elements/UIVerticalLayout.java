@@ -1,7 +1,5 @@
 package org.daylight.coinscalculator.ui.elements;
 
-import org.daylight.coinscalculator.CoinsCalculator;
-
 public class UIVerticalLayout extends UIPanel {
     private int spacing = 4;
     private HorizontalAlignment hAlign = HorizontalAlignment.LEFT;
