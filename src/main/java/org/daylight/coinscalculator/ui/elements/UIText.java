@@ -3,10 +3,9 @@ package org.daylight.coinscalculator.ui.elements;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 
-public class UIText implements UIElement {
+public class UIText extends UIElement {
     private final String text;
     private final Font font;
-    private int x, y;
 
     public UIText(String text, Font font) {
         this.text = text;

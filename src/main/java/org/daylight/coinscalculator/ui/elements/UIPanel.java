@@ -5,64 +5,68 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UIPanel implements UIElement {
-    private int x, y, width, height;
-    private final List<UIElement> children = new ArrayList<>();
-    private final int padding = 5;
-    private final int spacing = 4;
-
-    public void addElement(UIElement el) {
-        children.add(el);
+public class UIPanel extends UIElement {
+    public enum HorizontalAlignment {
+        LEFT, CENTER, RIGHT
     }
 
-    public void layout() {
-        int maxWidth = 0;
-        int totalHeight = padding;
+    public enum VerticalAlignment {
+        TOP, MIDDLE, BOTTOM
+    }
 
-        for (UIElement el : children) {
-            maxWidth = Math.max(maxWidth, el.getPreferredWidth());
-            totalHeight += el.getPreferredHeight() + spacing;
-        }
-        totalHeight += padding;
+    private int bgColor = 0x77444444;
+    private boolean backgroundVisible = false;
 
-        this.width = maxWidth + padding * 2;
-        this.height = totalHeight;
+    protected List<UIElement> children = new ArrayList<>();
+    protected int padding = 4;
 
-        int currentY = y + padding;
-        for (UIElement el : children) {
-            el.setPosition(x + padding, currentY);
-            currentY += el.getPreferredHeight() + spacing;
-        }
+    public void addElement(UIElement element) {
+        children.add(element);
     }
 
     @Override
     public int getPreferredWidth() {
-        return width; // после layout()
+        return 100; // заглушка для базового контейнера
     }
 
     @Override
     public int getPreferredHeight() {
-        return height;
+        return 100; // заглушка для базового контейнера
     }
 
-    @Override
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public void setBackgroundColor(int bgColor) {
+        this.bgColor = bgColor;
     }
 
+    public void setBackgroundVisible(boolean backgroundVisible) {
+        this.backgroundVisible = backgroundVisible;
+    }
+
+    public int getBackgroundColor() {
+        return bgColor;
+    }
+
+    public boolean isBackgroundVisible() {
+        return backgroundVisible;
+    }
+
+    public void layoutElements() {}
+
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.fill(x, y, x + width, y + height, 0xAA000000);
-        for (UIElement el : children) {
-            el.render(graphics, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        if(backgroundVisible) {
+            g.fill(x, y, x + width, y + height, bgColor);
+        }
+        for (UIElement child : children) {
+//            CoinsCalculator.LOGGER.info("child: " + child.getClass().getSimpleName() + " x: " + child.x + ", y: " + child.y + ", width: " + child.width + ", height: " + child.height);
+            child.render(g, mouseX, mouseY, partialTick);
         }
     }
 
     @Override
     public boolean onClick(double mouseX, double mouseY) {
-        for (UIElement el : children) {
-            if(el.onClick(mouseX, mouseY)) return true;
+        for (UIElement child : children) {
+            if(child.onClick(mouseX, mouseY)) return true;
         }
         return false;
     }

@@ -22,11 +22,11 @@ public class CoinsOverlay implements IGuiOverlay {
             return;
         }
 
-        String coinText = "Coins: 1234"; // Здесь должна быть логика подсчёта монет
+        String coinText = "Overlay"; // Здесь должна быть логика подсчёта монет
         Component text = Component.keybind(coinText).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF00)));
 
         int x = 10; // screenWidth / 2;
-        int y = screenHeight / 2;
+        int y = screenHeight - 20; // / 2;
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();

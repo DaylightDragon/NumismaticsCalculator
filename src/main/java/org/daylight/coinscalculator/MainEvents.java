@@ -1,33 +1,19 @@
 package org.daylight.coinscalculator;
 
-import dev.ithundxr.createnumismatics.content.backend.Coin;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.daylight.coinscalculator.ui.CoinsOverlay;
-import org.daylight.coinscalculator.ui.MainWidget;
-import org.daylight.coinscalculator.ui.elements.UIButton;
-import org.daylight.coinscalculator.ui.elements.UIEditBox;
-import org.daylight.coinscalculator.ui.elements.UIPanel;
-import org.daylight.coinscalculator.ui.elements.UIText;
+import org.daylight.coinscalculator.ui.elements.*;
 
 import java.util.List;
 
@@ -73,7 +59,7 @@ public class MainEvents {
 
     private static final int PANEL_WIDTH = 80;
     private static final int PANEL_HEIGHT = 120;
-    private UIPanel panel;
+    private UIPanel vLayout;
 
     @SubscribeEvent
     public void onScreenRender(ScreenEvent.Render.Post event) {
@@ -86,7 +72,7 @@ public class MainEvents {
 //            graphics.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0x885c5c5c);
 //            graphics.drawString(screen.getMinecraft().font, "Test Text", panelX + 5, panelY + 5, 0xFFFFFF);
 
-            if(panel != null) panel.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+            if(vLayout != null) vLayout.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
         } else {
 //            CoinsCalculator.LOGGER.info("Rendering method 2 on non InventoryScreen");
 //            GuiGraphics graphics = event.getGuiGraphics();
@@ -109,26 +95,36 @@ public class MainEvents {
             int invLeft = screen.getGuiLeft();
             Font font = screen.getMinecraft().font;
 
-            panel = new UIPanel();
-            panel.setPosition(invLeft - 120, screen.getGuiTop());
-            panel.addElement(new UIText("Coins: 123", font));
-            panel.addElement(new UIButton("Click", font, () -> System.out.println("Clicked!")));
-            panel.addElement(new UIButton("Meow", font, () -> System.out.println("Meow!")));
+            vLayout = new UIVerticalLayout();
+            vLayout.setPosition(invLeft - 120, screen.getGuiTop());
+            vLayout.setBackgroundVisible(true);
+
+            vLayout.addElement(new UIText("Coins: 123", font));
+            vLayout.addElement(new UIButton("Click", font, () -> System.out.println("Clicked!")));
+            vLayout.addElement(new UIButton("Meow", font, () -> System.out.println("Meow!")));
             UIEditBox input = new UIEditBox(font);
-            panel.addElement(input);
+            vLayout.addElement(input);
 
-            panel.layout();
+            int prefW = vLayout.getPreferredWidth();
+            int prefH = vLayout.getPreferredHeight();
+            vLayout.setBounds(invLeft - prefW - 10, screen.getGuiTop(), prefW, prefH);
 
-            event.addListener(input.getEditBox()); // добавляем реальное поле
+            vLayout.layoutElements();
+
+            event.addListener(input.getEditBox());
+
+//            CoinsCalculator.LOGGER.info("Before layout: panel width=" + vLayout.width + ", height=" + vLayout.height);
+//            CoinsCalculator.LOGGER.info("After layout: panel width=" + vLayout.width + ", height=" + vLayout.height);
         }
     }
 
     @SubscribeEvent
     public void onMouseClick(ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof InventoryScreen screen) {
-            if (panel != null) {
-                panel.onClick(event.getMouseX(), event.getMouseY());
-                event.setCanceled(true);
+            if (vLayout != null) {
+//                System.out.println("General click");
+                vLayout.onClick(event.getMouseX(), event.getMouseY());
+//                event.setCanceled(true);
             }
         }
     }

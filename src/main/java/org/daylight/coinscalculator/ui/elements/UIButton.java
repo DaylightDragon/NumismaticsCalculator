@@ -3,11 +3,10 @@ package org.daylight.coinscalculator.ui.elements;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 
-public class UIButton implements UIElement {
+public class UIButton extends UIElement {
     private final String label;
     private final Font font;
     private final Runnable onClick;
-    private int x, y, width, height;
 
     public UIButton(String label, Font font, Runnable onClick) {
         this.label = label;
@@ -19,18 +18,12 @@ public class UIButton implements UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return width;
+        return label.length() * 6 + 10; // width;
     }
 
     @Override
     public int getPreferredHeight() {
         return height;
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
     }
 
     @Override
@@ -47,9 +40,5 @@ public class UIButton implements UIElement {
             return true;
         }
         return false;
-    }
-
-    private boolean isMouseOver(double mx, double my) {
-        return mx >= x && mx <= x + width && my >= y && my <= y + height;
     }
 }

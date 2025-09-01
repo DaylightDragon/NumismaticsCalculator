@@ -5,12 +5,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
-public class UIEditBox implements UIElement {
+public class UIEditBox extends UIElement {
     private final EditBox editBox;
-    private int x, y;
 
     public UIEditBox(Font font) {
-        this.editBox = new EditBox(font, 0, 0, 100, 20, Component.literal(""));
+        this.editBox = new EditBox(font, x, y, width, height, Component.literal(""));
     }
 
     @Override
@@ -32,14 +31,39 @@ public class UIEditBox implements UIElement {
     }
 
     @Override
+    public void setBounds(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        editBox.setX(x);
+        editBox.setY(y);
+        editBox.setWidth(width);
+        editBox.setHeight(height);
+    }
+
+    @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // EditBox сам себя рендерит через Minecraft
+//        System.out.println("Rendering " + this.getClass().getSimpleName() +
+//                " at x=" + x + ", y=" + y + ", width=" + width + ", height=" + height);
+//        System.out.println("Real coords: " + editBox.getX() + ", " + editBox.getY() + " width: " + editBox.getWidth() + " height: " + editBox.getHeight());
     }
 
     @Override
     public boolean onClick(double mouseX, double mouseY) {
-        // обрабатывает сам
+//        System.out.println("UIEditBox onClick");
+//        return editBox.mouseClicked(mouseX, mouseY, 0); // 0 = left click
         return false;
+    }
+
+    public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
+        return editBox.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    public boolean onCharTyped(char codePoint, int modifiers) {
+        return editBox.charTyped(codePoint, modifiers);
     }
 
     public EditBox getEditBox() {
