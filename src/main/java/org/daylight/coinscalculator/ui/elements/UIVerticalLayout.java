@@ -40,7 +40,7 @@ public class UIVerticalLayout extends UIPanel {
             totalHeight += child.getPreferredHeight() + spacing;
         }
         if (!children.isEmpty()) totalHeight -= spacing;
-        System.out.println(getId() + " getPreferredHeight: " + totalHeight);
+//        System.out.println(getId() + " getPreferredHeight: " + totalHeight);
         return totalHeight;
     }
 

@@ -6,11 +6,27 @@ import java.util.Map;
 
 public class CoinChangeLimited {
 
-    static class Result {
+    public static class Result {
         boolean exact;
         int sum;
         int coins;
         Map<Integer, Integer> composition; // номинал → количество
+
+        public boolean isExact() {
+            return exact;
+        }
+
+        public int getSum() {
+            return sum;
+        }
+
+        public int getCoins() {
+            return coins;
+        }
+
+        public Map<Integer, Integer> getComposition() {
+            return composition;
+        }
 
         @Override
         public String toString() {
@@ -27,7 +43,21 @@ public class CoinChangeLimited {
         }
     }
 
-    static Result solve(int target, int[] values, int[] counts) {
+    public static Result solveInfinite(int target, int[] values) {
+        Result res = new Result();
+        res.exact = true;
+        res.sum = target;
+        res.coins = 0;
+        res.composition = new LinkedHashMap<>();
+        for (int i = 0; i < values.length; i++) {
+            int amount = target / values[i];
+            res.composition.put(values[i], amount);
+            target -= amount * values[i];
+        }
+        return res;
+    }
+
+    public static Result solve(int target, int[] values, int[] counts) {
         int n = values.length;
         int maxSum = target;
         for (int i = 0; i < n; i++) {

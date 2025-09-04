@@ -28,6 +28,7 @@ public class UIButton extends UIElement {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         if(!shouldBeRendered()) return;
         int bgColor = isMouseOver(mouseX, mouseY) ? 0xFF666666 : 0xFF444444;
         graphics.fill(x, y, x + width, y + height, bgColor);

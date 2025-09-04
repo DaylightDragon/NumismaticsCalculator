@@ -64,6 +64,8 @@ public abstract class UIElement {
         return height;
     }
 
+    public void updateInternalValues() {}
+
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
@@ -80,7 +82,9 @@ public abstract class UIElement {
 //                " setBounds -> x: " + x + ", y: " + y + ", width: " + width + ", height: " + height);
     }
 
-    public abstract void render(GuiGraphics g, int mouseX, int mouseY, float partialTick);
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        updateInternalValues();
+    }
 
     public boolean onClick(double mouseX, double mouseY) {
         // true to stop checks

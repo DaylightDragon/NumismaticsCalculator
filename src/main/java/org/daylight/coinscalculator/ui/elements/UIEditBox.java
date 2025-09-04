@@ -5,11 +5,18 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
+import java.util.function.Consumer;
+
 public class UIEditBox extends UIElement {
     private final EditBox editBox;
 
     public UIEditBox(Font font) {
         this.editBox = new EditBox(font, x, y, width, height, Component.literal(""));
+    }
+
+    public UIEditBox allowOnlyNumeric() {
+        editBox.setFilter(text -> text.isEmpty() || text.matches("\\d+"));
+        return this;
     }
 
     @Override
@@ -53,10 +60,16 @@ public class UIEditBox extends UIElement {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         // EditBox renders by itself
 //        System.out.println("Rendering " + this.getClass().getSimpleName() +
 //                " at x=" + x + ", y=" + y + ", width=" + width + ", height=" + height);
 //        System.out.println("Real coords: " + editBox.getX() + ", " + editBox.getY() + " width: " + editBox.getWidth() + " height: " + editBox.getHeight());
+    }
+
+    public UIEditBox setOnValueChange(Consumer<String> onValueChange) {
+        editBox.setResponder(onValueChange);
+        return this;
     }
 
     @Override

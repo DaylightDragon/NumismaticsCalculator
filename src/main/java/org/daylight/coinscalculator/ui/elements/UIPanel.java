@@ -22,6 +22,10 @@ public abstract class UIPanel extends UIElement {
 
     protected boolean elementsCollapsed = false;
 
+    public void setPadding(int padding) {
+        this.padding = padding;
+    }
+
     public boolean isElementsCollapsed() {
         return elementsCollapsed;
     }
@@ -82,7 +86,16 @@ public abstract class UIPanel extends UIElement {
     }
 
     @Override
+    public void updateInternalValues() {
+        super.updateInternalValues();
+        for(UIElement child : children) {
+            child.updateInternalValues();
+        }
+    }
+
+    @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        super.render(g, mouseX, mouseY, partialTick);
 //        System.out.println(shouldBeRendered() + " " + children.size());
         if(!shouldBeRendered()) return;
 
