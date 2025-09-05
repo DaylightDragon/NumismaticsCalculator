@@ -13,6 +13,7 @@ import java.util.Map;
 public class SelectionRenderer {
     public static void renderSelection(GuiGraphics g, AbstractContainerScreen<?> screen) {
         if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty()) {
+            System.out.println("Selection render");
 //            System.out.println(UiState.selectionStartPointSlotIndex + " - " + UiState.selectionEndPointSlotIndex);
             for(Integer slotIndex : UiState.selectionSlotValuesCoins.keySet()) {
                 Slot slot = screen.getMenu().getSlot(slotIndex);

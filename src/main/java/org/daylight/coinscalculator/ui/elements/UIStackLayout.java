@@ -36,6 +36,8 @@ public class UIStackLayout extends UIVerticalLayout {
         this.activeIndex = index;
         children.get(activeIndex).setEnabled(true);
 
+        System.out.println(activeIndex);
+
 //        layoutElements();
         return this;
     }

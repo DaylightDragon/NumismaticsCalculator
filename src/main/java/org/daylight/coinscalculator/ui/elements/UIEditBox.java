@@ -4,6 +4,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.client.event.ScreenEvent;
 
 import java.util.function.Consumer;
 
@@ -56,6 +57,12 @@ public class UIEditBox extends UIElement {
         setBounds(x, y, width, height);
         editBox.setVisible(value);
 //        if(value) setBounds(x, y, width, height);
+    }
+
+    @Override
+    public void relinkListeners(ScreenEvent.Init.Post event) {
+        super.relinkListeners(event);
+        event.addListener(editBox);
     }
 
     @Override

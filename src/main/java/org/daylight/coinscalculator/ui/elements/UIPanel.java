@@ -1,6 +1,7 @@
 package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraftforge.client.event.ScreenEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +91,14 @@ public abstract class UIPanel extends UIElement {
         super.updateInternalValues();
         for(UIElement child : children) {
             child.updateInternalValues();
+        }
+    }
+
+    @Override
+    public void relinkListeners(ScreenEvent.Init.Post event) {
+        super.relinkListeners(event);
+        for(UIElement child : children) {
+            child.relinkListeners(event);
         }
     }
 

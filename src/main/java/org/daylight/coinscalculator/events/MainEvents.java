@@ -1,16 +1,13 @@
-package org.daylight.coinscalculator;
+package org.daylight.coinscalculator.events;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.SimpleContainer;
@@ -19,19 +16,19 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.daylight.coinscalculator.ui.CoinsOverlay;
+import org.daylight.coinscalculator.CoinValues;
+import org.daylight.coinscalculator.UiState;
 import org.daylight.coinscalculator.ui.SelectionRenderer;
 import org.daylight.coinscalculator.ui.UIUpdateRequests;
 import org.daylight.coinscalculator.ui.elements.*;
+import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
 import org.daylight.coinscalculator.util.CoinChangeLimited;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,47 +37,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class MainEvents {
-    private static final Component holdShiftHintComponent = Component.literal("Hold ").withStyle(ChatFormatting.GRAY)
-            .append(Component.literal("SHIFT").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.BOLD))
-            .append(Component.literal(" to view total value").withStyle(ChatFormatting.GRAY));
-
-    @SubscribeEvent
-    public void onTooltip(ItemTooltipEvent event) {
-        ItemStack stack = event.getItemStack();
-
-        Integer value = CoinValues.ITEM_TO_VALUE.get(stack.getItem());
-        if (value != null && value > 0) {
-            if(!Screen.hasShiftDown()) {
-                event.getToolTip().add(holdShiftHintComponent);
-            } else {
-                Component newLine = Component.literal("Value (Total): ").withStyle(ChatFormatting.WHITE)
-                                .append(Component.literal(value * stack.getCount() + "¤").withStyle(ChatFormatting.GOLD)); //.withStyle(ChatFormatting.BOLD))
-//                                .append(Component.literal("").withStyle(ChatFormatting.WHITE))
-
-                List<Component> tooltip = event.getToolTip();
-                for(int i = 0; i < tooltip.size(); i++) {
-                    Component component = tooltip.get(i);
-                    if(component.getString().contains("Value:")) {
-                        tooltip.set(i, newLine);
-                    }
-                }
-            }
-        }
-    }
-
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
 
     }
 
-    @SubscribeEvent
-    public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("coins_overlay", new CoinsOverlay());
-        CoinsCalculator.LOGGER.info("Registering CoinsCalculator overlay");
-    }
-
-    private static final int PANEL_WIDTH = 80;
-    private static final int PANEL_HEIGHT = 120;
+//    private static final int PANEL_WIDTH = 80;
+//    private static final int PANEL_HEIGHT = 120;
     private UIPanel mainFloatingPanel;
     private UIStackLayout pagesStackPanel;
     private UIPanel page1VLayout;
@@ -89,23 +52,18 @@ public class MainEvents {
     @SubscribeEvent
     public void onScreenRender(ScreenEvent.Render.Post event) {
         if (event.getScreen() instanceof InventoryScreen screen) {
-            if(mainFloatingPanel != null) mainFloatingPanel.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+            CalculatorOverlay.getInstance().render(event.getGuiGraphics(), event.getPartialTick(), 0, 0, event.getMouseX(), event.getMouseY());
+//            if(mainFloatingPanel != null) mainFloatingPanel.render(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
             SelectionRenderer.renderSelection(event.getGuiGraphics(), screen);
         }
     }
 
     private void togglePanelPages() {
-        if(mainFloatingPanel != null) {
-//            if(page1VLayout.isEnabled()) {
-//                page1VLayout.setEnabled(false);
-//                page2VLayout.setEnabled(true);
-//            } else {
-//                page1VLayout.setEnabled(true);
-//                page2VLayout.setEnabled(false);
-//            }
-            pagesStackPanel.setNextIndex();
-            mainFloatingPanel.layoutElements();
-        }
+//        CalculatorOverlay.onChangeModeClicked();
+//        if(mainFloatingPanel != null) {
+//            pagesStackPanel.setNextIndex();
+//            mainFloatingPanel.layoutElements();
+//        }
     }
 
     public static final ResourceLocation BLOCK_ATLAS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/atlas/blocks.png");
@@ -171,6 +129,8 @@ public class MainEvents {
 
     @SubscribeEvent
     public void onScreenInit(ScreenEvent.Init.Post event) {
+        CalculatorOverlay.getInstance().relinkListeners(event);
+        if(true) return;
         if (event.getScreen() instanceof InventoryScreen screen) {
             int invLeft = screen.getGuiLeft();
             Font font = screen.getMinecraft().font;
@@ -345,6 +305,7 @@ public class MainEvents {
 
     @SubscribeEvent
     public void onMouseClick(ScreenEvent.MouseButtonPressed.Pre event) {
+        if(true) return;
         if (event.getScreen() instanceof InventoryScreen screen) {
             if(mainFloatingPanel != null) mainFloatingPanel.onClick(event.getMouseX(), event.getMouseY());
             Slot slot = screen.getSlotUnderMouse();
@@ -365,6 +326,7 @@ public class MainEvents {
 
     @SubscribeEvent
     public void onMouseDrag(ScreenEvent.MouseDragged.Pre event) {
+        if(true) return;
         if (event.getScreen() instanceof InventoryScreen screen) {
             if(UiState.selectionModeActive) {
                 Slot slot = screen.getSlotUnderMouse();
@@ -392,6 +354,7 @@ public class MainEvents {
 
     @SubscribeEvent
     public void onMouseRelease(ScreenEvent.MouseButtonReleased.Pre event) {
+        if(true) return;
         if (event.getScreen() instanceof InventoryScreen screen) {
             if(UiState.selectionModeActive) {
                 UiState.selectionRendered = false;

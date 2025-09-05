@@ -1,4 +1,4 @@
-package org.daylight.coinscalculator.ui;
+package org.daylight.coinscalculator.ui.overlays;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -11,16 +11,15 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import org.daylight.coinscalculator.CoinsCalculator;
 
 public class CoinsOverlay implements IGuiOverlay {
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getInstance();
 
-        if (mc.screen == null || !(mc.screen instanceof InventoryScreen || mc.screen instanceof CreativeModeInventoryScreen)) {
-            return;
-        }
+//        if (mc.screen == null || !(mc.screen instanceof InventoryScreen || mc.screen instanceof CreativeModeInventoryScreen)) {
+//            return;
+//        }
 
         String coinText = "Overlay"; // Здесь должна быть логика подсчёта монет
         Component text = Component.keybind(coinText).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF00)));

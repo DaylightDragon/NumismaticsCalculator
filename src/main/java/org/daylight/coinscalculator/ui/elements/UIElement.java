@@ -1,6 +1,7 @@
 package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraftforge.client.event.ScreenEvent;
 import org.daylight.coinscalculator.CoinsCalculator;
 
 public abstract class UIElement {
@@ -94,4 +95,6 @@ public abstract class UIElement {
     protected boolean isMouseOver(double mx, double my) {
         return mx >= x && mx <= x + width && my >= y && my <= y + height;
     }
+
+    public void relinkListeners(ScreenEvent.Init.Post event) {}
 }

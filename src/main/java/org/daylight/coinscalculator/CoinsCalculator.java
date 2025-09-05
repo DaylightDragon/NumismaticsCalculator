@@ -11,6 +11,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.daylight.coinscalculator.events.GUIEvents;
+import org.daylight.coinscalculator.events.MainEvents;
+import org.daylight.coinscalculator.events.TooltipEvents;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -26,9 +29,15 @@ public class CoinsCalculator
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);
 
+//        MinecraftForge.EVENT_BUS.register(TooltipEvents.class);
+//        MinecraftForge.EVENT_BUS.register(GUIEvents.class);
+
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new MainEvents());
-        context.getModEventBus().addListener(MainEvents::onRegisterGuiOverlays);
+//        context.getModEventBus().addListener(MainEvents::onRegisterGuiOverlays);
+//        context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
+//        context.getModEventBus().addListener(GUIEvents::renderOverlay); // bad
+        context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
