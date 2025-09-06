@@ -6,11 +6,13 @@ import net.minecraft.client.gui.GuiGraphics;
 public class UIButton extends UIElement {
     private final String label;
     private final Font font;
+    private final float fontScale;
     private final Runnable onClick;
 
-    public UIButton(String label, Font font, Runnable onClick) {
+    public UIButton(String label, Font font, float fontScale, Runnable onClick) {
         this.label = label;
         this.font = font;
+        this.fontScale = fontScale;
         this.onClick = onClick;
         this.width = font.width(label) + 10;
         this.height = font.lineHeight + 6;
@@ -32,7 +34,8 @@ public class UIButton extends UIElement {
         if(!shouldBeRendered()) return;
         int bgColor = isMouseOver(mouseX, mouseY) ? 0xFF666666 : 0xFF444444;
         graphics.fill(x, y, x + width, y + height, bgColor);
-        graphics.drawString(font, label, x + 5, y + (height - font.lineHeight) / 2, 0xFFFFFF);
+//        graphics.drawString(font, label, x + 5, y + (height - font.lineHeight) / 2, 0xFFFFFF);
+        UIText.drawScaledText(graphics, label, x + 5, y + (float) (height - font.lineHeight) / 2, 0xFFFFFF, fontScale, true);
     }
 
     @Override

@@ -37,6 +37,7 @@ import org.daylight.coinscalculator.ui.SelectionRenderer;
 import org.daylight.coinscalculator.ui.UIUpdateRequests;
 import org.daylight.coinscalculator.ui.elements.*;
 import org.daylight.coinscalculator.util.CoinChangeLimited;
+import org.daylight.coinscalculator.util.tuples.Quartet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -56,32 +57,51 @@ public class CalculatorOverlay {
     private UIPanel page2VLayout;
     private UIEditBox conversionInput;
 
-    public static void onChangeModeClicked() {
+    private float fontScaleText = 1.0f; // 0.7f;
+    private float fontScaleTitle = 1.0f; // 0.9f;
+    private float fontScaleButton = 1.0f; // 0.8f;
 
+    public void setOverlayActive(boolean value) {
+        if(mainFloatingPanel != null) {
+            mainFloatingPanel.setEnabled(value);
+        }
+    }
+
+    public static boolean shouldRenderOnScreen(Screen screen) {
+        return (screen instanceof AbstractContainerScreen) || (screen instanceof CreativeModeInventoryScreen) || (screen instanceof InventoryScreen);
     }
 
     //    @Override
-    public void render(GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight, Integer mouseX, Integer mouseY) {
-        if (Minecraft.getInstance().screen instanceof InventoryScreen screen) {
+    public void render(GuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
+        if(!UiState.coinCalculatorOverlayActive) return;
+        if (shouldRenderOnScreen(Minecraft.getInstance().screen)) {
+            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) Minecraft.getInstance().screen;
             if (mainFloatingPanel == null) {
                 init(screen);
             }
             SelectionRenderer.renderSelection(guiGraphics, screen);
-        }
-        if(mainFloatingPanel != null) {
-            Minecraft mc = Minecraft.getInstance();
-            if(mouseX == null) mouseX = (int) (mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getWidth());
-            if(mouseY == null) mouseY = (int) (mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getHeight());
+
+            if (mainFloatingPanel != null) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mouseX == null)
+                    mouseX = (int) (mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getWidth());
+                if (mouseY == null)
+                    mouseY = (int) (mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getHeight());
 
 //            System.out.println("Rendering actual ui");
 //            RenderSystem.disableDepthTest();
-            if(mainFloatingPanel != null) mainFloatingPanel.render(guiGraphics, mouseX, mouseY, partialTick);
+                if (mainFloatingPanel != null) mainFloatingPanel.render(guiGraphics, mouseX, mouseY, partialTick);
 //            RenderSystem.enableDepthTest();
+            }
         }
     }
 
+    public void updateLayout() {
+        if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
+    }
+
     private void togglePanelPages() {
-        System.out.println(mainFloatingPanel != null);
+//        System.out.println(mainFloatingPanel != null);
         if(mainFloatingPanel != null) {
             pagesStackPanel.setNextIndex();
             mainFloatingPanel.layoutElements();
@@ -137,7 +157,7 @@ public class CalculatorOverlay {
         UiImage sunCoinImage = new UiImage(getCoinResourceLocation(itemName), 16, 16);
         sunCoinMain.setEnabled(false);
         sunCoinMain.addElement(sunCoinImage);
-        sunCoinMain.addElement(new UIText("", font) {
+        sunCoinMain.addElement(new UIText("", font, fontScaleText) {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
@@ -149,29 +169,40 @@ public class CalculatorOverlay {
         return sunCoinMain;
     }
 
-    public void init(InventoryScreen screen) {
+    private Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(AbstractContainerScreen<?> screen) {
+        int prefWGlobal = mainFloatingPanel.getPreferredWidth();
+        int prefHGlobal = mainFloatingPanel.getPreferredHeight();
+
         int invLeft = screen.getGuiLeft();
-        Font font = screen.getMinecraft().font;
+        return new Quartet<>(invLeft - prefWGlobal - 10, (int) (screen.getGuiTop() + prefHGlobal * 0.1), prefWGlobal, prefHGlobal); //  + prefHGlobal * 0.4
+
+//      return new Quartet<>(0, 0, prefWGlobal, prefHGlobal);
+    }
+
+    public void init(AbstractContainerScreen<?> screen) {
+//        System.out.println("INIT");
+        Font font = Minecraft.getInstance().font;
+//        Font font1 = new Font()
 
         final UIVerticalLayout conversionOutputMain = createConversionMainLayout();
         final UIVerticalLayout conversionOutputReturns = createConversionReturnsLayout();
 
         mainFloatingPanel = new UIVerticalLayout();
         mainFloatingPanel.setId("Main Pages VERTICAL Panel");
-        mainFloatingPanel.setPosition(invLeft - 120, screen.getGuiTop());
+//        mainFloatingPanel.setPosition(invLeft - 120, screen.getGuiTop());
         mainFloatingPanel.setBackgroundVisible(true);
 
         pagesStackPanel = new UIStackLayout();
         pagesStackPanel.setId("Main Pages STACK Panel");
 
-        mainFloatingPanel.addElement(new UIButton("Change mode", font, this::togglePanelPages));
+        mainFloatingPanel.addElement(new UIButton("Change mode", font, fontScaleButton, this::togglePanelPages));
         mainFloatingPanel.addElement(pagesStackPanel);
 
         page1VLayout = new UIVerticalLayout();
         page1VLayout.setId("Page 1");
-        page1VLayout.addElement(new UIText("Total Available: 124 ¤", font));
-        page1VLayout.addElement(new UiSpace(0, 5 ));
-        page1VLayout.addElement(new UIText("", font) {
+        page1VLayout.addElement(new UIText("Total Available: 124 ¤", font, fontScaleText));
+        page1VLayout.addElement(new UiSpace(0, 5));
+        page1VLayout.addElement(new UIText("", font, fontScaleText) {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
@@ -183,7 +214,7 @@ public class CalculatorOverlay {
                 updatedInternalValues = true;
             }
         });
-        page1VLayout.addElement(new UIButton("Select", font, () -> {
+        page1VLayout.addElement(new UIButton("Select", font, fontScaleButton, () -> {
             System.out.println("Selecting...");
             UiState.selectionModeActive = !UiState.selectionModeActive;
             if(!UiState.selectionModeActive) {
@@ -195,7 +226,7 @@ public class CalculatorOverlay {
         page2VLayout = new UIVerticalLayout();
         page2VLayout.setId("Page 2");
 //            page2VLayout.setEnabled(false);
-        page2VLayout.addElement(new UIText("Convert ¤ to coins", font));
+        page2VLayout.addElement(new UIText("Convert ¤ to coins", font, fontScaleTitle));
 
         conversionInput = new UIEditBox(font).allowOnlyNumeric();
 //        event.addListener(conversionInput.getEditBox()); // commented
@@ -222,11 +253,12 @@ public class CalculatorOverlay {
             conversionOutputMain.updateInternalValues();
             conversionOutputMain.layoutElements(); // MAY BE OPTIMIZED IN LAZY WAY IDK
             conversionOutputReturns.updateInternalValues();
-            conversionOutputReturns.layoutElements();
+//            conversionOutputReturns.layoutElements();
+            mainFloatingPanel.layoutElements();
         });
         page2VLayout.addElement(conversionInput);
 
-        conversionOutputMain.addElement(new UIText("Value in coins:", font));
+        conversionOutputMain.addElement(new UIText("Value in coins:", font, fontScaleTitle));
 
         conversionOutputMain.addElement(createConversionLine("sun", "Sun", () -> UiState.conversionSunMain, font));
         conversionOutputMain.addElement(createConversionLine("crown", "Crown", () -> UiState.conversionCrownMain, font));
@@ -235,7 +267,15 @@ public class CalculatorOverlay {
         conversionOutputMain.addElement(createConversionLine("bevel", "Bevel", () -> UiState.conversionBevelMain, font));
         conversionOutputMain.addElement(createConversionLine("spur", "Spur", () -> UiState.conversionSpurMain, font));
 
-        conversionOutputMain.addElement(new UIText("Expected a return:", font));
+        conversionOutputMain.addElement(new UIText("Expected in return:", font, fontScaleTitle) {
+            private boolean updatedInternalValues = false;
+            @Override
+            public void updateInternalValues() {
+                super.updateInternalValues();
+                if(!updatedInternalValues || UIUpdateRequests.updateConversionValuesMain || UIUpdateRequests.updateConversionReturns) setText("Expected in return: " + UiState.conversionSummedOverpay);
+                updatedInternalValues = true;
+            }
+        });
 
         conversionOutputReturns.addElement(createConversionLine("sun", "Sun", () -> UiState.conversionSunOverpay, font));
         conversionOutputReturns.addElement(createConversionLine("crown", "Crown", () -> UiState.conversionCrownOverpay, font));
@@ -246,34 +286,13 @@ public class CalculatorOverlay {
 
         page2VLayout.addElement(conversionOutputMain);
 
-//            page2VLayout.addElement(new UIText("2 Cog", font));
-//            page2VLayout.addElement(new UIText("5 Sprocket", font));
-//            page2VLayout.addElement(new UIText("1 Bevel", font));
         pagesStackPanel.addElement(page2VLayout);
 
-//            int prefWPage1 = pagesPanel.getPreferredWidth();
-//            int prefHPage1 = pagesPanel.getPreferredHeight();
-//
-//            int prefWPage2 = pagesPanel.getPreferredWidth();
-//            int prefHPage2 = pagesPanel.getPreferredHeight();
-
-        // Math.max(0,
-
-//            page1VLayout.setBounds(invLeft - prefWPage1 - 10, screen.getGuiTop(), prefWPage1, prefHPage1);
-//            page2VLayout.setBounds(invLeft - prefWPage2 - 10, screen.getGuiTop(), prefWPage2, prefHPage2);
-
-//            pagesPanel.setBounds(invLeft - prefWGlobal - 10, screen.getGuiTop(), prefWGlobal, prefHGlobal);
-
-//            CoinsCalculator.LOGGER.info("Before layout: panel width=" + page1VLayout.width + ", height=" + page1VLayout.height);
-//            page1VLayout.layoutElements();
         mainFloatingPanel.layoutElements();
         mainFloatingPanel.updateInternalValues();
-//            CoinsCalculator.LOGGER.info("After layout: panel width=" + page1VLayout.width + ", height=" + page1VLayout.height);
 
-        int prefWGlobal = mainFloatingPanel.getPreferredWidth();
-        int prefHGlobal = mainFloatingPanel.getPreferredHeight();
-        mainFloatingPanel.setBounds(invLeft - prefWGlobal - 10, (int) (screen.getGuiTop() + prefHGlobal * 0.1), prefWGlobal, prefHGlobal); //  + prefHGlobal * 0.4
-
+        Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(screen);
+        mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
     }
 
     private static @NotNull UIVerticalLayout createConversionReturnsLayout() {
@@ -317,6 +336,7 @@ public class CalculatorOverlay {
             if(consumerSetMain != null) consumerSetMain.accept(entry.getValue());
 //            if(consumerSetReturn != null) consumerSetReturn.accept(entry.getValue());
         }
+        UiState.conversionSummedOverpay = res.getCoins();
         Objects.requireNonNull(CoinValues.TYPE_TO_SET_RETURN.get(CoinValues.CoinTypes.SPUR)).accept(res.getCoins());
     }
 
@@ -529,7 +549,8 @@ public class CalculatorOverlay {
 
     public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
         boolean result = false;
-        if (screenOrig instanceof InventoryScreen screen) {
+        if (shouldRenderOnScreen(screenOrig)) {
+            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
             if(mainFloatingPanel != null) mainFloatingPanel.onClick(mouseX, mouseY);
             Slot slot = screen.getSlotUnderMouse();
             if(isSlotValidForSelection(slot)) {
@@ -550,7 +571,8 @@ public class CalculatorOverlay {
     }
 
     public boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig) {
-        if (screenOrig instanceof InventoryScreen screen) {
+        if (shouldRenderOnScreen(screenOrig)) {
+            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
             if(UiState.selectionModeActive) {
                 Slot slot = screen.getSlotUnderMouse();
 //                if(slot != null) System.out.println(slot.getContainerSlot() + " " + slot.container.getClass().getSimpleName());
@@ -571,7 +593,8 @@ public class CalculatorOverlay {
     }
 
     public void onMouseRelease(double mouseX, double mouseY, int button, Screen screenOrig) {
-        if (screenOrig instanceof InventoryScreen screen) {
+        if (shouldRenderOnScreen(screenOrig)) {
+            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
             if(UiState.selectionModeActive) {
                 UiState.selectionRendered = false;
                 Slot slot = screen.getSlotUnderMouse();
@@ -602,14 +625,17 @@ public class CalculatorOverlay {
     }
 
     public void onKeyPressed(int keyCode, int scanCode, int modifiers) {
-        if(conversionInput != null) conversionInput.getEditBox().keyPressed(keyCode, scanCode, modifiers);
+//        if(conversionInput != null) conversionInput.getEditBox().keyPressed(keyCode, scanCode, modifiers);
     }
 
     public void onMouseScrolled(double mouseX, double mouseY, double delta) {
-        if(conversionInput != null) conversionInput.getEditBox().mouseScrolled(mouseX, mouseY, delta);
+//        if(conversionInput != null) conversionInput.getEditBox().mouseScrolled(mouseX, mouseY, delta);
     }
 
     public void relinkListeners(ScreenEvent.Init.Post event) {
-        if(mainFloatingPanel != null) mainFloatingPanel.relinkListeners(event);
+        if(event.getScreen() instanceof AbstractContainerScreen<?> abstractContainerScreen) {
+            if (mainFloatingPanel == null) init(abstractContainerScreen);
+        }
+        mainFloatingPanel.relinkListeners(event);
     }
 }

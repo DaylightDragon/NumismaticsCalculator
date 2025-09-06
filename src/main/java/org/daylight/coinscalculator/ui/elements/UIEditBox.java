@@ -1,5 +1,6 @@
 package org.daylight.coinscalculator.ui.elements;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -53,21 +54,25 @@ public class UIEditBox extends UIElement {
 
     @Override
     public void updateInternalVisibility(boolean value) {
-        super.updateInternalVisibility(value);
+        boolean finalValue = value && isEnabled() && isVisible();
+//        System.out.println("Editbox updateInternalVisibility " + finalValue);
+        super.updateInternalVisibility(finalValue);
         setBounds(x, y, width, height);
-        editBox.setVisible(value);
+        editBox.setVisible(finalValue);
 //        if(value) setBounds(x, y, width, height);
     }
 
     @Override
     public void relinkListeners(ScreenEvent.Init.Post event) {
         super.relinkListeners(event);
+//        System.out.println("Adding listener to editBox");
         event.addListener(editBox);
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
+        if(Minecraft.getInstance().screen == null) editBox.render(graphics, mouseX, mouseY, partialTick);
         // EditBox renders by itself
 //        System.out.println("Rendering " + this.getClass().getSimpleName() +
 //                " at x=" + x + ", y=" + y + ", width=" + width + ", height=" + height);

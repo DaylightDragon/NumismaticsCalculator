@@ -15,12 +15,11 @@ import org.daylight.coinscalculator.ui.overlays.CoinsOverlay;
 public class GUIEvents {
     @SubscribeEvent
     public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("coins_overlay", new CoinsOverlay());
-//        event.registerAboveAll("coin_calculator_overlay", new CalculatorOverlay());
-        event.registerAboveAll("coin_calculator_overlay2", (gui, graphics, partialTick, width, height) -> {
+//        event.registerAboveAll("coins_overlay", new CoinsOverlay());
+        event.registerAboveAll("coin_calculator_overlay", (gui, graphics, partialTick, width, height) -> {
             if (Minecraft.getInstance().screen == null) {
 //                System.out.println("render overlay");
-                CalculatorOverlay.getInstance().render(graphics, partialTick, width, height, 0, 0);
+                CalculatorOverlay.getInstance().render(graphics, partialTick, InputEvents.getMouseX(), InputEvents.getMouseY());
             }
         });
         CoinsCalculator.LOGGER.info("Registering overlays");

@@ -1,7 +1,13 @@
 package org.daylight.coinscalculator.ui.elements;
 
+import org.daylight.coinscalculator.UiState;
+
 public class UIVerticalLayout extends UIPanel {
-    private int spacing = 4;
+    private float spacing = 4;
+    private int getCorrectedSpacing() {
+        return (int) (spacing * UiState.globalPanelSpacingModifier);
+    }
+
     private HorizontalAlignment hAlign = HorizontalAlignment.LEFT;
     private VerticalAlignment vAlign = VerticalAlignment.TOP;
 
@@ -28,18 +34,18 @@ public class UIVerticalLayout extends UIPanel {
         for (UIElement child : children) {
             maxWidth = Math.max(maxWidth, child.getPreferredWidth());
         }
-        return maxWidth + padding * 2;
+        return maxWidth + getCorrectedPadding() * 2;
     }
 
     @Override
     public int getPreferredHeight() {
-        int totalHeight = padding * 2;
+        int totalHeight = getCorrectedPadding() * 2;
         for (UIElement child : children) {
             if(!child.isEnabled()) continue;
 //            System.out.println(getId() + " child height: " + child.getPreferredHeight());
-            totalHeight += child.getPreferredHeight() + spacing;
+            totalHeight += child.getPreferredHeight() + getCorrectedSpacing();
         }
-        if (!children.isEmpty()) totalHeight -= spacing;
+        if (!children.isEmpty()) totalHeight -= getCorrectedSpacing();
 //        System.out.println(getId() + " getPreferredHeight: " + totalHeight);
         return totalHeight;
     }
@@ -50,15 +56,15 @@ public class UIVerticalLayout extends UIPanel {
 //        CoinsCalculator.LOGGER.info(getClass().getSimpleName() +
 //                " layoutElements -> panel x: " + x + ", y: " + y + ", width: " + width + ", height: " + height);
 
-        int totalHeight = getPreferredHeight() - padding * 2;
-        int availableHeight = height - padding * 2;
-        int currentY = y + padding;
+        int totalHeight = getPreferredHeight() - getCorrectedPadding() * 2;
+        int availableHeight = height - getCorrectedPadding() * 2;
+        int currentY = y + getCorrectedPadding();
 
         // Выравнивание по вертикали
         if (vAlign == VerticalAlignment.MIDDLE) {
-            currentY += (availableHeight - (totalHeight - padding * 2)) / 2;
+            currentY += (availableHeight - (totalHeight - getCorrectedPadding() * 2)) / 2;
         } else if (vAlign == VerticalAlignment.BOTTOM) {
-            currentY += (availableHeight - (totalHeight - padding * 2));
+            currentY += (availableHeight - (totalHeight - getCorrectedPadding() * 2));
         }
 
         if(isElementsCollapsed()) return;
@@ -74,17 +80,18 @@ public class UIVerticalLayout extends UIPanel {
             int childWidth = child.getPreferredWidth();
             int childHeight = child.getPreferredHeight();
 
-            int childX = x + padding;
+            int childX = x + getCorrectedPadding();
             if (hAlign == HorizontalAlignment.CENTER) {
-                childX += (width - padding * 2 - childWidth) / 2;
+                childX += (width - getCorrectedPadding() * 2 - childWidth) / 2;
             } else if (hAlign == HorizontalAlignment.RIGHT) {
-                childX += (width - padding * 2 - childWidth);
+                childX += (width - getCorrectedPadding() * 2 - childWidth);
             }
 
             child.setBounds(childX, currentY, childWidth, childHeight);
 //            child.setBounds(child.getX(), child.getY(), child.getWidth(), child.getPreferredHeight()); // may be important
-            child.updateInternalVisibility(true);
-            currentY += childHeight + spacing;
+//            System.out.println("update child visibility");
+            child.updateInternalVisibility(isEnabled() && isVisible()); // true
+            currentY += childHeight + getCorrectedSpacing();
         }
 
         height = getPreferredHeight();

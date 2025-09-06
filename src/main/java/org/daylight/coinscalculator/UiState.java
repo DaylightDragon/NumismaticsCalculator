@@ -1,14 +1,12 @@
 package org.daylight.coinscalculator;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import org.daylight.coinscalculator.ui.elements.UIText;
-import org.javatuples.Pair;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class UiState {
+    public static boolean coinCalculatorOverlayActive = false;
+    public static float globalPanelSpacingModifier = 0.8f;
+    public static float globalPanelPaddingModifier = 0.8f;
     public static int selectedCoinsValue = 0;
     public static Map<Integer, Integer> selectionSlotValuesCoins = new HashMap<>();
     public static boolean selectionModeActive = false;
@@ -23,6 +21,7 @@ public class UiState {
     public static int conversionValue = 0;
     public static int conversionMode = 1;
     public static int conversionSunMain = 0;
+    public static int conversionSummedOverpay = 0;
     public static int conversionSunOverpay = 0;
     public static int conversionCrownMain = 0;
     public static int conversionCrownOverpay = 0;

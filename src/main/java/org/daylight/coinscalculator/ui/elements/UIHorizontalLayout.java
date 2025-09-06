@@ -1,7 +1,13 @@
 package org.daylight.coinscalculator.ui.elements;
 
+import org.daylight.coinscalculator.UiState;
+
 public class UIHorizontalLayout extends UIPanel {
-    private int spacing = 4;
+    private float spacing = 4;
+    private int getCorrectedSpacing() {
+        return (int) (spacing * UiState.globalPanelSpacingModifier);
+    }
+
     private HorizontalAlignment hAlign = HorizontalAlignment.LEFT;
     private VerticalAlignment vAlign = VerticalAlignment.TOP;
 
@@ -32,8 +38,8 @@ public class UIHorizontalLayout extends UIPanel {
             total += child.getPreferredWidth();
             enabledCount++;
         }
-        if (enabledCount > 1) total += spacing * (enabledCount - 1);
-        int result = total + padding * 2;
+        if (enabledCount > 1) total += getCorrectedSpacing() * (enabledCount - 1);
+        int result = total + getCorrectedPadding() * 2;
 //        System.out.println(getId() + " getPreferredWidth: " + result);
         return result;
     }
@@ -45,7 +51,7 @@ public class UIHorizontalLayout extends UIPanel {
         for (UIElement child : children) {
             maxH = Math.max(maxH, child.getPreferredHeight());
         }
-        return maxH + padding * 2;
+        return maxH + getCorrectedPadding() * 2;
     }
 
     @Override
@@ -60,10 +66,10 @@ public class UIHorizontalLayout extends UIPanel {
             contentW += child.getPreferredWidth();
             enabledCount++;
         }
-        if (enabledCount > 1) contentW += spacing * (enabledCount - 1);
+        if (enabledCount > 1) contentW += getCorrectedSpacing() * (enabledCount - 1);
 
-        int availableW = Math.max(0, width - padding * 2);
-        int currentX = x + padding;
+        int availableW = Math.max(0, width - getCorrectedPadding() * 2);
+        int currentX = x + getCorrectedPadding();
 
         // Горизонтальное выравнивание ряда
         if (hAlign == HorizontalAlignment.CENTER) {
@@ -89,8 +95,8 @@ public class UIHorizontalLayout extends UIPanel {
             int childH = child.getPreferredHeight();
 
             // Вертикальное выравнивание каждого элемента в своей "колонке"
-            int childY = y + padding;
-            int innerH = Math.max(0, height - padding * 2);
+            int childY = y + getCorrectedPadding();
+            int innerH = Math.max(0, height - getCorrectedPadding() * 2);
             if (vAlign == VerticalAlignment.MIDDLE) {
                 childY += (innerH - childH) / 2;
             } else if (vAlign == VerticalAlignment.BOTTOM) {
@@ -98,8 +104,8 @@ public class UIHorizontalLayout extends UIPanel {
             }
 
             child.setBounds(currentX, childY, childW, childH);
-            child.updateInternalVisibility(true);
-            currentX += childW + spacing;
+            child.updateInternalVisibility(isEnabled() && isVisible());
+            currentX += childW + getCorrectedSpacing();
         }
 
         // Как в вертикальном: фиксируем "гибкую" меру контейнера под контент

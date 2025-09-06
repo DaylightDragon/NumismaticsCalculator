@@ -2,6 +2,7 @@ package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.event.ScreenEvent;
+import org.daylight.coinscalculator.UiState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,10 @@ public abstract class UIPanel extends UIElement {
     private boolean backgroundVisible = false;
 
     protected List<UIElement> children = new ArrayList<>();
-    protected int padding = 4;
+    protected float padding = 4;
+    protected int getCorrectedPadding() {
+        return (int) (padding * UiState.globalPanelPaddingModifier);
+    }
 
     protected boolean elementsCollapsed = false;
 
@@ -82,7 +86,7 @@ public abstract class UIPanel extends UIElement {
     public void updateInternalVisibility(boolean value) {
         super.updateInternalVisibility(value);
         for(UIElement child : children) {
-            child.updateInternalVisibility(isVisible() && isEnabled());
+            child.updateInternalVisibility(value && isVisible() && isEnabled());
         }
     }
 
@@ -96,6 +100,7 @@ public abstract class UIPanel extends UIElement {
 
     @Override
     public void relinkListeners(ScreenEvent.Init.Post event) {
+//        System.out.println("RelinkListeners panel");
         super.relinkListeners(event);
         for(UIElement child : children) {
             child.relinkListeners(event);

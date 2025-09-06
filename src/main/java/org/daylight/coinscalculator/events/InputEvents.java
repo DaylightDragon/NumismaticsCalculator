@@ -9,6 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinsCalculator;
 import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
+import org.daylight.coinscalculator.ui.overlays.GuiManagerOverlay;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
@@ -17,7 +18,8 @@ import java.util.Set;
 @Mod.EventBusSubscriber(modid = CoinsCalculator.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class InputEvents {
 
-    private static CalculatorOverlay inputHandler = CalculatorOverlay.getInstance();
+    private static CalculatorOverlay calculatorOverlay = CalculatorOverlay.getInstance();
+    private static GuiManagerOverlay guiManagerOverlay = GuiManagerOverlay.getInstance();
 
     private static boolean leftButtonDown = false;
     private static boolean rightButtonDown = false;
@@ -69,15 +71,16 @@ public class InputEvents {
         double mouseY = getMouseY();
         Screen screen = mc.screen;
 
-        if (inputHandler == null || screen == null) return;
+        if (calculatorOverlay == null || screen == null) return;
 
         int button = event.getButton();
         if (event.getAction() == GLFW.GLFW_PRESS) {
             pressedButtons.add(button);
-            if(inputHandler.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
+            if(calculatorOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
+            if(guiManagerOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
         } else if (event.getAction() == GLFW.GLFW_RELEASE) {
             pressedButtons.remove(button);
-            inputHandler.onMouseRelease(mouseX, mouseY, event.getButton(), screen);
+            calculatorOverlay.onMouseRelease(mouseX, mouseY, event.getButton(), screen);
         }
     }
 
@@ -97,8 +100,8 @@ public class InputEvents {
             if ((mouseX != lastMouseX || mouseY != lastMouseY) && pressedButtons.contains(0)) {
                 double dx = mouseX - lastMouseX;
                 double dy = mouseY - lastMouseY;
-                System.out.println("Мышь двинулась с зажатой кнопкой: dx=" + dx + ", dy=" + dy);
-                inputHandler.onMouseDrag(getMouseX(), getMouseX(), 0, Minecraft.getInstance().screen);
+//                System.out.println("Mouse dragging detected: dx=" + dx + ", dy=" + dy);
+                calculatorOverlay.onMouseDrag(getMouseX(), getMouseX(), 0, Minecraft.getInstance().screen);
             }
         }
 
@@ -117,8 +120,8 @@ public class InputEvents {
 
     @SubscribeEvent
     public static void onKeyPressed(InputEvent.Key event) {
-        if (inputHandler == null) return;
-        inputHandler.onKeyPressed(event.getKey(), event.getScanCode(), event.getModifiers());
+        if (calculatorOverlay == null) return;
+        calculatorOverlay.onKeyPressed(event.getKey(), event.getScanCode(), event.getModifiers());
     }
 
 //    @SubscribeEvent
@@ -129,17 +132,27 @@ public class InputEvents {
 
     @SubscribeEvent
     public static void onMouseScrolled(InputEvent.MouseScrollingEvent event) {
-        if (inputHandler == null) return;
-        inputHandler.onMouseScrolled(event.getScrollDelta(), event.getScrollDelta(), event.getScrollDelta());
+        if (calculatorOverlay == null) return;
+        calculatorOverlay.onMouseScrolled(event.getScrollDelta(), event.getScrollDelta(), event.getScrollDelta());
     }
 
-    private static int getMouseX() {
+    public static int getMouseX() {
         Minecraft mc = Minecraft.getInstance();
         return (int) (mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getWidth());
     }
 
-    private static int getMouseY() {
+    public static int getMouseY() {
         Minecraft mc = Minecraft.getInstance();
         return (int) (mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getHeight());
     }
+
+//    @SubscribeEvent
+//    public static void onCharTyped(ScreenEvent.KeyboardCharTyped.Pre event) {
+//        if (event.getScreen() instanceof YourScreen screen) {
+//            if (screen.getFocused() instanceof EditBox editBox) {
+//                String current = editBox.getValue();
+//                System.out.println("Текущее значение: " + current);
+//            }
+//        }
+//    }
 }
