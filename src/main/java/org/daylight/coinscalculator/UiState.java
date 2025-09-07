@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UiState {
+    public static Map<Integer, Integer> inventorySnapshotCoinsAmounts = new HashMap<>();
+    public static int inventorySnapshotTotalCoins = 0;
     public static boolean coinCalculatorOverlayActive = false;
     public static float globalPanelSpacingModifier = 0.8f;
     public static float globalPanelPaddingModifier = 0.8f;
@@ -19,7 +21,7 @@ public class UiState {
     public static int selectionEndPointSlotIndex = -1;
 
     public static int conversionValue = 0;
-    public static int conversionMode = 1;
+    public static boolean conversionModeUseAvailable = false;
     public static int conversionSunMain = 0;
     public static int conversionSummedOverpay = 0;
     public static int conversionSunOverpay = 0;

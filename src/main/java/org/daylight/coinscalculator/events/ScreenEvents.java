@@ -29,6 +29,7 @@ public class ScreenEvents {
         if (CalculatorOverlay.shouldRenderOnScreen(event.getScreen())) {
 //            System.out.println("Relink main");
             CalculatorOverlay.getInstance().relinkListeners(event);
+            CalculatorOverlay.getInstance().updateOverlayPosition(event.getScreen());
         }
         if(GuiManagerOverlay.shouldRenderOnScreen(event.getScreen())) {
             GuiManagerOverlay.getInstance().relinkListeners(event);

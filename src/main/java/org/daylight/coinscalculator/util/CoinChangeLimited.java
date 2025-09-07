@@ -11,6 +11,7 @@ public class CoinChangeLimited {
         int sum;
         int coins;
         Map<Integer, Integer> composition; // номинал → количество
+        int overpay;
 
         public boolean isExact() {
             return exact;
@@ -24,6 +25,10 @@ public class CoinChangeLimited {
             return coins;
         }
 
+        public int getOverpay() {
+            return overpay;
+        }
+
         public Map<Integer, Integer> getComposition() {
             return composition;
         }
@@ -33,7 +38,7 @@ public class CoinChangeLimited {
             StringBuilder sb = new StringBuilder();
             int check = 0;
             sb.append(exact ? "Exact" : "Overpay").append(" sum: ").append(sum)
-                    .append(", coins: ").append(coins).append("\n");
+                    .append(", coins: ").append(coins).append("overpay: ").append(getOverpay()).append("\n");
             for (Map.Entry<Integer, Integer> e : composition.entrySet()) {
                 check += e.getKey() * e.getValue();
                 sb.append(e.getKey()).append(" x ").append(e.getValue()).append("\n");
@@ -54,10 +59,54 @@ public class CoinChangeLimited {
             res.composition.put(values[i], amount);
             target -= amount * values[i];
         }
+        res.overpay = target;
         return res;
     }
 
-    public static Result solve(int target, int[] values, int[] counts) {
+    public static Result solveFast(int target, int[] values, int[] counts) {
+        int n = values.length;
+        Result res = new Result();
+        res.composition = new LinkedHashMap<>();
+        int sum = 0;
+        int coins = 0;
+
+        // Жадно забираем от больших к меньшим
+        for (int i = 0; i < n; i++) {
+            int take = Math.min(counts[i], target / values[i]);
+            if (take > 0) {
+                res.composition.put(values[i], take);
+                target -= take * values[i];
+                sum += take * values[i];
+                coins += take;
+            }
+        }
+
+        // Если всё закрыли — отлично
+        if (target == 0) {
+            res.exact = true;
+            res.sum = sum;
+            res.coins = coins;
+            return res;
+        }
+
+        // Не хватило: добавляем переплату (берём минимальные номиналы)
+        for (int i = n - 1; i >= 0 && target > 0; i--) {
+            if (counts[i] > res.composition.getOrDefault(values[i], 0)) {
+                res.composition.merge(values[i], 1, Integer::sum);
+                sum += values[i];
+                coins++;
+                target -= values[i]; // уйдём в минус (переплата)
+            }
+        }
+
+        res.exact = (target <= 0);
+        res.sum = sum;
+        res.coins = coins;
+        res.overpay = - target;
+        return res;
+    }
+
+    public static Result solveSlow(int target, int[] values, int[] counts) {
         int n = values.length;
         int maxSum = target;
         for (int i = 0; i < n; i++) {
@@ -121,6 +170,7 @@ public class CoinChangeLimited {
         result.sum = bestSum;
         result.coins = dp[bestSum];
         result.composition = comp;
+        result.overpay = target - bestSum;
         return result;
     }
 
@@ -130,7 +180,7 @@ public class CoinChangeLimited {
         int[] values = {50, 20, 10, 5};
         int[] counts = {1, 2, 1, 1};
 
-        Result res = solve(target, values, counts);
+        Result res = solveFast(target, values, counts);
         if (res != null) {
             System.out.println(res);
         } else {

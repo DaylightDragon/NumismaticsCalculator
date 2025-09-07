@@ -40,7 +40,7 @@ public class UIButton extends UIElement {
 
     @Override
     public boolean onClick(double mouseX, double mouseY) {
-        if (isMouseOver(mouseX, mouseY)) {
+        if (isEnabled() && isMouseOver(mouseX, mouseY)) {
             onClick.run();
             return true;
         }

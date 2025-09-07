@@ -124,8 +124,12 @@ public abstract class UIPanel extends UIElement {
 
     @Override
     public boolean onClick(double mouseX, double mouseY) {
+        if(!isEnabled()) return false;
         for (UIElement child : children) {
-            if(child.onClick(mouseX, mouseY)) return true;
+            if(child.onClick(mouseX, mouseY)) {
+//                System.out.println("Clicked " + child.getId());
+                return true;
+            }
         }
         return false;
     }

@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -41,6 +42,8 @@ import org.daylight.coinscalculator.util.tuples.Quartet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -144,6 +147,50 @@ public class CalculatorOverlay {
         if(amount > 0) text.setText(amount + " * " + name);
     }
 
+    private void onConversionTextUpdate(String text) {
+        if(text.isBlank()) text = "0";
+        int value;
+        try {
+            value = Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        UiState.conversionValue = value;
+
+        int[] values = {4096, 512, 64, 16, 8, 1};
+//        int[] counts = {1000, 1000, 1000, 1000, 1000, 1000}; //TODO
+
+        CoinChangeLimited.Result res;
+
+//        System.out.println("Method " + UiState.conversionModeUseAvailable);
+
+        if(UiState.conversionModeUseAvailable) {
+            int i = 0;
+            int[] types = new int[UiState.inventorySnapshotCoinsAmounts.size()];
+            int[] amounts = new int[UiState.inventorySnapshotCoinsAmounts.size()];
+            for (Map.Entry<Integer, Integer> entry : UiState.inventorySnapshotCoinsAmounts.entrySet()) {
+                types[i] = entry.getKey();
+                amounts[i] = entry.getValue();
+                i++;
+            }
+
+            res = CoinChangeLimited.solveFast(value, types, amounts);
+        }
+        else res = CoinChangeLimited.solveInfinite(value, values);
+        if(res == null) return;
+//        System.out.println(res);
+        setConversionValues(res);
+
+        UIUpdateRequests.updateConversionValuesMain = true;
+        UIUpdateRequests.updateConversionReturns = true;
+
+        conversionOutputMain.updateInternalValues();
+        conversionOutputMain.layoutElements(); // MAY BE OPTIMIZED IN LAZY WAY IDK
+        conversionOutputReturns.updateInternalValues();
+//            conversionOutputReturns.layoutElements();
+        mainFloatingPanel.layoutElements();
+    }
+
     private UIElement createConversionLine(String itemName, String displayName, Supplier<Integer> amount, Font font) {
         UIHorizontalLayout sunCoinMain = new UIHorizontalLayout() {
             private boolean updatedInternalValues = false;
@@ -174,18 +221,40 @@ public class CalculatorOverlay {
         int prefHGlobal = mainFloatingPanel.getPreferredHeight();
 
         int invLeft = screen.getGuiLeft();
-        return new Quartet<>(invLeft - prefWGlobal - 10, (int) (screen.getGuiTop() + prefHGlobal * 0.1), prefWGlobal, prefHGlobal); //  + prefHGlobal * 0.4
+        int left = invLeft - prefWGlobal - 10;
+        int top = screen.getGuiTop() + (screen.getYSize() - prefHGlobal) / 2;
+        int right = left + prefWGlobal;
+        int bottom = top + prefHGlobal;
+
+        if(left < 5) left = 5;
+        if(top < 5) top = 5;
+
+        if(bottom > screen.getGuiTop() + screen.getYSize() - 5) {
+            int newBottom = screen.getGuiTop() + screen.getYSize() - 5;
+            top -= bottom - newBottom;
+            bottom = newBottom;
+
+            if (top < 5) {
+                top = 5;
+//                bottom = top + prefHGlobal;
+            }
+        }
+
+        return new Quartet<>(left, top, right, bottom); //  + prefHGlobal * 0.4
 
 //      return new Quartet<>(0, 0, prefWGlobal, prefHGlobal);
     }
+
+    private UIVerticalLayout conversionOutputMain;
+    private UIVerticalLayout conversionOutputReturns;
 
     public void init(AbstractContainerScreen<?> screen) {
 //        System.out.println("INIT");
         Font font = Minecraft.getInstance().font;
 //        Font font1 = new Font()
 
-        final UIVerticalLayout conversionOutputMain = createConversionMainLayout();
-        final UIVerticalLayout conversionOutputReturns = createConversionReturnsLayout();
+        conversionOutputMain = createConversionMainLayout();
+        conversionOutputReturns = createConversionReturnsLayout();
 
         mainFloatingPanel = new UIVerticalLayout();
         mainFloatingPanel.setId("Main Pages VERTICAL Panel");
@@ -195,12 +264,23 @@ public class CalculatorOverlay {
         pagesStackPanel = new UIStackLayout();
         pagesStackPanel.setId("Main Pages STACK Panel");
 
-        mainFloatingPanel.addElement(new UIButton("Change mode", font, fontScaleButton, this::togglePanelPages));
+        mainFloatingPanel.addElement(new UIButton("Count | Convert", font, fontScaleButton, this::togglePanelPages));
         mainFloatingPanel.addElement(pagesStackPanel);
 
         page1VLayout = new UIVerticalLayout();
         page1VLayout.setId("Page 1");
-        page1VLayout.addElement(new UIText("Total Available: 124 ¤", font, fontScaleText));
+        page1VLayout.addElement(new UIText("", font, fontScaleText) {
+            private boolean updatedInternalValues = false;
+            @Override
+            public void updateInternalValues() {
+                super.updateInternalValues();
+                if(!updatedInternalValues || UIUpdateRequests.updateTotalCoinsValue) {
+                    setText("Total Available: " + UiState.inventorySnapshotTotalCoins + " ¤");
+                    UIUpdateRequests.updateTotalCoinsValue = false;
+                }
+                updatedInternalValues = true;
+            }
+        });
         page1VLayout.addElement(new UiSpace(0, 5));
         page1VLayout.addElement(new UIText("", font, fontScaleText) {
             private boolean updatedInternalValues = false;
@@ -215,7 +295,7 @@ public class CalculatorOverlay {
             }
         });
         page1VLayout.addElement(new UIButton("Select", font, fontScaleButton, () -> {
-            System.out.println("Selecting...");
+//            System.out.println("Selecting...");
             UiState.selectionModeActive = !UiState.selectionModeActive;
             if(!UiState.selectionModeActive) {
                 clearAllSelectionCoords();
@@ -230,33 +310,14 @@ public class CalculatorOverlay {
 
         conversionInput = new UIEditBox(font).allowOnlyNumeric();
 //        event.addListener(conversionInput.getEditBox()); // commented
-        conversionInput.setOnValueChange(text -> {
-            if(text.isBlank()) text = "0";
-            int value;
-            try {
-                value = Integer.parseInt(text);
-            } catch (NumberFormatException e) {
-                return;
-            }
-            UiState.conversionValue = value;
-
-            int[] values = {4096, 512, 64, 16, 8, 1};
-//                int[] counts = {1000, 1000, 1000, 1000, 1000, 1000};
-
-            CoinChangeLimited.Result res = CoinChangeLimited.solveInfinite(value, values);
-            System.out.println(res);
-            setConversionValues(res);
-
-            UIUpdateRequests.updateConversionValuesMain = true;
-            UIUpdateRequests.updateConversionReturns = true;
-
-            conversionOutputMain.updateInternalValues();
-            conversionOutputMain.layoutElements(); // MAY BE OPTIMIZED IN LAZY WAY IDK
-            conversionOutputReturns.updateInternalValues();
-//            conversionOutputReturns.layoutElements();
-            mainFloatingPanel.layoutElements();
-        });
+        conversionInput.setOnValueChange(this::onConversionTextUpdate);
         page2VLayout.addElement(conversionInput);
+
+        page2VLayout.addElement(new UICheckBox(font, "Only available", false).setOnValueChange(value -> {
+//            System.out.println("Set to " + value);
+            UiState.conversionModeUseAvailable = value;
+            onConversionTextUpdate(conversionInput.getEditBox().getValue());
+        }));
 
         conversionOutputMain.addElement(new UIText("Value in coins:", font, fontScaleTitle));
 
@@ -295,6 +356,13 @@ public class CalculatorOverlay {
         mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
     }
 
+    public void updateOverlayPosition(Screen screen) {
+        if(screen instanceof AbstractContainerScreen<?> abstractContainerScreen) {
+            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(abstractContainerScreen);
+            mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
+        }
+    }
+
     private static @NotNull UIVerticalLayout createConversionReturnsLayout() {
         UIVerticalLayout conversionOutputReturns = new UIVerticalLayout() {
             private boolean updatedInternalValues = false;
@@ -328,6 +396,12 @@ public class CalculatorOverlay {
     }
 
     private void setConversionValues(CoinChangeLimited.Result res) {
+        for (Consumer<Integer> value : CoinValues.TYPE_TO_SET_MAIN.values()) {
+            value.accept(0);
+        }
+        for (Consumer<Integer> value : CoinValues.TYPE_TO_SET_RETURN.values()) {
+            value.accept(0);
+        }
         for(Map.Entry<Integer, Integer> entry : res.getComposition().entrySet()) {
             CoinValues.CoinTypes type = CoinValues.VALUE_TO_COIN_TYPE.get(entry.getKey());
             if(type == null) return;
@@ -336,8 +410,8 @@ public class CalculatorOverlay {
             if(consumerSetMain != null) consumerSetMain.accept(entry.getValue());
 //            if(consumerSetReturn != null) consumerSetReturn.accept(entry.getValue());
         }
-        UiState.conversionSummedOverpay = res.getCoins();
-        Objects.requireNonNull(CoinValues.TYPE_TO_SET_RETURN.get(CoinValues.CoinTypes.SPUR)).accept(res.getCoins());
+        UiState.conversionSummedOverpay = res.getOverpay();
+        Objects.requireNonNull(CoinValues.TYPE_TO_SET_RETURN.get(CoinValues.CoinTypes.SPUR)).accept(res.getOverpay());
     }
 
     private static boolean isSlotValidForSelection(Slot slot) {
@@ -545,6 +619,51 @@ public class CalculatorOverlay {
             }
         }
         return slot.y;
+    }
+
+    private static final ExecutorService backgroundProcessor = Executors.newSingleThreadExecutor();
+
+    public static void requestInventorySnapshot() {
+        System.out.println("requestInventorySnapshot called");
+        Minecraft.getInstance().execute(() -> {
+            System.out.println("requestInventorySnapshot");
+            // На главном потоке: снимаем snapshot инвентаря
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null) return;
+
+            List<ItemStack> snapshot = new ArrayList<>();
+            for (ItemStack stack : player.getInventory().items) {
+                if (!stack.isEmpty()) snapshot.add(stack.copy());
+            }
+
+            // Отправляем snapshot обратно в фон для обработки
+            backgroundProcessor.submit(() -> getInstance().processInventory(snapshot));
+        });
+    }
+
+    // Executed in a thread pool
+    private void processInventory(List<ItemStack> snapshot) {
+        int totalValue = 0;
+        final Map<Integer, Integer> tempMap = new HashMap<>();
+        for (ItemStack stack : snapshot) {
+            Integer value = CoinValues.ITEM_TO_VALUE.get(stack.getItem());
+            if (value != null) {
+                totalValue += value * stack.getCount();
+                if(!tempMap.containsKey(value)) tempMap.put(value, stack.getCount());
+                else tempMap.put(value, tempMap.get(value) + stack.getCount());
+            }
+        }
+
+        final int totalValueCopy = totalValue;
+        Minecraft.getInstance().execute(() -> {
+            UiState.inventorySnapshotCoinsAmounts.clear();
+            UiState.inventorySnapshotCoinsAmounts.putAll(tempMap);
+            UiState.inventorySnapshotTotalCoins = totalValueCopy;
+            System.out.println(UiState.inventorySnapshotTotalCoins);
+
+            if(conversionInput != null) onConversionTextUpdate(conversionInput.getEditBox().getValue());
+            UIUpdateRequests.updateTotalCoinsValue = true;
+        });
     }
 
     public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
