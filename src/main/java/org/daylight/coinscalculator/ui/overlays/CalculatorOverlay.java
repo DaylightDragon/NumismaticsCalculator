@@ -240,7 +240,19 @@ public class CalculatorOverlay {
             }
         }
 
-        return new Quartet<>(left, top, right, bottom); //  + prefHGlobal * 0.4
+//        System.out.println("Right:" + right + ", invleft: " + invLeft + ", left: " + left);
+
+        if(right > invLeft - 5) {
+            int newRight = invLeft - 5;
+            left -= right - newRight;
+            right = newRight;
+
+            if (left < 5) {
+                left = 5;
+            }
+        }
+
+        return new Quartet<>(left, top, right - left, bottom - top); //  + prefHGlobal * 0.4
 
 //      return new Quartet<>(0, 0, prefWGlobal, prefHGlobal);
     }

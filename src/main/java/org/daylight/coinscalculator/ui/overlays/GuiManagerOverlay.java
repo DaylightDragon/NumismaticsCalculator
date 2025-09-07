@@ -39,8 +39,8 @@ public class GuiManagerOverlay {
         if(shouldRenderOnScreen(Minecraft.getInstance().screen)) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) Minecraft.getInstance().screen;
             if (rootPanel == null) init(screen);
+            rootPanel.render(guiGraphics, InputEvents.getMouseX(), InputEvents.getMouseY(), partialTick);
         }
-        if(rootPanel != null) rootPanel.render(guiGraphics, InputEvents.getMouseX(), InputEvents.getMouseY(), partialTick);
     }
 
     public void init(AbstractContainerScreen<?> screen) {

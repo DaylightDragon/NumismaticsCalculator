@@ -13,13 +13,14 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.daylight.coinscalculator.events.GUIEvents;
 import org.daylight.coinscalculator.events.ScreenEvents;
+import org.daylight.coinscalculator.events.TooltipEvents;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(CoinsCalculator.MODID)
 public class CoinsCalculator
 {
-    public static final String MODID = "createnumismaticscalculator";
+    public static final String MODID = "numismaticscalculator";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public CoinsCalculator(FMLJavaModLoadingContext context) {
@@ -33,6 +34,7 @@ public class CoinsCalculator
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new ScreenEvents());
+        MinecraftForge.EVENT_BUS.addListener(TooltipEvents::onTooltip);
 //        context.getModEventBus().addListener(MainEvents::onRegisterGuiOverlays);
 //        context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
 //        context.getModEventBus().addListener(GUIEvents::renderOverlay); // bad
