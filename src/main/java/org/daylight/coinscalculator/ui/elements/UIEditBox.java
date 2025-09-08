@@ -12,7 +12,9 @@ import java.util.function.Consumer;
 public class UIEditBox extends UIElement {
     private final EditBox editBox;
 
-    public UIEditBox(Font font) {
+    public UIEditBox(Font font, int width, int height) {
+        this.width = width;
+        this.height = height;
         this.editBox = new EditBox(font, x, y, width, height, Component.literal(""));
     }
 
@@ -23,7 +25,7 @@ public class UIEditBox extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return 100;
+        return 80;
     }
 
     @Override

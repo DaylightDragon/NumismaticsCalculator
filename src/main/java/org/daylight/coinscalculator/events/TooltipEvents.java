@@ -23,7 +23,6 @@ public class TooltipEvents {
 
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
-        System.out.println("A");
         ItemStack stack = event.getItemStack();
 
         Integer value = CoinValues.ITEM_TO_VALUE.get(stack.getItem());

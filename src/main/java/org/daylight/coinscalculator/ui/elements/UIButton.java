@@ -2,9 +2,10 @@ package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import org.daylight.coinscalculator.ModColors;
 
 public class UIButton extends UIElement {
-    private final String label;
+    protected String label;
     private final Font font;
     private final float fontScale;
     private final Runnable onClick;
@@ -20,7 +21,7 @@ public class UIButton extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return label.length() * 6 + 10; // width;
+        return (int) (font.width(label) * fontScale + 10);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class UIButton extends UIElement {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         if(!shouldBeRendered()) return;
-        int bgColor = isMouseOver(mouseX, mouseY) ? 0xFF666666 : 0xFF444444;
+        int bgColor = isMouseOver(mouseX, mouseY) ? ModColors.uiButtonBgHovered : ModColors.uiButtonBg;
         graphics.fill(x, y, x + width, y + height, bgColor);
 //        graphics.drawString(font, label, x + 5, y + (height - font.lineHeight) / 2, 0xFFFFFF);
         UIText.drawScaledText(graphics, label, x + 5, y + (float) (height - font.lineHeight) / 2, 0xFFFFFF, fontScale, true);

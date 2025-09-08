@@ -66,7 +66,14 @@ public class GuiManagerOverlay {
         int prefWGlobal = rootPanel.getPreferredWidth();
         int prefHGlobal = rootPanel.getPreferredHeight();
 
-        return new Quartet<>(5, (int) (screen.getGuiTop() + screen.getYSize() * 0.8), prefWGlobal, prefHGlobal); //  + prefHGlobal * 0.4
+        Quartet<Integer, Integer, Integer, Integer> mainOverlayBounds = CalculatorOverlay.getInstance().getLastOverlayPosition();
+        int y = mainOverlayBounds.getB() + mainOverlayBounds.getD() + 10;
+
+        if(y > screen.height - 5 - prefHGlobal) {
+            y = screen.height - 5 - prefHGlobal;
+        }
+
+        return new Quartet<>(5, y, prefWGlobal, prefHGlobal); // (int) (screen.getGuiTop() + screen.getYSize() * 0.8)
     }
 
     public void relinkListeners(ScreenEvent.Init.Post event) {
@@ -82,5 +89,13 @@ public class GuiManagerOverlay {
             if (rootPanel != null) rootPanel.onClick(mouseX, mouseY);
         }
         return result;
+    }
+
+    public void updateOverlayPosition(Screen screen) {
+        if(rootPanel == null) return;
+        if(screen instanceof AbstractContainerScreen<?> abstractContainerScreen) {
+            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(abstractContainerScreen);
+            rootPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
+        }
     }
 }

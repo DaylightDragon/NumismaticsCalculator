@@ -9,11 +9,13 @@ public class UIText extends UIElement {
     private String text;
     private final Font font;
     private float scale;
+    private int color;
 
-    public UIText(String text, Font font, float scale) {
+    public UIText(String text, Font font, float scale, int color) {
         this.text = text;
         this.font = font;
         this.scale = scale;
+        this.color = color;
     }
 
     public void setText(String text) {
@@ -22,7 +24,7 @@ public class UIText extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return (int) (font.width(text)); //  * scale
+        return (int) (font.width(text) * scale + 10);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class UIText extends UIElement {
         super.render(graphics, mouseX, mouseY, partialTick);
         if(!shouldBeRendered()) return;
 //        graphics.drawString(font, text, x, y, 0xFFFFFF);
-        drawScaledText(graphics, text, x, y, 0xFFFFFF, scale, true);
+        drawScaledText(graphics, text, x, y, color, scale, true);
     }
 
     public static void drawScaledText(GuiGraphics graphics, String text, float x, float y, int color, float scale, boolean shadow) {

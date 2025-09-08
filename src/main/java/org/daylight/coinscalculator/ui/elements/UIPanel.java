@@ -3,6 +3,7 @@ package org.daylight.coinscalculator.ui.elements;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.daylight.coinscalculator.UiState;
+import org.daylight.coinscalculator.util.DrawingUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ public abstract class UIPanel extends UIElement {
 
     private int bgColor = 0x77444444;
     private boolean backgroundVisible = false;
+    private int outlineWidth = 0;
+    private int outlineColor = 0x00000000;
 
     protected List<UIElement> children = new ArrayList<>();
     protected float padding = 4;
@@ -59,6 +62,14 @@ public abstract class UIPanel extends UIElement {
 
     public void setBackgroundVisible(boolean backgroundVisible) {
         this.backgroundVisible = backgroundVisible;
+    }
+
+    public void setOutlineWidth(int outlineWidth) {
+        this.outlineWidth = outlineWidth;
+    }
+
+    public void setOutlineColor(int outlineColor) {
+        this.outlineColor = outlineColor;
     }
 
     public int getBackgroundColor() {
@@ -114,7 +125,8 @@ public abstract class UIPanel extends UIElement {
         if(!shouldBeRendered()) return;
 
         if(backgroundVisible) {
-            g.fill(x, y, x + width, y + height, bgColor);
+            DrawingUtils.fill(g, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
+//            g.fill(x, y, x + width, y + height, bgColor);
         }
         for (UIElement child : children) {
 //            CoinsCalculator.LOGGER.info("child: " + child.getClass().getSimpleName() + " x: " + child.x + ", y: " + child.y + ", width: " + child.width + ", height: " + child.height);

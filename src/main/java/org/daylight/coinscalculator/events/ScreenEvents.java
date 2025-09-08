@@ -33,6 +33,7 @@ public class ScreenEvents {
         }
         if(GuiManagerOverlay.shouldRenderOnScreen(event.getScreen())) {
             GuiManagerOverlay.getInstance().relinkListeners(event);
+            GuiManagerOverlay.getInstance().updateOverlayPosition(event.getScreen());
         }
     }
 
