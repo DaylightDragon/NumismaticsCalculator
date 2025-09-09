@@ -8,8 +8,8 @@ public class UIHorizontalLayout extends UIPanel {
         return (int) (spacing * UiState.globalPanelSpacingModifier);
     }
 
-    private HorizontalAlignment hAlign = HorizontalAlignment.LEFT;
-    private VerticalAlignment vAlign = VerticalAlignment.TOP;
+    private HorizontalAlignment hAlign = HorizontalAlignment.START;
+    private VerticalAlignment vAlign = VerticalAlignment.START;
 
     public UIHorizontalLayout setSpacing(int spacing) {
         this.spacing = spacing;
@@ -74,7 +74,7 @@ public class UIHorizontalLayout extends UIPanel {
         // Горизонтальное выравнивание ряда
         if (hAlign == HorizontalAlignment.CENTER) {
             currentX += (availableW - contentW) / 2;
-        } else if (hAlign == HorizontalAlignment.RIGHT) {
+        } else if (hAlign == HorizontalAlignment.END) {
             currentX += (availableW - contentW);
         }
 
@@ -99,7 +99,7 @@ public class UIHorizontalLayout extends UIPanel {
             int innerH = Math.max(0, height - getCorrectedPadding() * 2);
             if (vAlign == VerticalAlignment.MIDDLE) {
                 childY += (innerH - childH) / 2;
-            } else if (vAlign == VerticalAlignment.BOTTOM) {
+            } else if (vAlign == VerticalAlignment.END) {
                 childY += (innerH - childH);
             }
 

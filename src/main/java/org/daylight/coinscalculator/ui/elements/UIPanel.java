@@ -11,11 +11,11 @@ import java.util.List;
 
 public abstract class UIPanel extends UIElement {
     public enum HorizontalAlignment {
-        LEFT, CENTER, RIGHT
+        START, CENTER, END
     }
 
     public enum VerticalAlignment {
-        TOP, MIDDLE, BOTTOM
+        START, MIDDLE, END
     }
 
     private int bgColor = 0x77444444;

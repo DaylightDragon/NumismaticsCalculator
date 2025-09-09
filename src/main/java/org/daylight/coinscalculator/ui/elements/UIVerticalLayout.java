@@ -8,8 +8,8 @@ public class UIVerticalLayout extends UIPanel {
         return (int) (spacing * UiState.globalPanelSpacingModifier);
     }
 
-    private HorizontalAlignment hAlign = HorizontalAlignment.LEFT;
-    private VerticalAlignment vAlign = VerticalAlignment.TOP;
+    private HorizontalAlignment hAlign = HorizontalAlignment.START;
+    private VerticalAlignment vAlign = VerticalAlignment.START;
 
     public UIVerticalLayout setSpacing(int spacing) {
         this.spacing = spacing;
@@ -63,7 +63,7 @@ public class UIVerticalLayout extends UIPanel {
         // Выравнивание по вертикали
         if (vAlign == VerticalAlignment.MIDDLE) {
             currentY += (availableHeight - (totalHeight - getCorrectedPadding() * 2)) / 2;
-        } else if (vAlign == VerticalAlignment.BOTTOM) {
+        } else if (vAlign == VerticalAlignment.END) {
             currentY += (availableHeight - (totalHeight - getCorrectedPadding() * 2));
         }
 
@@ -83,7 +83,7 @@ public class UIVerticalLayout extends UIPanel {
             int childX = x + getCorrectedPadding();
             if (hAlign == HorizontalAlignment.CENTER) {
                 childX += (width - getCorrectedPadding() * 2 - childWidth) / 2;
-            } else if (hAlign == HorizontalAlignment.RIGHT) {
+            } else if (hAlign == HorizontalAlignment.END) {
                 childX += (width - getCorrectedPadding() * 2 - childWidth);
             }
 

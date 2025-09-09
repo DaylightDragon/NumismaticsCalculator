@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class UICheckBox extends UIElement {
+public class UICheckBoxVanilla extends UIElement {
     private final Checkbox checkbox;
     private Consumer<Boolean> onValueChange;
     private Font font;
 
-    public UICheckBox(Font font, String label, boolean initialState) {
+    public UICheckBoxVanilla(Font font, String label, boolean initialState) {
         this.checkbox = new Checkbox(x, y, 20, 20, Component.literal(label), initialState) {
             @Override
             public void onPress() {
@@ -26,7 +26,7 @@ public class UICheckBox extends UIElement {
         this.font = font;
     }
 
-    public UICheckBox setOnValueChange(Consumer<Boolean> callback) {
+    public UICheckBoxVanilla setOnValueChange(Consumer<Boolean> callback) {
         this.onValueChange = callback;
         return this;
     }

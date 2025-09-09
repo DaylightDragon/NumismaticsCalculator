@@ -1,7 +1,5 @@
 package org.daylight.coinscalculator.ui.overlays;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,9 +12,6 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.SimpleContainer;
@@ -27,11 +22,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.checkerframework.checker.units.qual.A;
 import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.ModColors;
 import org.daylight.coinscalculator.ModResources;
@@ -46,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -300,18 +294,69 @@ public class CalculatorOverlay implements IOverlay {
         pagesStackPanel = new UIStackLayout();
         pagesStackPanel.setId("Main Pages STACK Panel");
 
-        final UIButton modeSwitchBtn = new UIButton("Default Mode", font, fontScaleButton, this::togglePanelPages) {
+        UIHorizontalLayout modesPanel = new UIHorizontalLayout();
+        modesPanel.setId("Modes Panel");
+        modesPanel.setBackgroundVisible(true);
+        modesPanel.setBackgroundColor(ModColors.modeSwitchPanelBg);
+        modesPanel.setOutlineColor(ModColors.modeSwitchPanelOutline);
+        modesPanel.setOutlineWidth(2);
+        modesPanel.setPadding(4);
+        modesPanel.setSpacing(8);
+
+        final AtomicReference<UIButton> sumModeBtn = new AtomicReference<>();
+        final AtomicReference<UIButton> conversionModeBtn = new AtomicReference<>();
+
+        sumModeBtn.set(new UIButton("", font, fontScaleButton, () -> {}) {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
                 boolean result = super.onClick(mouseX, mouseY);
-                if(pagesStackPanel.getActiveIndex() == 0) label = "Default Mode";
-                else if(pagesStackPanel.getActiveIndex() == 1) label = "Conversion Mode";
-                mainFloatingPanel.layoutElements();
-                return result;
-            }
-        };
+                if(!result) return false;
 
-        mainFloatingPanel.addElement(modeSwitchBtn);
+//                setBgColorNormal(ModColors.modeSwitchButtonHovered);
+//                if(finalConversionModeBtn != null) finalConversionModeBtn.setBgColorNormal(ModColors.modeSwitchButtonNormal);
+                setOutlineWidth(1);
+                if(conversionModeBtn.get() != null) conversionModeBtn.get().setOutlineWidth(0);
+
+                if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(0);
+                if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
+                return true;
+            }
+        });
+        sumModeBtn.get().setPadding(2, 2);
+        sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonNormal);
+        sumModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonHovered);
+        sumModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonSelected);
+        sumModeBtn.get().setIcon(ModResources.SUM_ICON, 10, 10);
+        sumModeBtn.get().setOutlineWidth(1);
+        modesPanel.addElement(sumModeBtn.get());
+
+        conversionModeBtn.set(new UIButton("", font, fontScaleButton, () -> {}) {
+            @Override
+            public boolean onClick(double mouseX, double mouseY) {
+                boolean result = super.onClick(mouseX, mouseY);
+                if(!result) return false;
+
+//                setBgColorNormal(ModColors.modeSwitchButtonHovered);
+//                if(finalSumModeBtn != null) finalSumModeBtn.setBgColorNormal(ModColors.modeSwitchButtonNormal);
+                setOutlineWidth(1);
+                if(sumModeBtn.get() != null) sumModeBtn.get().setOutlineWidth(0);
+
+                if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(1);
+                if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
+                return true;
+            }
+        });
+        conversionModeBtn.get().setPadding(2, 2);
+        conversionModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonNormal);
+        conversionModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonHovered);
+        conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonSelected);
+        conversionModeBtn.get().setIcon(ModResources.WEIGHING_MACHINE_ICON, 10, 10);
+        modesPanel.addElement(conversionModeBtn.get());
+
+//        mainFloatingPanel.addElement(modeSwitchBtn);
+        UIVerticalLayout tempPanel = new UIVerticalLayout();
+        tempPanel.addElement(modesPanel);
+        mainFloatingPanel.addElement(tempPanel);
         mainFloatingPanel.addElement(pagesStackPanel);
 
         page1VLayout = new UIVerticalLayout();
@@ -382,11 +427,16 @@ public class CalculatorOverlay implements IOverlay {
         conversionInput.setOnValueChange(this::onConversionTextUpdate);
         page2VLayout.addElement(conversionInput);
 
-        page2VLayout.addElement(new UICheckBox(font, "Only available", false).setOnValueChange(value -> {
-//            System.out.println("Set to " + value);
-            UiState.conversionModeUseAvailable = value;
-            onConversionTextUpdate(conversionInput.getEditBox().getValue());
-        }));
+        UiCheckBox useAvailable = new UiCheckBox("Only available", font, 1.0f, () -> {}) {
+            @Override
+            public boolean onClick(double mouseX, double mouseY) {
+                boolean result = super.onClick(mouseX, mouseY);
+                UiState.conversionModeUseAvailable = selected;
+                onConversionTextUpdate(conversionInput.getEditBox().getValue());
+                return result;
+            }
+        };
+        page2VLayout.addElement(useAvailable);
 
         conversionOutputMain.addElement(new UIText("Value in coins:", font, fontScaleTitle, ModColors.uiPrimaryText));
 
