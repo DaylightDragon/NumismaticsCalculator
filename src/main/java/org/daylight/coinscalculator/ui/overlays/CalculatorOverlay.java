@@ -24,7 +24,6 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.checkerframework.checker.units.qual.A;
 import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.ModColors;
 import org.daylight.coinscalculator.ModResources;
@@ -52,8 +51,8 @@ public class CalculatorOverlay implements IOverlay {
 
     private UIPanel mainFloatingPanel;
     private UIStackLayout pagesStackPanel;
-    private UIPanel page1VLayout;
-    private UIPanel page2VLayout;
+    private UIVerticalLayout page1VLayout;
+    private UIVerticalLayout page2VLayout;
     private UIEditBox conversionInput;
     private Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = new Quartet<>(0, 0, 0, 0);
 
@@ -293,6 +292,7 @@ public class CalculatorOverlay implements IOverlay {
 
         pagesStackPanel = new UIStackLayout();
         pagesStackPanel.setId("Main Pages STACK Panel");
+        pagesStackPanel.setPadding(0);
 
         UIHorizontalLayout modesPanel = new UIHorizontalLayout();
         modesPanel.setId("Modes Panel");
@@ -312,10 +312,12 @@ public class CalculatorOverlay implements IOverlay {
                 boolean result = super.onClick(mouseX, mouseY);
                 if(!result) return false;
 
-//                setBgColorNormal(ModColors.modeSwitchButtonHovered);
-//                if(finalConversionModeBtn != null) finalConversionModeBtn.setBgColorNormal(ModColors.modeSwitchButtonNormal);
+                setBgColorNormal(ModColors.modeSwitchButtonBgSelected);
                 setOutlineWidth(1);
-                if(conversionModeBtn.get() != null) conversionModeBtn.get().setOutlineWidth(0);
+                if(conversionModeBtn.get() != null) {
+                    conversionModeBtn.get().setOutlineWidth(0);
+                    conversionModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgNormal);
+                }
 
                 if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(0);
                 if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
@@ -323,10 +325,10 @@ public class CalculatorOverlay implements IOverlay {
             }
         });
         sumModeBtn.get().setPadding(2, 2);
-        sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonNormal);
-        sumModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonHovered);
-        sumModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonSelected);
-        sumModeBtn.get().setIcon(ModResources.SUM_ICON, 10, 10);
+        sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgNormal);
+        sumModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonBgHovered);
+        sumModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
+        sumModeBtn.get().setIcon(ModResources.SUM_ICON, 12, 12);
         sumModeBtn.get().setOutlineWidth(1);
         modesPanel.addElement(sumModeBtn.get());
 
@@ -336,10 +338,13 @@ public class CalculatorOverlay implements IOverlay {
                 boolean result = super.onClick(mouseX, mouseY);
                 if(!result) return false;
 
-//                setBgColorNormal(ModColors.modeSwitchButtonHovered);
-//                if(finalSumModeBtn != null) finalSumModeBtn.setBgColorNormal(ModColors.modeSwitchButtonNormal);
+
+                setBgColorNormal(ModColors.modeSwitchButtonBgSelected);
                 setOutlineWidth(1);
-                if(sumModeBtn.get() != null) sumModeBtn.get().setOutlineWidth(0);
+                if(sumModeBtn.get() != null) {
+                    sumModeBtn.get().setOutlineWidth(0);
+                    sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgNormal);
+                }
 
                 if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(1);
                 if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
@@ -347,20 +352,22 @@ public class CalculatorOverlay implements IOverlay {
             }
         });
         conversionModeBtn.get().setPadding(2, 2);
-        conversionModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonNormal);
-        conversionModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonHovered);
-        conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonSelected);
-        conversionModeBtn.get().setIcon(ModResources.WEIGHING_MACHINE_ICON, 10, 10);
+        conversionModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgNormal);
+        conversionModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonBgHovered);
+        conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
+        conversionModeBtn.get().setIcon(ModResources.WEIGHING_MACHINE_ICON, 12, 12);
         modesPanel.addElement(conversionModeBtn.get());
 
 //        mainFloatingPanel.addElement(modeSwitchBtn);
         UIVerticalLayout tempPanel = new UIVerticalLayout();
         tempPanel.addElement(modesPanel);
+        tempPanel.addElement(pagesStackPanel);
+//        tempPanel.setPadding(0);
         mainFloatingPanel.addElement(tempPanel);
-        mainFloatingPanel.addElement(pagesStackPanel);
 
         page1VLayout = new UIVerticalLayout();
         page1VLayout.setId("Page 1");
+        page1VLayout.setSpacing(8);
         page1VLayout.addElement(new UIText("", font, fontScaleText, ModColors.uiPrimaryText) {
             private boolean updatedInternalValues = false;
             @Override
@@ -373,7 +380,7 @@ public class CalculatorOverlay implements IOverlay {
                 updatedInternalValues = true;
             }
         });
-        page1VLayout.addElement(new UiSpace(0, 5));
+//        page1VLayout.addElement(new UiSpace(0, 5));
         page1VLayout.addElement(new UIText("", font, fontScaleText, ModColors.uiPrimaryText) {
             private boolean updatedInternalValues = false;
             @Override
@@ -420,6 +427,7 @@ public class CalculatorOverlay implements IOverlay {
 
         page2VLayout = new UIVerticalLayout();
         page2VLayout.setId("Page 2");
+        page2VLayout.setSpacing(8);
         page2VLayout.addElement(new UIText("Convert ¤ to coins", font, fontScaleTitle, ModColors.uiPrimaryText));
 
         conversionInput = new UIEditBox(font, 80, 20).allowOnlyNumeric();
@@ -447,6 +455,7 @@ public class CalculatorOverlay implements IOverlay {
         conversionOutputMain.addElement(createConversionLine("bevel", "Bevel", () -> UiState.conversionBevelMain, font));
         conversionOutputMain.addElement(createConversionLine("spur", "Spur", () -> UiState.conversionSpurMain, font));
 
+        conversionOutputMain.addElement(new UiSpace(0, 1));
         conversionOutputMain.addElement(new UIText("Expected in return:", font, fontScaleTitle, ModColors.uiPrimaryText) {
             private boolean updatedInternalValues = false;
             @Override
@@ -465,6 +474,8 @@ public class CalculatorOverlay implements IOverlay {
         conversionOutputReturns.addElement(createConversionLine("spur", "Spur", () -> UiState.conversionSpurOverpay, font));
 
         page2VLayout.addElement(conversionOutputMain);
+//        page2VLayout.addElement(new UiSpace(0, 2));
+//        page2VLayout.addElement(conversionOutputReturns);
 
         pagesStackPanel.addElement(page2VLayout);
 
@@ -746,9 +757,9 @@ public class CalculatorOverlay implements IOverlay {
     private static final ExecutorService backgroundProcessor = Executors.newSingleThreadExecutor();
 
     public static void requestInventorySnapshot() {
-        System.out.println("requestInventorySnapshot called");
+//        System.out.println("requestInventorySnapshot called");
         Minecraft.getInstance().execute(() -> {
-            System.out.println("requestInventorySnapshot");
+//            System.out.println("requestInventorySnapshot");
             // На главном потоке: снимаем snapshot инвентаря
             LocalPlayer player = Minecraft.getInstance().player;
             if (player == null) return;
@@ -781,7 +792,7 @@ public class CalculatorOverlay implements IOverlay {
             UiState.inventorySnapshotCoinsAmounts.clear();
             UiState.inventorySnapshotCoinsAmounts.putAll(tempMap);
             UiState.inventorySnapshotTotalCoins = totalValueCopy;
-            System.out.println(UiState.inventorySnapshotTotalCoins);
+//            System.out.println(UiState.inventorySnapshotTotalCoins);
 
             if(conversionInput != null) onConversionTextUpdate(conversionInput.getEditBox().getValue());
             UIUpdateRequests.updateTotalCoinsValue = true;
