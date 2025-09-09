@@ -8,6 +8,7 @@ public class ModColors {
     public static final int uiButtonBg = 0xAA78594c;
     public static final int uiButtonBgHovered = 0xAA9c6e4a;
     public static final int uiPrimaryText = 0xFFFFFF;
+    public static final int uiErrorText = 0xff4a4a;
     public static final int uiSecondaryText = 0xd4d6d3;
     public static final int uiSelected = 0xFFffc430;
     public static final int modeSwitchPanelBg = 0xAA5e4933;

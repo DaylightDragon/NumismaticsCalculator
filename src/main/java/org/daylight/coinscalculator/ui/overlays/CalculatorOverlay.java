@@ -461,7 +461,17 @@ public class CalculatorOverlay implements IOverlay {
             @Override
             public void updateInternalValues() {
                 super.updateInternalValues();
-                if(!updatedInternalValues || UIUpdateRequests.updateConversionValuesMain || UIUpdateRequests.updateConversionReturns) setText("Expected in return: " + UiState.conversionSummedOverpay);
+                if(!updatedInternalValues || UIUpdateRequests.updateConversionValuesMain || UIUpdateRequests.updateConversionReturns) {
+                    if(UiState.conversionSummedOverpay >= 0) {
+                        setEnabled(false);
+//                        setColor(ModColors.uiPrimaryText);
+//                        setText("Expected in return: " + UiState.conversionSummedOverpay);
+                    } else {
+                        setEnabled(true);
+                        setColor(ModColors.uiErrorText);
+                        setText("Missing amount: " + -UiState.conversionSummedOverpay);
+                    }
+                }
                 updatedInternalValues = true;
             }
         });

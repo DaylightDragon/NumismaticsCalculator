@@ -23,6 +23,10 @@ public class UIText extends UIElement {
         this.text = text;
     }
 
+    public void setColor(int color) {
+        this.color = color;
+    }
+
     @Override
     public int getPreferredWidth() {
         return (int) (font.width(text) * scale + 10);
