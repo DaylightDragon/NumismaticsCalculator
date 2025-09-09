@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.NotNull;
 
 public class UIText extends UIElement {
     private String text;
@@ -50,14 +51,14 @@ public class UIText extends UIElement {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         if(!shouldBeRendered()) return;
 //        graphics.drawString(font, text, x, y, 0xFFFFFF);
         drawScaledText(graphics, text, x, y, color, scale, true);
     }
 
-    public static void drawScaledText(GuiGraphics graphics, String text, float x, float y, int color, float scale, boolean shadow) {
+    public static void drawScaledText(@NotNull GuiGraphics graphics, String text, float x, float y, int color, float scale, boolean shadow) {
         PoseStack poseStack = graphics.pose();
         poseStack.pushPose();
 

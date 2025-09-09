@@ -2,6 +2,7 @@ package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.NotNull;
 
 public class UiSpace extends UIElement {
     private int xSpace;
@@ -23,7 +24,7 @@ public class UiSpace extends UIElement {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         super.render(g, mouseX, mouseY, partialTick);
     }
 }

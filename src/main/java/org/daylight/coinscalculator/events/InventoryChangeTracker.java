@@ -72,7 +72,7 @@ public class InventoryChangeTracker {
     }
 
     private static void onInventoryChange() {
-        System.out.println("Inventory changed");
+//        System.out.println("Inventory changed");
         for(Runnable r : listeners) r.run();
     }
 }

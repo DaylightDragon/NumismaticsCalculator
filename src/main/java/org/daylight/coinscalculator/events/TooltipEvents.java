@@ -11,6 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.CoinsCalculator;
+import org.daylight.coinscalculator.config.ConfigData;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class TooltipEvents {
 
         Integer value = CoinValues.ITEM_TO_VALUE.get(stack.getItem());
         if (value != null && value > 0) {
-            if(!Screen.hasShiftDown()) {
+            if(!Screen.hasShiftDown() && ConfigData.requireShiftForTotalTooltip.get()) {
                 event.getToolTip().add(holdShiftHintComponent);
             } else {
                 Component newLine = Component.literal("Value (Total): ").withStyle(ChatFormatting.WHITE)

@@ -3,6 +3,7 @@ package org.daylight.coinscalculator.ui.elements;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.daylight.coinscalculator.CoinsCalculator;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class UIElement {
     protected String id = "Unknown" + getClass().getSimpleName();
@@ -83,7 +84,7 @@ public abstract class UIElement {
 //                " setBounds -> x: " + x + ", y: " + y + ", width: " + width + ", height: " + height);
     }
 
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         updateInternalValues();
     }
 

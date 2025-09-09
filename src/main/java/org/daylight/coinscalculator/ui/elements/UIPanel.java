@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.daylight.coinscalculator.UiState;
 import org.daylight.coinscalculator.util.DrawingUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +120,7 @@ public abstract class UIPanel extends UIElement {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         super.render(g, mouseX, mouseY, partialTick);
 //        System.out.println(shouldBeRendered() + " " + children.size());
         if(!shouldBeRendered()) return;

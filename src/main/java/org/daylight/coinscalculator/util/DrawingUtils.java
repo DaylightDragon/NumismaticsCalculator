@@ -1,9 +1,10 @@
 package org.daylight.coinscalculator.util;
 
 import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.NotNull;
 
 public class DrawingUtils {
-    public static void fill(GuiGraphics g, int minX, int minY, int maxX, int maxY, int pColor, int outlineWidth, int outlineColor) {
+    public static void fill(@NotNull GuiGraphics g, int minX, int minY, int maxX, int maxY, int pColor, int outlineWidth, int outlineColor) {
         if(outlineWidth <= 0) {
             g.fill(minX, minY, maxX, maxY, pColor);
         } else {

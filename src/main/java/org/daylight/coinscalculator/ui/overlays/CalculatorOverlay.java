@@ -34,6 +34,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.ModColors;
+import org.daylight.coinscalculator.ModResources;
 import org.daylight.coinscalculator.UiState;
 import org.daylight.coinscalculator.ui.SelectionRenderer;
 import org.daylight.coinscalculator.ui.UIUpdateRequests;
@@ -48,7 +49,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CalculatorOverlay {
+public class CalculatorOverlay implements IOverlay {
     private static CalculatorOverlay instance;
     public static CalculatorOverlay getInstance() {
         if(instance == null) instance = new CalculatorOverlay();
@@ -76,12 +77,16 @@ public class CalculatorOverlay {
         }
     }
 
+    public boolean isInitialized() {
+        return mainFloatingPanel != null;
+    }
+
     public static boolean shouldRenderOnScreen(Screen screen) {
         return (screen instanceof AbstractContainerScreen) || (screen instanceof CreativeModeInventoryScreen) || (screen instanceof InventoryScreen);
     }
 
     //    @Override
-    public void render(GuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
+    public void render(@NotNull GuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
         if(!UiState.coinCalculatorOverlayActive) return;
         if (shouldRenderOnScreen(Minecraft.getInstance().screen)) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) Minecraft.getInstance().screen;
@@ -164,7 +169,6 @@ public class CalculatorOverlay {
         UiState.conversionValue = value;
 
         int[] values = {4096, 512, 64, 16, 8, 1};
-//        int[] counts = {1000, 1000, 1000, 1000, 1000, 1000}; //TODO
 
         CoinChangeLimited.Result res;
 
@@ -222,7 +226,7 @@ public class CalculatorOverlay {
         return sunCoinMain;
     }
 
-    private Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(AbstractContainerScreen<?> screen) {
+    public Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(AbstractContainerScreen<?> screen) {
         int prefWGlobal = mainFloatingPanel.getPreferredWidth();
         int prefHGlobal = mainFloatingPanel.getPreferredHeight();
 
@@ -281,6 +285,7 @@ public class CalculatorOverlay {
             @Override
             public void layoutElements() {
                 super.layoutElements();
+                lastOverlayPosition = new Quartet<>(x, y, width, height);
                 GuiManagerOverlay.getInstance().updateOverlayPosition(screen);
             }
         };
@@ -336,7 +341,7 @@ public class CalculatorOverlay {
                 updatedInternalValues = true;
             }
         });
-        page1VLayout.addElement(new UIButton("Select", font, fontScaleButton, () -> {
+        UIButton selectSwitchBtn = new UIButton("Select", font, fontScaleButton, () -> {
 //            System.out.println("Selecting...");
             UiState.selectionModeActive = !UiState.selectionModeActive;
             if(!UiState.selectionModeActive) {
@@ -346,17 +351,30 @@ public class CalculatorOverlay {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
                 boolean result = super.onClick(mouseX, mouseY);
-                if(UiState.selectionModeActive) label = "Selecting...";
-                else label = "Select";
+//                if(UiState.selectionModeActive) label = "Selecting...";
+//                else label = "Select";
+                if(UiState.selectionModeActive) {
+//                    setIcon(ModResources.SELECTION_ACTIVE, 16, 16);
+                    setOutlineWidth(1);
+                }
+                else {
+//                    setIcon(ModResources.SELECTION_DEFAULT, 16, 16);
+                    setOutlineWidth(0);
+                }
                 mainFloatingPanel.layoutElements();
                 return result;
             }
-        });
+        };
+        selectSwitchBtn.setIcon(ModResources.SELECTION_DEFAULT, 16, 16);
+        selectSwitchBtn.setPadding(2, 2);
+        selectSwitchBtn.setImagePosition(UIButton.ImagePosition.IMAGE_LEFT);
+        selectSwitchBtn.setOutlineColor(ModColors.uiSelected);
+
+        page1VLayout.addElement(selectSwitchBtn);
         pagesStackPanel.addElement(page1VLayout);
 
         page2VLayout = new UIVerticalLayout();
         page2VLayout.setId("Page 2");
-//            page2VLayout.setEnabled(false);
         page2VLayout.addElement(new UIText("Convert ¤ to coins", font, fontScaleTitle, ModColors.uiPrimaryText));
 
         conversionInput = new UIEditBox(font, 80, 20).allowOnlyNumeric();
@@ -411,6 +429,7 @@ public class CalculatorOverlay {
     public void updateOverlayPosition(Screen screen) {
         if(screen instanceof AbstractContainerScreen<?> abstractContainerScreen) {
             Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(abstractContainerScreen);
+//            System.out.println("Main: " + bounds);
             lastOverlayPosition = bounds;
             mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
         }

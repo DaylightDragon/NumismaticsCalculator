@@ -14,15 +14,20 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import org.daylight.coinscalculator.ModResources;
 import org.daylight.coinscalculator.UiState;
+import org.daylight.coinscalculator.config.ConfigData;
 import org.daylight.coinscalculator.events.InputEvents;
 import org.daylight.coinscalculator.ui.SelectionRenderer;
 import org.daylight.coinscalculator.ui.elements.UIButton;
+import org.daylight.coinscalculator.ui.elements.UIHorizontalLayout;
 import org.daylight.coinscalculator.ui.elements.UIPanel;
 import org.daylight.coinscalculator.ui.elements.UIVerticalLayout;
+import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
 import org.daylight.coinscalculator.util.tuples.Quartet;
+import org.jetbrains.annotations.NotNull;
 
-public class GuiManagerOverlay {
+public class GuiManagerOverlay implements IOverlay {
     private static GuiManagerOverlay instance;
     public static GuiManagerOverlay getInstance() {
         if(instance == null) instance = new GuiManagerOverlay();
@@ -35,12 +40,20 @@ public class GuiManagerOverlay {
         return (screen instanceof AbstractContainerScreen) || (screen instanceof CreativeModeInventoryScreen) || (screen instanceof InventoryScreen);
     }
 
-    public void render(GuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
+    public void render(@NotNull GuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
+        if(!ConfigData.showControlPanel.get()) return;
         if(shouldRenderOnScreen(Minecraft.getInstance().screen)) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) Minecraft.getInstance().screen;
             if (rootPanel == null) init(screen);
             rootPanel.render(guiGraphics, InputEvents.getMouseX(), InputEvents.getMouseY(), partialTick);
         }
+    }
+
+    public static void toggleMainOverlayState() {
+        if(!CalculatorOverlay.getInstance().isInitialized() || !CalculatorOverlay.shouldRenderOnScreen(Minecraft.getInstance().screen)) return;
+        UiState.coinCalculatorOverlayActive = !UiState.coinCalculatorOverlayActive;
+        CalculatorOverlay.getInstance().setOverlayActive(UiState.coinCalculatorOverlayActive); // bad way kinda
+        CalculatorOverlay.getInstance().updateLayout();
     }
 
     public void init(AbstractContainerScreen<?> screen) {
@@ -49,11 +62,22 @@ public class GuiManagerOverlay {
 
         rootPanel = new UIVerticalLayout();
 
-        rootPanel.addElement(new UIButton("■", font, 1.0f, () -> {
-            UiState.coinCalculatorOverlayActive = !UiState.coinCalculatorOverlayActive;
-            CalculatorOverlay.getInstance().setOverlayActive(UiState.coinCalculatorOverlayActive); // bad way kinda
-            CalculatorOverlay.getInstance().updateLayout();
-        }));
+        UIHorizontalLayout horizontalLayout = new UIHorizontalLayout();
+        horizontalLayout.setPadding(0);
+
+        UIButton toggleUiBtn = new UIButton("", font, 1.0f, GuiManagerOverlay::toggleMainOverlayState);
+        toggleUiBtn.setIcon(ModResources.CURRENCY_ICON, 12, 12);
+        toggleUiBtn.setBgColorNormal(0x8878594c);
+        toggleUiBtn.setPadding(2, 2);
+        horizontalLayout.addElement(toggleUiBtn);
+
+        UIButton openSettingsBtn = new UIButton("", font, 1.0f, ModSettingsScreen::setAsScreen);
+        openSettingsBtn.setIcon(ModResources.GEAR_ICON, 12, 12);
+        openSettingsBtn.setBgColorNormal(0x8878594c);
+        openSettingsBtn.setPadding(2, 2);
+        horizontalLayout.addElement(openSettingsBtn);
+
+        rootPanel.addElement(horizontalLayout);
 
         rootPanel.layoutElements();
         rootPanel.updateInternalValues();
@@ -62,11 +86,12 @@ public class GuiManagerOverlay {
         rootPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
     }
 
-    private Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(AbstractContainerScreen<?> screen) {
+    public Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(AbstractContainerScreen<?> screen) {
         int prefWGlobal = rootPanel.getPreferredWidth();
         int prefHGlobal = rootPanel.getPreferredHeight();
 
         Quartet<Integer, Integer, Integer, Integer> mainOverlayBounds = CalculatorOverlay.getInstance().getLastOverlayPosition();
+//        System.out.println("Main overlay bounds: " + mainOverlayBounds);
         int y = mainOverlayBounds.getB() + mainOverlayBounds.getD() + 10;
 
         if(y > screen.height - 5 - prefHGlobal) {
@@ -84,6 +109,7 @@ public class GuiManagerOverlay {
     }
 
     public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
+        if(!ConfigData.showControlPanel.get()) return false;
         boolean result = false;
         if (shouldRenderOnScreen(screenOrig)) {
             if (rootPanel != null) rootPanel.onClick(mouseX, mouseY);
@@ -96,6 +122,8 @@ public class GuiManagerOverlay {
         if(screen instanceof AbstractContainerScreen<?> abstractContainerScreen) {
             Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(abstractContainerScreen);
             rootPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
+//            rootPanel.layoutElements();
+//            System.out.println("set " + bounds);
         }
     }
 }

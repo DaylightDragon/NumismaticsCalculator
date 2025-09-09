@@ -8,9 +8,11 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.daylight.coinscalculator.config.ConfigHandler;
 import org.daylight.coinscalculator.events.GUIEvents;
 import org.daylight.coinscalculator.events.ScreenEvents;
 import org.daylight.coinscalculator.events.TooltipEvents;
@@ -25,6 +27,9 @@ public class CoinsCalculator
 
     public CoinsCalculator(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
+
+//        ConfigHandler2.load();
+        context.registerConfig(ModConfig.Type.CLIENT, ConfigHandler.SPEC);
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);

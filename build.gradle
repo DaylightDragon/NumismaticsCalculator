@@ -16,6 +16,8 @@ base {
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+jarJar.enable()
+
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     // The mappings can be changed at any time and must be in the following format.
@@ -164,6 +166,11 @@ dependencies {
 
     // Usual Java Dependencies
 //    implementation("org.javatuples:javatuples:1.2")
+//    implementation fg.deobf('org.yaml:snakeyaml:2.0')
+//    jarJar 'org.yaml:snakeyaml:2.0'
+//    jarJar(group: 'org.yaml', name: 'snakeyaml', version: '[2.0,3.0)') {
+//        jarJar.pin(it, '2.0')
+//    }
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

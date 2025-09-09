@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinsCalculator;
 import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
 import org.daylight.coinscalculator.ui.overlays.GuiManagerOverlay;
+import org.daylight.coinscalculator.ui.overlays.ModSettingsOverlay;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
@@ -20,6 +21,7 @@ public class InputEvents {
 
     private static CalculatorOverlay calculatorOverlay = CalculatorOverlay.getInstance();
     private static GuiManagerOverlay guiManagerOverlay = GuiManagerOverlay.getInstance();
+    private static ModSettingsOverlay modSettingsOverlay = ModSettingsOverlay.getInstance();
 
     private static boolean leftButtonDown = false;
     private static boolean rightButtonDown = false;
@@ -78,6 +80,7 @@ public class InputEvents {
             pressedButtons.add(button);
             if(calculatorOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
             if(guiManagerOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
+            if(modSettingsOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
         } else if (event.getAction() == GLFW.GLFW_RELEASE) {
             pressedButtons.remove(button);
             calculatorOverlay.onMouseRelease(mouseX, mouseY, event.getButton(), screen);

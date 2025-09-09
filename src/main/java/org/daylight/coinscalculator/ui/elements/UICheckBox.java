@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.event.ScreenEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -81,7 +82,7 @@ public class UICheckBox extends UIElement {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
 //        System.out.println(checkbox.getX() + " " + checkbox.getY() + " " + checkbox.getWidth() + " " + checkbox.getHeight());
         if (Minecraft.getInstance().screen == null) {

@@ -5,11 +5,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
 import org.daylight.coinscalculator.ModColors;
 import org.daylight.coinscalculator.UiState;
+import org.jetbrains.annotations.NotNull;
 
 public class SelectionRenderer {
-    public static void renderSelection(GuiGraphics g, AbstractContainerScreen<?> screen) {
+    public static void renderSelection(@NotNull GuiGraphics g, AbstractContainerScreen<?> screen) {
         if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty()) {
-            System.out.println("Selection render");
+//            System.out.println("Selection render");
 //            System.out.println(UiState.selectionStartPointSlotIndex + " - " + UiState.selectionEndPointSlotIndex);
             for(Integer slotIndex : UiState.selectionSlotValuesCoins.keySet()) {
                 Slot slot = screen.getMenu().getSlot(slotIndex);
