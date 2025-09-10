@@ -23,6 +23,10 @@ public abstract class UIPanel extends UIElement {
 
     protected boolean elementsCollapsed = false;
 
+    public float getPadding() {
+        return padding;
+    }
+
     public void setPadding(int padding) {
         this.padding = padding;
     }

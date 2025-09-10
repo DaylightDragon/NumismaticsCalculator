@@ -2,7 +2,6 @@ package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.event.ScreenEvent;
-import org.daylight.coinscalculator.CoinsCalculator;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class UIElement {
@@ -12,6 +11,16 @@ public abstract class UIElement {
     protected int minHeight = 0, maxHeight = Integer.MAX_VALUE;
     protected boolean isVisible = true;
     protected boolean isEnabled = true;
+    private boolean crossAxisExcludedFromLayout = false;
+    private boolean heightExcludedFromLayout = false;
+
+    public void setCrossAxisExcludedFromLayout(boolean excluded) {
+        this.crossAxisExcludedFromLayout = excluded;
+    }
+
+    public boolean isCrossAxisExcludedFromLayout() {
+        return crossAxisExcludedFromLayout;
+    }
 
     public String getId() {
         return id;

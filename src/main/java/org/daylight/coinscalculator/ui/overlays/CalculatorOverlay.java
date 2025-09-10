@@ -50,7 +50,9 @@ public class CalculatorOverlay implements IOverlay {
     }
 
     private UIPanel mainFloatingPanel;
+    UIVerticalLayout modesAndStackPanel;
     private UIStackLayout pagesStackPanel;
+    final AtomicReference<UIAxisLayout> modesPanel = new AtomicReference<>();
     private UIVerticalLayout page1VLayout;
     private UIVerticalLayout page2VLayout;
     private UIEditBox conversionInput;
@@ -294,18 +296,19 @@ public class CalculatorOverlay implements IOverlay {
         pagesStackPanel.setId("Main Pages STACK Panel");
         pagesStackPanel.setPadding(0);
 
-        UIHorizontalLayout modesPanel = new UIHorizontalLayout();
-        modesPanel.setId("Modes Panel");
-        modesPanel.setBackgroundVisible(true);
-        modesPanel.setBackgroundColor(ModColors.modeSwitchPanelBg);
-        modesPanel.setOutlineColor(ModColors.modeSwitchPanelOutline);
-        modesPanel.setOutlineWidth(2);
-        modesPanel.setPadding(4);
-        modesPanel.setSpacing(8);
-        modesPanel.setMinWidth(100);
+        modesPanel.set(new UIHorizontalLayout());
+        modesPanel.get().setId("Modes Panel");
+        modesPanel.get().setBackgroundVisible(true);
+        modesPanel.get().setBackgroundColor(ModColors.modeSwitchPanelBg);
+        modesPanel.get().setOutlineColor(ModColors.modeSwitchPanelOutline);
+        modesPanel.get().setOutlineWidth(2);
+        modesPanel.get().setPadding(4);
+        modesPanel.get().setSpacing(8);
+//        modesPanel.get().setMinWidth(100);
+        modesPanel.get().setCrossAxisExcludedFromLayout(true);
 
-        modesPanel.setCrossAlignment(CrossAlignment.STRETCH);
-        modesPanel.setMainDistribution(MainDistribution.FILL);
+        modesPanel.get().setCrossAlignment(CrossAlignment.STRETCH);
+        modesPanel.get().setMainDistribution(MainDistribution.FILL);
 
         final AtomicReference<UIButton> sumModeBtn = new AtomicReference<>();
         final AtomicReference<UIButton> conversionModeBtn = new AtomicReference<>();
@@ -335,7 +338,7 @@ public class CalculatorOverlay implements IOverlay {
         sumModeBtn.get().setImagePosition(UIButton.ImagePosition.IMAGE_RIGHT_KINDA);
         sumModeBtn.get().setIcon(ModResources.SUM_ICON, 12, 12);
         sumModeBtn.get().setOutlineWidth(1);
-        modesPanel.addElement(sumModeBtn.get());
+        modesPanel.get().addElement(sumModeBtn.get());
 
         conversionModeBtn.set(new UIButton("", font, fontScaleButton, () -> {}) {
             @Override
@@ -362,14 +365,23 @@ public class CalculatorOverlay implements IOverlay {
         conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
         conversionModeBtn.get().setImagePosition(UIButton.ImagePosition.IMAGE_RIGHT_KINDA);
         conversionModeBtn.get().setIcon(ModResources.WEIGHING_MACHINE_ICON, 12, 12);
-        modesPanel.addElement(conversionModeBtn.get());
+        modesPanel.get().addElement(conversionModeBtn.get());
 
 //        mainFloatingPanel.addElement(modeSwitchBtn);
-        UIVerticalLayout tempPanel = new UIVerticalLayout();
-        tempPanel.addElement(modesPanel);
-        tempPanel.addElement(pagesStackPanel);
+        modesAndStackPanel = new UIVerticalLayout() {
+            @Override
+            public void layoutElements() {
+                super.layoutElements();
+                if(modesPanel.get() != null) {
+                    modesPanel.get().setMinWidth((int) (getMaxChildSize(false) - getPadding() * 2));
+                    modesPanel.get().layoutElements();
+                }
+            }
+        };
+        modesAndStackPanel.addElement(modesPanel.get());
+        modesAndStackPanel.addElement(pagesStackPanel);
 //        tempPanel.setPadding(0);
-        mainFloatingPanel.addElement(tempPanel);
+        mainFloatingPanel.addElement(modesAndStackPanel);
 
         page1VLayout = new UIVerticalLayout();
         page1VLayout.setId("Page 1");

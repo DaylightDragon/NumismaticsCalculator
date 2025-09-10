@@ -54,7 +54,9 @@ public abstract class UIAxisLayout extends UIPanel {
         } else {
             int totalWidth = getCorrectedPadding() * 2;
             for (UIElement child : children) {
-                if (!child.isEnabled()) continue;
+                if (!child.isEnabled()) continue; // main axis always active
+
+                if (isVertical() && child.isCrossAxisExcludedFromLayout()) continue; // no cross axis (width)
                 totalWidth += child.getPreferredWidth() + getCorrectedSpacing();
             }
             if (!children.isEmpty()) totalWidth -= getCorrectedSpacing();
@@ -68,6 +70,8 @@ public abstract class UIAxisLayout extends UIPanel {
             int totalHeight = getCorrectedPadding() * 2;
             for (UIElement child : children) {
                 if (!child.isEnabled()) continue;
+
+                if (!isVertical() && child.isCrossAxisExcludedFromLayout()) continue; // no cross axis (height)
                 totalHeight += child.getPreferredHeight() + getCorrectedSpacing();
             }
             if (!children.isEmpty()) totalHeight -= getCorrectedSpacing();
@@ -152,6 +156,7 @@ public abstract class UIAxisLayout extends UIPanel {
         if (isVertical()) {
             height = getPreferredHeight();
             int maxChildWidth = visibleChildren.stream()
+                    .filter(child -> !child.isCrossAxisExcludedFromLayout())
                     .mapToInt(UIElement::getWidth)
                     .max()
                     .orElse(0);
@@ -159,7 +164,10 @@ public abstract class UIAxisLayout extends UIPanel {
         } else {
             width = getPreferredWidth();
             int totalWidth = getCorrectedPadding() * 2
-                    + visibleChildren.stream().mapToInt(UIElement::getWidth).sum()
+                    + visibleChildren.stream()
+                    .filter(child -> !child.isCrossAxisExcludedFromLayout())
+                    .mapToInt(UIElement::getWidth)
+                    .sum()
                     + Math.max(0, (count - 1) * getCorrectedSpacing());
             width = totalWidth;
         }
@@ -170,10 +178,12 @@ public abstract class UIAxisLayout extends UIPanel {
         int childCrossSize = getCrossSize(child);
         int crossPos = (isVertical() ? x : y) + getCorrectedPadding();
 
-        switch (crossAlign) {
-            case CENTER -> crossPos += (availableCross - childCrossSize) / 2;
-            case END -> crossPos += (availableCross - childCrossSize);
-            case STRETCH -> childCrossSize = availableCross;
+        if (!child.isCrossAxisExcludedFromLayout()) {
+            switch (crossAlign) {
+                case CENTER -> crossPos += (availableCross - childCrossSize) / 2;
+                case END -> crossPos += (availableCross - childCrossSize);
+                case STRETCH -> childCrossSize = availableCross;
+            }
         }
 
         if (isVertical()) {
@@ -188,17 +198,19 @@ public abstract class UIAxisLayout extends UIPanel {
         child.updateInternalVisibility(isEnabled() && isVisible());
     }
 
-//    public int getMaxChildSize(boolean mainAxis) {
-//        int maxSize = 0;
-//        for (UIElement child : children) {
-//            if (!child.isEnabled() || !includeInLayout(child)) continue;
-//
-//            int size = mainAxis
-//                    ? (isVertical() ? child.getHeight() : child.getWidth())
-//                    : (isVertical() ? child.getWidth() : child.getHeight());
-//
-//            maxSize = Math.max(maxSize, size);
-//        }
-//        return maxSize;
-//    }
+    public int getMaxChildSize(boolean mainAxis) {
+        int maxSize = 0;
+        for (UIElement child : children) {
+            if (!child.isEnabled()) continue;
+
+            if (!mainAxis && child.isCrossAxisExcludedFromLayout()) continue; // ignoring cross-axis
+
+            int size = mainAxis
+                    ? (isVertical() ? child.getHeight() : child.getWidth())
+                    : (isVertical() ? child.getWidth() : child.getHeight());
+
+            maxSize = Math.max(maxSize, size);
+        }
+        return maxSize;
+    }
 }
