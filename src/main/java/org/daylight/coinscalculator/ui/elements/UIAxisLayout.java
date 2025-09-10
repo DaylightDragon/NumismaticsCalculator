@@ -2,6 +2,8 @@ package org.daylight.coinscalculator.ui.elements;
 
 import org.daylight.coinscalculator.UiState;
 
+import java.util.List;
+
 public abstract class UIAxisLayout extends UIPanel {
     protected float spacing = 4;
 
@@ -83,137 +85,106 @@ public abstract class UIAxisLayout extends UIPanel {
     public void layoutElements() {
         super.layoutElements();
 
-        int padding2 = getCorrectedPadding() * 2;
-        int availableMain = (isVertical() ? height : width) - padding2;
-        int totalMain = (isVertical() ? getPreferredHeight() : getPreferredWidth()) - padding2;
-
         if (isElementsCollapsed()) return;
 
-        // count visible children
-        int visibleCount = (int) children.stream().filter(UIElement::isEnabled).count();
-        if (visibleCount == 0) return;
+        int padding2 = getCorrectedPadding() * 2;
+        int availableMain = (isVertical() ? height : width) - padding2;
+        int availableCross = (isVertical() ? width : height) - padding2;
 
-        // determine spacing and starting offset based on distribution
+        // collect visible children
+        List<UIElement> visibleChildren = children.stream()
+                .filter(UIElement::isEnabled)
+                .toList();
+        int count = visibleChildren.size();
+        if (count == 0) return;
+
+        // --- calculate gap and start offset depending on distribution ---
         int gap = getCorrectedSpacing();
         int startOffset = 0;
 
+        int totalMainPreferred = 0;
+        for (UIElement child : visibleChildren) {
+            totalMainPreferred += getMainSize(child);
+        }
+        totalMainPreferred += (count - 1) * getCorrectedSpacing();
+
         switch (mainDistribution) {
-            case START -> {
-                startOffset = 0;
-            }
-            case CENTER -> {
-                startOffset = (availableMain - totalMain) / 2;
-            }
-            case END -> {
-                startOffset = (availableMain - totalMain);
-            }
+            case START -> startOffset = 0;
+            case CENTER -> startOffset = (availableMain - totalMainPreferred) / 2;
+            case END -> startOffset = availableMain - totalMainPreferred;
             case SPACE_BETWEEN -> {
-                if (visibleCount > 1) {
-                    gap = (availableMain - (totalMain - (visibleCount - 1) * getCorrectedSpacing()))
-                            / (visibleCount - 1);
+                if (count > 1) {
+                    gap = (availableMain - (totalMainPreferred - (count - 1) * getCorrectedSpacing()))
+                            / (count - 1);
                 }
             }
             case SPACE_AROUND -> {
-                if (visibleCount > 0) {
-                    gap = (availableMain - (totalMain - (visibleCount - 1) * getCorrectedSpacing()))
-                            / visibleCount;
-                    startOffset = gap / 2;
-                }
+                gap = (availableMain - (totalMainPreferred - (count - 1) * getCorrectedSpacing())) / count;
+                startOffset = gap / 2;
             }
             case SPACE_EVENLY -> {
-                gap = (availableMain - (totalMain - (visibleCount - 1) * getCorrectedSpacing()))
-                        / (visibleCount + 1);
+                gap = (availableMain - (totalMainPreferred - (count - 1) * getCorrectedSpacing())) / (count + 1);
                 startOffset = gap;
             }
             case FILL -> {
-                int availableMainFill = (isVertical() ? height : width) - padding2;
-                int visibleCountFill = (int) children.stream().filter(UIElement::isEnabled).count();
-                if (visibleCountFill == 0) return;
-
-                int childMainSize = (availableMainFill - (visibleCountFill - 1) * getCorrectedSpacing()) / visibleCountFill;
-                int childCrossSize = (isVertical() ? width : height) - padding2;
-
-                int currentMainFill = (isVertical() ? y : x) + getCorrectedPadding();
-                for (UIElement child : children) {
-                    if (!child.isEnabled()) continue;
-
-                    if (isVertical()) {
-                        child.setBounds(
-                                x + getCorrectedPadding(),
-                                currentMainFill,
-                                childCrossSize,
-                                childMainSize
-                        );
-                        currentMainFill += childMainSize + getCorrectedSpacing();
-                    } else {
-                        child.setBounds(
-                                currentMainFill,
-                                y + getCorrectedPadding(),
-                                childMainSize,
-                                childCrossSize
-                        );
-                        currentMainFill += childMainSize + getCorrectedSpacing();
-                    }
-                }
-                return; // return because have done everything
+                // handled separately below
             }
         }
 
         int currentMain = (isVertical() ? y : x) + getCorrectedPadding() + startOffset;
-        int availableCross = (isVertical() ? width : height) - padding2;
 
-        for (UIElement child : children) {
-            if (!child.isEnabled()) {
-                child.updateInternalVisibility(false);
-                continue;
+        if (mainDistribution == MainDistribution.FILL) {
+            int childMainSize = (availableMain - (count - 1) * getCorrectedSpacing()) / count;
+
+            for (UIElement child : visibleChildren) {
+                applyCrossAlignment(child, availableCross, currentMain, childMainSize);
+                currentMain += childMainSize + getCorrectedSpacing();
             }
-            if (child instanceof UIPanel panel) panel.layoutElements();
-
-            int childMainSize = getMainSize(child);
-            int childCrossSize = getCrossSize(child);
-
-            // --- handle cross alignment ---
-            int childCross = getCorrectedPadding();
-            if (crossAlign == CrossAlignment.CENTER) {
-                childCross += (availableCross - childCrossSize) / 2;
-            } else if (crossAlign == CrossAlignment.END) {
-                childCross += (availableCross - childCrossSize);
-            } else if (crossAlign == CrossAlignment.STRETCH) {
-                childCrossSize = availableCross;
+        } else {
+            for (UIElement child : visibleChildren) {
+                int childMainSize = getMainSize(child);
+                applyCrossAlignment(child, availableCross, currentMain, childMainSize);
+                currentMain += childMainSize + gap;
             }
-
-            if (isVertical()) {
-                child.setBounds(x + childCross, currentMain, childCrossSize, childMainSize);
-            } else {
-                child.setBounds(currentMain, y + childCross, childMainSize, childCrossSize);
-            }
-
-            child.updateInternalVisibility(isEnabled() && isVisible());
-            currentMain += childMainSize + gap;
         }
 
+        // --- recalc panel size after layout ---
         if (isVertical()) {
             height = getPreferredHeight();
-        } else {
-            width = getPreferredWidth();
-        }
-        if (isVertical()) {
-            int maxChildWidth = 0;
-            for (UIElement child : children) {
-                if (!child.isEnabled()) continue;
-                maxChildWidth = Math.max(maxChildWidth, child.getWidth());
-            }
+            int maxChildWidth = visibleChildren.stream()
+                    .mapToInt(UIElement::getWidth)
+                    .max()
+                    .orElse(0);
             width = getCorrectedPadding() * 2 + maxChildWidth;
         } else {
-            int totalWidth = getCorrectedPadding() * 2;
-            int visibleCount2 = 0;
-            for (UIElement child : children) {
-                if (!child.isEnabled()) continue;
-                totalWidth += child.getWidth();
-                visibleCount2++;
-            }
-            if (visibleCount2 > 1) totalWidth += getCorrectedSpacing() * (visibleCount2 - 1);
+            width = getPreferredWidth();
+            int totalWidth = getCorrectedPadding() * 2
+                    + visibleChildren.stream().mapToInt(UIElement::getWidth).sum()
+                    + Math.max(0, (count - 1) * getCorrectedSpacing());
             width = totalWidth;
         }
+    }
+
+    // helper method, applies cross alignment and sets bounds
+    private void applyCrossAlignment(UIElement child, int availableCross, int currentMain, int childMainSize) {
+        int childCrossSize = getCrossSize(child);
+        int crossPos = (isVertical() ? x : y) + getCorrectedPadding();
+
+        switch (crossAlign) {
+            case CENTER -> crossPos += (availableCross - childCrossSize) / 2;
+            case END -> crossPos += (availableCross - childCrossSize);
+            case STRETCH -> childCrossSize = availableCross;
+        }
+
+        if (isVertical()) {
+            child.setBounds(crossPos, currentMain, childCrossSize, childMainSize);
+        } else {
+            child.setBounds(currentMain, crossPos, childMainSize, childCrossSize);
+        }
+
+        if (child instanceof UIPanel panel) {
+            panel.layoutElements();
+        }
+        child.updateInternalVisibility(isEnabled() && isVisible());
     }
 }
