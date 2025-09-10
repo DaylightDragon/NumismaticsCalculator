@@ -302,6 +302,10 @@ public class CalculatorOverlay implements IOverlay {
         modesPanel.setOutlineWidth(2);
         modesPanel.setPadding(4);
         modesPanel.setSpacing(8);
+        modesPanel.setMinWidth(80);
+
+        modesPanel.setCrossAlignment(CrossAlignment.STRETCH);
+        modesPanel.setMainDistribution(MainDistribution.FILL);
 
         final AtomicReference<UIButton> sumModeBtn = new AtomicReference<>();
         final AtomicReference<UIButton> conversionModeBtn = new AtomicReference<>();

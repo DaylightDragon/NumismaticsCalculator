@@ -64,7 +64,7 @@ public class UIButton extends UIElement {
     public void setPadding(int paddingX, int paddingY) {
         this.paddingX = paddingX;
         this.paddingY = paddingY;
-        recalcSize();
+//        recalcSize();
     }
 
     public void setBgColorNormal(int bgColorNormal) {
@@ -84,8 +84,9 @@ public class UIButton extends UIElement {
     }
 
     private void recalcSize() {
-        this.width = getPreferredWidth();
-        this.height = getPreferredHeight();
+        // only without container
+        if (width == 0) width = getPreferredWidth();
+        if (height == 0) height = getPreferredHeight();
     }
 
     @Override

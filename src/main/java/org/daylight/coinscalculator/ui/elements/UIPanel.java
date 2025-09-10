@@ -10,14 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class UIPanel extends UIElement {
-    public enum HorizontalAlignment {
-        START, CENTER, END
-    }
-
-    public enum VerticalAlignment {
-        START, MIDDLE, END
-    }
-
     private int bgColor = 0x77444444;
     private boolean backgroundVisible = false;
     private int outlineWidth = 0;
@@ -125,10 +117,10 @@ public abstract class UIPanel extends UIElement {
 //        System.out.println(shouldBeRendered() + " " + children.size());
         if(!shouldBeRendered()) return;
 
-        if(backgroundVisible) {
-            DrawingUtils.fill(g, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
-//            g.fill(x, y, x + width, y + height, bgColor);
-        }
+        int bgColor = getBackgroundColor();
+        if(!backgroundVisible) bgColor = 0;
+        if(bgColor != 0 || (outlineColor != 0 && outlineWidth != 0)) DrawingUtils.fill(g, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
+//        g.fill(x, y, x + width, y + height, bgColor);
         for (UIElement child : children) {
 //            CoinsCalculator.LOGGER.info("child: " + child.getClass().getSimpleName() + " x: " + child.x + ", y: " + child.y + ", width: " + child.width + ", height: " + child.height);
             child.render(g, mouseX, mouseY, partialTick);

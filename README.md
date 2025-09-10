@@ -58,9 +58,15 @@ Remember, that you can check if you have the right sum available to pay someone 
 
 By pressing the second button in your `Control Panel` or just by pressing a configured keybind, you can open the mod's `Config Screen`. Here you can toggle features on and off.  
 
+## Important notes
+There are **some bugs** at the moment that may take indefinite period of time to fix. Those include:
+
+- Selection mode bugs out on player's hotbar and additionally doesn't work with chests.  
+- In certain scenarios the ui may not fit on your screen, but you can simply re-open your inventory or set your GUI Scale to 3 or lower.  
+
 ## Supported Versions
 
-Currently only Forge 1.20.1
+- Forge 1.20.1
 
 ## Building From Source Code
 

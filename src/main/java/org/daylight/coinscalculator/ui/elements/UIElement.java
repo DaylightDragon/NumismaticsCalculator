@@ -68,6 +68,22 @@ public abstract class UIElement {
 
     public void updateInternalValues() {}
 
+    public void setMinWidth(int minWidth) {
+        this.minWidth = minWidth;
+    }
+
+    public void setMaxWidth(int maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    public void setMinHeight(int minHeight) {
+        this.minHeight = minHeight;
+    }
+
+    public void setMaxHeight(int maxHeight) {
+        this.maxHeight = maxHeight;
+    }
+
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
