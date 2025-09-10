@@ -38,10 +38,12 @@ public class ModSettingsOverlay implements IOverlay {
     private UIPanel createOptionRow(String name, ForgeConfigSpec.ConfigValue<?> value) {
         Font font = Minecraft.getInstance().font;
         UIHorizontalLayout optionRow = new UIHorizontalLayout();
-        optionRow.setPadding(4);
+        optionRow.setPadding(5);
         optionRow.setCrossAlignment(CrossAlignment.CENTER);
+        optionRow.setBackgroundVisible(true);
+        optionRow.setBackgroundColor(0xAA36302c);
         optionRow.setOutlineWidth(1);
-        optionRow.setOutlineColor(0xAAe3bc9a);
+        optionRow.setOutlineColor(0xBBbf7947);
         optionRow.addElement(new UIText(name, font, 1.0f, 0xFFFFFF));
         if(value instanceof ForgeConfigSpec.BooleanValue booleanValue) {
             UIButton btn = new UIButton(booleanValue.get() ? "True" : "False", font, 1.0f, () -> {}) {

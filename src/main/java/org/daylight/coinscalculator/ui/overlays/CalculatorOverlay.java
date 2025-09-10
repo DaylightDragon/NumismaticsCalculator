@@ -260,6 +260,8 @@ public class CalculatorOverlay implements IOverlay {
             }
         }
 
+//        System.out.println(left + " " + right + " | " + invLeft + " " + screenH);
+
         return new Quartet<>(left, top, right - left, bottom - top); //  + prefHGlobal * 0.4
 
 //      return new Quartet<>(0, 0, prefWGlobal, prefHGlobal);
@@ -373,7 +375,7 @@ public class CalculatorOverlay implements IOverlay {
             public void layoutElements() {
                 super.layoutElements();
                 if(modesPanel.get() != null) {
-                    modesPanel.get().setMinWidth((int) (getMaxChildSize(false) - getPadding() * 2));
+                    modesPanel.get().setMinWidth(Math.min((int) (getMaxChildSize(false) - getPadding() * 2), 100));
                     modesPanel.get().layoutElements();
                 }
             }
