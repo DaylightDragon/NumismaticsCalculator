@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class UIButton extends UIElement {
     public enum ImagePosition {
-        IMAGE_LEFT, IMAGE_RIGHT
+        IMAGE_LEFT, IMAGE_RIGHT_KINDA
     }
 
     private final Font font;
@@ -130,11 +130,11 @@ public class UIButton extends UIElement {
 
         if (label != null && !label.isEmpty()) {
             UIText.drawScaledText(graphics, label, contentX, y + (height - font.lineHeight * fontScale) / 2, 0xFFFFFF, fontScale, true);
-            if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT) {
+            if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT_KINDA) {
                 contentX += (int) (font.width(label) * fontScale) + spacing;
                 graphics.blit(icon, contentX, contentY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
             }
-        } else if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT) {
+        } else if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT_KINDA) {
             // Если текста нет, просто центрируем иконку
             graphics.blit(icon, x + (width - iconWidth) / 2, y + (height - iconHeight) / 2, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
         }

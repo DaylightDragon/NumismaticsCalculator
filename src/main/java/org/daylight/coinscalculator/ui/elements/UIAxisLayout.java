@@ -187,4 +187,18 @@ public abstract class UIAxisLayout extends UIPanel {
         }
         child.updateInternalVisibility(isEnabled() && isVisible());
     }
+
+//    public int getMaxChildSize(boolean mainAxis) {
+//        int maxSize = 0;
+//        for (UIElement child : children) {
+//            if (!child.isEnabled() || !includeInLayout(child)) continue;
+//
+//            int size = mainAxis
+//                    ? (isVertical() ? child.getHeight() : child.getWidth())
+//                    : (isVertical() ? child.getWidth() : child.getHeight());
+//
+//            maxSize = Math.max(maxSize, size);
+//        }
+//        return maxSize;
+//    }
 }
