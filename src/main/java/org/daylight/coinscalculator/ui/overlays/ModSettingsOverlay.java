@@ -65,6 +65,20 @@ public class ModSettingsOverlay implements IOverlay {
             btn.setSpacing(0);
             btn.setMinWidth(37);
             optionRow.addElement(btn);
+        } else if(value instanceof ForgeConfigSpec.IntValue intValue) {
+            UIEditBox editBox = new UIEditBox(font, 40, 37);
+            editBox.setText(String.valueOf(intValue.get()));
+            editBox.setOnValueChange(text -> {
+                if(text.isBlank()) text = "0";
+                int userValue;
+                try {
+                    userValue = Integer.parseInt(text);
+                } catch (NumberFormatException e) {
+                    return;
+                }
+                intValue.set(userValue);
+            });
+            optionRow.addElement(editBox);
         }
         return optionRow;
     }
@@ -77,6 +91,8 @@ public class ModSettingsOverlay implements IOverlay {
 
         verticalLayout.addElement(createOptionRow("Require \"Shift\" For Total Value Tooltip", ConfigData.requireShiftForTotalTooltip));
         verticalLayout.addElement(createOptionRow("Show Control Panel Buttons", ConfigData.showControlPanel));
+        verticalLayout.addElement(createOptionRow("Overlay Animation Enabled", ConfigData.overlayAnimationEnabled));
+        verticalLayout.addElement(createOptionRow("Overlay Animation Duration", ConfigData.overlayAnimationDuration));
 
         rootPanel.addElement(verticalLayout);
 

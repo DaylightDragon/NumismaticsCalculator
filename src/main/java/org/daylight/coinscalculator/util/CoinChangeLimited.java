@@ -181,10 +181,10 @@ public class CoinChangeLimited {
         int[] counts = {1, 2, 1, 1};
 
         Result res = solveFast(target, values, counts);
-        if (res != null) {
-            System.out.println(res);
-        } else {
-            System.out.println("No combination possible");
-        }
+//        if (res != null) {
+//            System.out.println(res);
+//        } else {
+//            System.out.println("No combination possible");
+//        }
     }
 }

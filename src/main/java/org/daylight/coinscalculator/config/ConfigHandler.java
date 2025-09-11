@@ -15,6 +15,12 @@ public class ConfigHandler {
         ConfigData.showControlPanel = BUILDER.comment("Show Control Panel Buttons")
                 .define("showControlPanel", true);
 
+        ConfigData.overlayAnimationEnabled = BUILDER.comment("Main Overlay Animation Enabled")
+                .define("mainOverlayPositionAnimationEnabled", true);
+
+        ConfigData.overlayAnimationDuration = BUILDER.comment("Main Overlay Animation Duration")
+                        .defineInRange("mainOverlayPositionAnimationDuration", 150, 0, 10000);
+
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

@@ -24,6 +24,11 @@ public class UIEditBox extends UIElement {
         return this;
     }
 
+    public UIEditBox setText(String text) {
+        editBox.setValue(text);
+        return this;
+    }
+
     @Override
     public int getPreferredWidth() {
         return 80;

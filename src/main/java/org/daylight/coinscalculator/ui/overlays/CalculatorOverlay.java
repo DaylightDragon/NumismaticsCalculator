@@ -28,6 +28,7 @@ import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.ModColors;
 import org.daylight.coinscalculator.ModResources;
 import org.daylight.coinscalculator.UiState;
+import org.daylight.coinscalculator.config.ConfigData;
 import org.daylight.coinscalculator.ui.SelectionRenderer;
 import org.daylight.coinscalculator.ui.UIUpdateRequests;
 import org.daylight.coinscalculator.ui.elements.*;
@@ -114,35 +115,13 @@ public class CalculatorOverlay implements IOverlay {
     private int positionAnimationEndY = 0;
     private boolean positionAnimationActive = false;
     private long positionAnimationStartTime = 0;
-    private long positionAnimationDuration = 150;
 
     private void replacePositionAnimationData() {
-//        int uiTop = mainFloatingPanel.getY();
-//        int uiBottom = uiTop + mainFloatingPanel.getHeight();
-//        int screenHeight = 0;
-//        if(Minecraft.getInstance().screen != null) screenHeight = Minecraft.getInstance().screen.height;
-//        else return;
-//
-//        if(uiBottom > screenHeight) {
-//            positionAnimationStartY = mainFloatingPanel.getY();
-//            positionAnimationEndY = (screenHeight - uiBottom) - 5;
-//            positionAnimationActive = true;
-//            positionAnimationStartTime = Calendar.getInstance().getTimeInMillis();
-//
-//            System.out.println("StartY: " + positionAnimationStartY);
-//            System.out.println("EndY: " + positionAnimationEndY);
-//            System.out.println("StartTime: " + positionAnimationStartTime);
-//        } else if(uiTop < 5) {
-//            positionAnimationStartY = mainFloatingPanel.getY();
-//            positionAnimationEndY = 5;
-//            positionAnimationActive = true;
-//            positionAnimationStartTime = Calendar.getInstance().getTimeInMillis();
-//        }
-
+        if(!ConfigData.overlayAnimationEnabled.get()) return;
         if(Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
 
-        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen((AbstractContainerScreen<?>) Minecraft.getInstance().screen); // maybe update
-        System.out.println(lastOverlayPosition + " " + mainFloatingPanel.getY());
+        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen((AbstractContainerScreen<?>) Minecraft.getInstance().screen);
+//        System.out.println(lastOverlayPosition + " " + mainFloatingPanel.getY());
         if (lastOverlayPosition != null && lastOverlayPosition.getB() != mainFloatingPanel.getY()) {
             positionAnimationStartY = mainFloatingPanel.getY();
             positionAnimationEndY = lastOverlayPosition.getB();
@@ -150,8 +129,8 @@ public class CalculatorOverlay implements IOverlay {
             positionAnimationStartTime = Calendar.getInstance().getTimeInMillis();
 //            System.out.println("start");
 
-            System.out.println("Start: " + positionAnimationStartY);
-            System.out.println("End: " + positionAnimationEndY);
+//            System.out.println("Start: " + positionAnimationStartY);
+//            System.out.println("End: " + positionAnimationEndY);
         }
     }
 
@@ -166,6 +145,8 @@ public class CalculatorOverlay implements IOverlay {
     private void runPositionAnimation() {
         if(!positionAnimationActive) return;
         long currentTime = Calendar.getInstance().getTimeInMillis();
+        int positionAnimationDuration = ConfigData.overlayAnimationDuration.get();
+//        System.out.println("positionAnimationDuration: " + positionAnimationDuration);
         if(currentTime - positionAnimationStartTime < positionAnimationDuration) {
             float t = (currentTime - positionAnimationStartTime) / (float) positionAnimationDuration;
             if (t > 1.0f) t = 1.0f;
@@ -173,7 +154,7 @@ public class CalculatorOverlay implements IOverlay {
             float progress = easeInOutSine(t);
 //            float newY = easeOutCubic(t);
             float newY = positionAnimationStartY + (positionAnimationEndY - positionAnimationStartY) * progress;
-            System.out.println("Progress: " + progress + ", newY: " + newY);
+//            System.out.println("Progress: " + progress + ", newY: " + newY);
 
             float prevY = mainFloatingPanel.getY();
             mainFloatingPanel.setBounds(mainFloatingPanel.getX(), (int) newY, mainFloatingPanel.getWidth(), mainFloatingPanel.getHeight());
@@ -181,7 +162,10 @@ public class CalculatorOverlay implements IOverlay {
                 positionAnimationActive = false;
                 mainFloatingPanel.setBounds(mainFloatingPanel.getX(), positionAnimationEndY, mainFloatingPanel.getWidth(), mainFloatingPanel.getHeight());
             }
-        } else positionAnimationActive = false;
+        } else {
+            mainFloatingPanel.setBounds(mainFloatingPanel.getX(), positionAnimationEndY, mainFloatingPanel.getWidth(), mainFloatingPanel.getHeight());
+            positionAnimationActive = false;
+        }
     }
 
     private void updateVisibilityIfAvailable(UIElement el, int amountNow) {
@@ -669,7 +653,7 @@ public class CalculatorOverlay implements IOverlay {
                 slots.set(inventory.items.indexOf(slot.getItem()), slot);
             }
         }
-        System.out.println("Full Slots List: " + slots);
+//        System.out.println("Full Slots List: " + slots);
         return slots;
     }
 
@@ -702,8 +686,8 @@ public class CalculatorOverlay implements IOverlay {
         Slot start = slots.get(startIndex);
         Slot end   = slots.get(endIndex);
 
-        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
-        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
+//        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
+//        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
 
         int startX;
         int startY;
@@ -724,7 +708,7 @@ public class CalculatorOverlay implements IOverlay {
 
 //        System.out.println(initialX + " " + initialY + " + " + slotDx + " " + slotDy);
 
-        System.out.println(end.getContainerSlot() + " " + (end.container instanceof Inventory) + " end slot X: " + endX + ", Y: " + endY);
+//        System.out.println(end.getContainerSlot() + " " + (end.container instanceof Inventory) + " end slot X: " + endX + ", Y: " + endY);
 
         int x1 = Math.min(startX, endX);
         int y1 = Math.min(startY, endY);
@@ -907,7 +891,7 @@ public class CalculatorOverlay implements IOverlay {
                     UiState.selectionEndPointX = mouseX;
                     UiState.selectionEndPointY = mouseY;
 
-                    System.out.println("Setting " + screen.getSlotUnderMouse().getContainerSlot() + " slot as end in " + (screen.getSlotUnderMouse().container.getClass().getSimpleName()));
+//                    System.out.println("Setting " + screen.getSlotUnderMouse().getContainerSlot() + " slot as end in " + (screen.getSlotUnderMouse().container.getClass().getSimpleName()));
                     UiState.selectionEndPointSlotIndex = screen.getSlotUnderMouse().getContainerSlot();
 
                     updateSelectedValue(screen);
