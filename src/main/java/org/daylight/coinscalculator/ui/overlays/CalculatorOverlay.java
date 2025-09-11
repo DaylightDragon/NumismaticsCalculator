@@ -89,6 +89,7 @@ public class CalculatorOverlay implements IOverlay {
                 init(screen);
             }
             SelectionRenderer.renderSelection(guiGraphics, screen);
+            runPositionAnimation();
 
             if (mainFloatingPanel != null) {
                 Minecraft mc = Minecraft.getInstance();
@@ -109,12 +110,78 @@ public class CalculatorOverlay implements IOverlay {
         if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
     }
 
-    private void togglePanelPages() {
-//        System.out.println(mainFloatingPanel != null);
-        if(mainFloatingPanel != null) {
-            pagesStackPanel.setNextIndex();
-            mainFloatingPanel.layoutElements();
+    private int positionAnimationStartY = 0;
+    private int positionAnimationEndY = 0;
+    private boolean positionAnimationActive = false;
+    private long positionAnimationStartTime = 0;
+    private long positionAnimationDuration = 150;
+
+    private void replacePositionAnimationData() {
+//        int uiTop = mainFloatingPanel.getY();
+//        int uiBottom = uiTop + mainFloatingPanel.getHeight();
+//        int screenHeight = 0;
+//        if(Minecraft.getInstance().screen != null) screenHeight = Minecraft.getInstance().screen.height;
+//        else return;
+//
+//        if(uiBottom > screenHeight) {
+//            positionAnimationStartY = mainFloatingPanel.getY();
+//            positionAnimationEndY = (screenHeight - uiBottom) - 5;
+//            positionAnimationActive = true;
+//            positionAnimationStartTime = Calendar.getInstance().getTimeInMillis();
+//
+//            System.out.println("StartY: " + positionAnimationStartY);
+//            System.out.println("EndY: " + positionAnimationEndY);
+//            System.out.println("StartTime: " + positionAnimationStartTime);
+//        } else if(uiTop < 5) {
+//            positionAnimationStartY = mainFloatingPanel.getY();
+//            positionAnimationEndY = 5;
+//            positionAnimationActive = true;
+//            positionAnimationStartTime = Calendar.getInstance().getTimeInMillis();
+//        }
+
+        if(Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
+
+        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen((AbstractContainerScreen<?>) Minecraft.getInstance().screen); // maybe update
+        System.out.println(lastOverlayPosition + " " + mainFloatingPanel.getY());
+        if (lastOverlayPosition != null && lastOverlayPosition.getB() != mainFloatingPanel.getY()) {
+            positionAnimationStartY = mainFloatingPanel.getY();
+            positionAnimationEndY = lastOverlayPosition.getB();
+            positionAnimationActive = true;
+            positionAnimationStartTime = Calendar.getInstance().getTimeInMillis();
+//            System.out.println("start");
+
+            System.out.println("Start: " + positionAnimationStartY);
+            System.out.println("End: " + positionAnimationEndY);
         }
+    }
+
+    private float easeOutCubic(float t) {
+        return 1 - (float)Math.pow(1 - t, 3);
+    }
+
+    private float easeInOutSine(float t) {
+        return -(float)Math.cos(Math.PI * t) / 2 + 0.5f;
+    }
+
+    private void runPositionAnimation() {
+        if(!positionAnimationActive) return;
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+        if(currentTime - positionAnimationStartTime < positionAnimationDuration) {
+            float t = (currentTime - positionAnimationStartTime) / (float) positionAnimationDuration;
+            if (t > 1.0f) t = 1.0f;
+
+            float progress = easeInOutSine(t);
+//            float newY = easeOutCubic(t);
+            float newY = positionAnimationStartY + (positionAnimationEndY - positionAnimationStartY) * progress;
+            System.out.println("Progress: " + progress + ", newY: " + newY);
+
+            float prevY = mainFloatingPanel.getY();
+            mainFloatingPanel.setBounds(mainFloatingPanel.getX(), (int) newY, mainFloatingPanel.getWidth(), mainFloatingPanel.getHeight());
+            if(t >= 1.0f) { // Math.abs(newY - prevY) < 0.5
+                positionAnimationActive = false;
+                mainFloatingPanel.setBounds(mainFloatingPanel.getX(), positionAnimationEndY, mainFloatingPanel.getWidth(), mainFloatingPanel.getHeight());
+            }
+        } else positionAnimationActive = false;
     }
 
     private void updateVisibilityIfAvailable(UIElement el, int amountNow) {
@@ -167,6 +234,7 @@ public class CalculatorOverlay implements IOverlay {
         conversionOutputReturns.updateInternalValues();
 //            conversionOutputReturns.layoutElements();
         mainFloatingPanel.layoutElements();
+        replacePositionAnimationData();
     }
 
     private UIElement createConversionLine(String itemName, String displayName, Supplier<Integer> amount, Font font) {
@@ -257,6 +325,7 @@ public class CalculatorOverlay implements IOverlay {
                 super.layoutElements();
                 lastOverlayPosition = new Quartet<>(x, y, width, height);
                 GuiManagerOverlay.getInstance().updateOverlayPosition(screen);
+//                replacePositionAnimationData();
             }
         };
         mainFloatingPanel.setId("Main Pages VERTICAL Panel");
@@ -303,6 +372,7 @@ public class CalculatorOverlay implements IOverlay {
 
                 if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(0);
                 if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
+                replacePositionAnimationData();
                 return true;
             }
         });
@@ -331,6 +401,7 @@ public class CalculatorOverlay implements IOverlay {
 
                 if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(1);
                 if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
+                replacePositionAnimationData();
                 return true;
             }
         });
