@@ -29,13 +29,13 @@ public class UIText extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return (int) (font.width(text) * scale + 10);
+        return clampWidth((int) (font.width(text) * scale + 10));
     }
 
     @Override
     public int getPreferredHeight() {
 //        System.out.println(getId() + " getPreferredHeight: " + font.lineHeight);
-        return (int) (font.lineHeight); //  * scale
+        return clampHeight((int) (font.lineHeight)); //  * scale
     }
 
     @Override

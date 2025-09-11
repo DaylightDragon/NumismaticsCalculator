@@ -20,12 +20,12 @@ public class UiImage extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return width;
+        return clampWidth(width);
     }
 
     @Override
     public int getPreferredHeight() {
-        return height;
+        return clampHeight(height);
     }
 
     @Override

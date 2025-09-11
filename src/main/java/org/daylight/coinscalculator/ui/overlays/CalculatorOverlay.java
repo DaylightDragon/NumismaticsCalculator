@@ -286,6 +286,7 @@ public class CalculatorOverlay implements IOverlay {
         }
 
 //        System.out.println(left + " " + right + " | " + invLeft + " " + screenH);
+        System.out.println(right - left);
 
         return new Quartet<>(left, top, right - left, bottom - top); //  + prefHGlobal * 0.4
 
@@ -314,6 +315,7 @@ public class CalculatorOverlay implements IOverlay {
         };
         mainFloatingPanel.setId("Main Pages VERTICAL Panel");
         mainFloatingPanel.setPadding(7);
+        mainFloatingPanel.setMinWidth(135);
 //        mainFloatingPanel.setPosition(invLeft - 120, screen.getGuiTop());
         mainFloatingPanel.setBackgroundVisible(true);
         mainFloatingPanel.setBackgroundColor(ModColors.uiBg);
@@ -422,7 +424,7 @@ public class CalculatorOverlay implements IOverlay {
             public void updateInternalValues() {
                 super.updateInternalValues();
                 if(!updatedInternalValues || UIUpdateRequests.updateTotalCoinsValue) {
-                    setText("Total Available: " + UiState.inventorySnapshotTotalCoins + " ¤");
+                    setText("Total Available: " + UiState.inventorySnapshotTotalCoins + " ¤"); // Value
                     UIUpdateRequests.updateTotalCoinsValue = false;
                 }
                 updatedInternalValues = true;

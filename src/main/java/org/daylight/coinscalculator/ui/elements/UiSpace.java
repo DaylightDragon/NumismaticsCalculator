@@ -15,12 +15,12 @@ public class UiSpace extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return xSpace;
+        return clampWidth(xSpace);
     }
 
     @Override
     public int getPreferredHeight() {
-        return ySpace;
+        return clampWidth(ySpace);
     }
 
     @Override

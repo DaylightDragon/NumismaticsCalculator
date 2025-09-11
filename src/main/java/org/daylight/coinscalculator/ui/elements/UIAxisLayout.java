@@ -50,7 +50,7 @@ public abstract class UIAxisLayout extends UIPanel {
             for (UIElement child : children) {
                 maxWidth = Math.max(maxWidth, child.getPreferredWidth());
             }
-            return maxWidth + getCorrectedPadding() * 2;
+            return clampWidth(maxWidth + getCorrectedPadding() * 2);
         } else {
             int totalWidth = getCorrectedPadding() * 2;
             for (UIElement child : children) {
@@ -60,7 +60,7 @@ public abstract class UIAxisLayout extends UIPanel {
                 totalWidth += child.getPreferredWidth() + getCorrectedSpacing();
             }
             if (!children.isEmpty()) totalWidth -= getCorrectedSpacing();
-            return totalWidth;
+            return clampWidth(totalWidth);
         }
     }
 
@@ -75,13 +75,13 @@ public abstract class UIAxisLayout extends UIPanel {
                 totalHeight += child.getPreferredHeight() + getCorrectedSpacing();
             }
             if (!children.isEmpty()) totalHeight -= getCorrectedSpacing();
-            return totalHeight;
+            return clampHeight(totalHeight);
         } else {
             int maxHeight = 0;
             for (UIElement child : children) {
                 maxHeight = Math.max(maxHeight, child.getPreferredHeight());
             }
-            return maxHeight + getCorrectedPadding() * 2;
+            return clampHeight(maxHeight + getCorrectedPadding() * 2);
         }
     }
 
@@ -154,13 +154,13 @@ public abstract class UIAxisLayout extends UIPanel {
 
         // --- recalc panel size after layout ---
         if (isVertical()) {
-            height = getPreferredHeight();
+            height = clampHeight(getPreferredHeight());
             int maxChildWidth = visibleChildren.stream()
                     .filter(child -> !child.isCrossAxisExcludedFromLayout())
                     .mapToInt(UIElement::getWidth)
                     .max()
                     .orElse(0);
-            width = getCorrectedPadding() * 2 + maxChildWidth;
+            width = clampWidth(getCorrectedPadding() * 2 + maxChildWidth);
         } else {
             width = getPreferredWidth();
             int totalWidth = getCorrectedPadding() * 2
@@ -169,7 +169,7 @@ public abstract class UIAxisLayout extends UIPanel {
                     .mapToInt(UIElement::getWidth)
                     .sum()
                     + Math.max(0, (count - 1) * getCorrectedSpacing());
-            width = totalWidth;
+            width = clampWidth(totalWidth);
         }
     }
 

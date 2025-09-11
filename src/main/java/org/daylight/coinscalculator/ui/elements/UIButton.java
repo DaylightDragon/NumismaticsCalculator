@@ -104,14 +104,14 @@ public class UIButton extends UIElement {
                 totalWidth += spacing; // только если есть текст
             }
         }
-        return totalWidth;
+        return clampWidth(totalWidth);
     }
 
     @Override
     public int getPreferredHeight() {
         int textHeight = (int) (font.lineHeight * fontScale);
         int contentHeight = Math.max(textHeight, icon != null ? iconHeight : 0);
-        return contentHeight + paddingY * 2;
+        return clampHeight(contentHeight + paddingY * 2);
     }
 
     @Override

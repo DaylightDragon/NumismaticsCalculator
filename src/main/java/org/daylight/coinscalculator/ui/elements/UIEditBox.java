@@ -31,12 +31,12 @@ public class UIEditBox extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return 80;
+        return clampWidth(80);
     }
 
     @Override
     public int getPreferredHeight() {
-        return 20;
+        return clampWidth(20);
     }
 
     @Override

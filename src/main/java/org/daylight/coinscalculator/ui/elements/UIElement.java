@@ -109,6 +109,14 @@ public abstract class UIElement {
 //                " setBounds -> x: " + x + ", y: " + y + ", width: " + width + ", height: " + height);
     }
 
+    protected int clampWidth(int value) {
+        return Math.max(minWidth, Math.min(value, maxWidth));
+    }
+
+    protected int clampHeight(int value) {
+        return Math.max(minHeight, Math.min(value, maxHeight));
+    }
+
     public void render(@NotNull GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         updateInternalValues();
     }

@@ -39,7 +39,9 @@ public class ModSettingsOverlay implements IOverlay {
         Font font = Minecraft.getInstance().font;
         UIHorizontalLayout optionRow = new UIHorizontalLayout();
         optionRow.setPadding(5);
-//        optionRow.setMinWidth(196); // - I give up
+        optionRow.setMinWidth(280);
+        if(Minecraft.getInstance().screen != null) optionRow.setMinWidth((int) (Minecraft.getInstance().screen.width * 0.65f));
+        optionRow.setMainDistribution(MainDistribution.SPACE_BETWEEN);
         optionRow.setCrossAlignment(CrossAlignment.CENTER);
         optionRow.setBackgroundVisible(true);
         optionRow.setBackgroundColor(0xAA36302c);

@@ -45,12 +45,12 @@ public abstract class UIPanel extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return 100; // заглушка для базового контейнера
+        return clampWidth(100); // заглушка для базового контейнера
     }
 
     @Override
     public int getPreferredHeight() {
-        return 100; // заглушка для базового контейнера
+        return clampHeight(100); // заглушка для базового контейнера
     }
 
     public void setBackgroundColor(int bgColor) {

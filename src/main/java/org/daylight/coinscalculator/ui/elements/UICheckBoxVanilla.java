@@ -33,13 +33,13 @@ public class UICheckBoxVanilla extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return checkbox.getWidth();
+        return clampWidth(checkbox.getWidth());
 //        return 150; // можно сделать динамически от текста
     }
 
     @Override
     public int getPreferredHeight() {
-        return checkbox.getHeight();
+        return clampHeight(checkbox.getHeight());
 //        return 20;
     }
 
