@@ -39,6 +39,7 @@ public class ModSettingsOverlay implements IOverlay {
         Font font = Minecraft.getInstance().font;
         UIHorizontalLayout optionRow = new UIHorizontalLayout();
         optionRow.setPadding(5);
+//        optionRow.setMinWidth(196); // - I give up
         optionRow.setCrossAlignment(CrossAlignment.CENTER);
         optionRow.setBackgroundVisible(true);
         optionRow.setBackgroundColor(0xAA36302c);
@@ -57,6 +58,7 @@ public class ModSettingsOverlay implements IOverlay {
 //                    System.out.println(width);
 //                    System.out.println("CLICK");
 //                        booleanValue.save();
+//                    System.out.println(optionRow.getWidth());
                     return true;
                 }
             };
@@ -80,6 +82,7 @@ public class ModSettingsOverlay implements IOverlay {
             });
             optionRow.addElement(editBox);
         }
+//        optionRow.setBounds(optionRow.getX(), optionRow.getY(), optionRow.getWidth(), optionRow.getHeight());
         return optionRow;
     }
 
