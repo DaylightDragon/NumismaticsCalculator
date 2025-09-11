@@ -20,6 +20,7 @@ public class UIButton extends UIElement {
     private int bgColorHover = ModColors.uiButtonBgHovered;
     private int outlineWidth = 0;
     private int outlineColor = 0x00000000;
+    private int textColor = 0xFFFFFFFF;
 
     protected String label;
     private ResourceLocation icon;
@@ -83,6 +84,10 @@ public class UIButton extends UIElement {
         this.outlineColor = outlineColor;
     }
 
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
+
     private void recalcSize() {
         // only without container
         if (width == 0) width = getPreferredWidth();
@@ -129,7 +134,7 @@ public class UIButton extends UIElement {
         }
 
         if (label != null && !label.isEmpty()) {
-            UIText.drawScaledText(graphics, label, contentX, y + (height - font.lineHeight * fontScale) / 2, 0xFFFFFF, fontScale, true);
+            UIText.drawScaledText(graphics, label, contentX, y + (height - font.lineHeight * fontScale) / 2, textColor, fontScale, true);
             if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT_KINDA) {
                 contentX += (int) (font.width(label) * fontScale) + spacing;
                 graphics.blit(icon, contentX, contentY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);

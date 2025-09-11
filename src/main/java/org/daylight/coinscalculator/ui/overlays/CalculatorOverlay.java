@@ -117,33 +117,6 @@ public class CalculatorOverlay implements IOverlay {
         }
     }
 
-    public static final ResourceLocation BLOCK_ATLAS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/atlas/blocks.png");
-
-    private TextureAtlasSprite getCoinResourceLocation(String itemName) {
-        Item item = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse("numismatics:" + itemName));
-        if(item == null || Minecraft.getInstance().level == null) {
-//            return ResourceLocation.fromNamespaceAndPath("minecraft", "missingno");
-            Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(ResourceLocation.parse("minecraft:missingno"));
-        }
-        BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(new ItemStack(item), null, null, 0);
-
-        List<BakedQuad> quads = ((IForgeBakedModel) model).getQuads(
-                null,                // BlockState (null для предмета)
-                null,                // Direction (null = все стороны)
-                RandomSource.create(), // Случайный источник
-                ModelData.EMPTY,     // Нет дополнительных данных
-                null                 // RenderType (null = все)
-        );
-
-        if (!quads.isEmpty()) {
-            return quads.get(0).getSprite();
-        }
-
-        return Minecraft.getInstance().getTextureAtlas(BLOCK_ATLAS).apply(ResourceLocation.parse("minecraft:missingno"));
-
-//        return ResourceLocation.fromNamespaceAndPath("numismatics", "textures/item/coin/" + itemName + ".png");
-    }
-
     private void updateVisibilityIfAvailable(UIElement el, int amountNow) {
         el.setEnabled(amountNow > 0);
     }
@@ -206,7 +179,7 @@ public class CalculatorOverlay implements IOverlay {
                 updatedInternalValues = true;
             }
         };
-        UiImage sunCoinImage = new UiImage(getCoinResourceLocation(itemName), 16, 16);
+        UiImage sunCoinImage = new UiImage(CoinValues.NAME_TO_TEXTURE_ATLAS_SPRITE.getOrDefault(itemName, CoinValues.getMissingNo()), 16, 16);
         sunCoinMain.setEnabled(false);
         sunCoinMain.addElement(sunCoinImage);
         sunCoinMain.addElement(new UIText("", font, fontScaleText, ModColors.uiSecondaryText) {

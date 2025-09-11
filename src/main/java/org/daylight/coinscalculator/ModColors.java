@@ -12,7 +12,7 @@ public class ModColors {
     public static final int uiSecondaryText = 0xd4d6d3;
     public static final int uiSelected = 0xFFffc430;
     public static final int modeSwitchPanelBg = 0xAA5e4933;
-    public static final int modeSwitchPanelOutline = 0xCC42382e;
+    public static final int modeSwitchPanelOutline = 0x99302417; // 42382e
     public static final int modeSwitchButtonBgNormal = 0xDD3d2c1d;
     public static final int modeSwitchButtonBgHovered = 0xDD694e36;
     public static final int modeSwitchButtonOutlineSelected = 0xDDe09748;

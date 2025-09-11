@@ -53,11 +53,17 @@ public class ModSettingsOverlay implements IOverlay {
                     if(!result) return false;
                     booleanValue.set(!booleanValue.get());
                     setLabel(booleanValue.get() ? "True" : "False");
+                    setTextColor(booleanValue.get() ? 0xb9ff8a : 0xff8a8a);
+//                    System.out.println(width);
 //                    System.out.println("CLICK");
 //                        booleanValue.save();
                     return true;
                 }
             };
+            btn.setTextColor(booleanValue.get() ? 0xb9ff8a : 0xff6e6e);
+            btn.setImagePosition(UIButton.ImagePosition.IMAGE_RIGHT_KINDA);
+            btn.setSpacing(0);
+            btn.setMinWidth(37);
             optionRow.addElement(btn);
         }
         return optionRow;
