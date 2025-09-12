@@ -12,10 +12,10 @@ public class ModColors {
     public static final int uiWarningText = 0xf76834;
     public static final int uiSecondaryText = 0xd4d6d3;
     public static final int uiSelected = 0xFFffc430;
-    public static final int modeSwitchPanelBg = 0xAA5e4933;
-    public static final int modeSwitchPanelOutline = 0x99302417; // 42382e
-    public static final int modeSwitchButtonBgNormal = 0xDD3d2c1d;
-    public static final int modeSwitchButtonBgHovered = 0xDD694e36;
+    public static final int modeSwitchPanelBg = 0xAA40291d; // AA5e4933
+    public static final int modeSwitchPanelOutline = 0x99302417; // 42382e // 99302417
+    public static final int modeSwitchButtonBgNormal = 0xDD2b231c;
+    public static final int modeSwitchButtonBgHovered = 0xDD5e4b3a;
     public static final int modeSwitchButtonOutlineSelected = 0xDDe09748;
     public static final int modeSwitchButtonBgSelected = 0xDD693f1b;
 }
