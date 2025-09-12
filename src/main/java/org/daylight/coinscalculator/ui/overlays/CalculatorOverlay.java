@@ -641,7 +641,7 @@ public class CalculatorOverlay implements IOverlay {
         UiState.selectionSlotValuesCoins.clear();
         List<Integer> slots = getSlotIndexesInSelection(screen, UiState.selectionStartPointSlotIndex, UiState.selectionEndPointSlotIndex);
         for(Integer slotIndex : slots) {
-            Slot slot = screen.getMenu().getSlot(slotIndex);
+            Slot slot = getRealInventorySlot(screen, slotIndex); // screen.getMenu().getSlot(slotIndex);
             Integer value = CoinValues.ITEM_TO_VALUE.get(slot.getItem().getItem());
             if(value != null) UiState.selectionSlotValuesCoins.put(slotIndex, value * slot.getItem().getCount());
             else UiState.selectionSlotValuesCoins.put(slotIndex, null);
@@ -670,9 +670,37 @@ public class CalculatorOverlay implements IOverlay {
         return slots;
     }
 
+    public static int getRealSlotIndex(AbstractContainerScreen<?> screen, Slot slot) {
+        if(!(screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) return screen.getMenu().slots.indexOf(slot);
+
+        for(Slot menuSlot : screen.getMenu().slots) {
+            if(menuSlot.container instanceof Inventory && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
+                return menuSlot.getSlotIndex();
+            }
+        }
+        return -1;
+    }
+
+    public static Slot getRealInventorySlot(AbstractContainerScreen<?> screen, int slotIndex) {
+        if(!(screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) return screen.getMenu().getSlot(slotIndex);
+
+        for(Slot slot : screen.getMenu().slots) {
+            if(slot.container instanceof Inventory && slot.getSlotIndex() == slotIndex) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
     public static List<Integer> getSlotIndexesInSelection(AbstractContainerScreen<?> screen, int startIndex, int endIndex) {
         AbstractContainerMenu menu = screen.getMenu();
         List<Slot> slots = menu.slots;
+
+//        System.out.println("----------getSlotIndexesInSelection----------");
+//        for(Slot slot : slots) {
+//            System.out.println(slot.index + " " + slot.getSlotIndex() + " " + slot.getContainerSlot() + " " + slot.container.getClass().getSimpleName());
+//        }
+
 //        if(screen instanceof InventoryScreen) {
 //            slots = getPlayerInventorySlots(screen);
 //            for(int i = 0; i < slots.size(); i++) {
@@ -696,11 +724,11 @@ public class CalculatorOverlay implements IOverlay {
         int slotDx = getSlotDx(menu, 18);
         int slotDy = getSlotDy(menu, 18);
 
-        Slot start = slots.get(startIndex);
-        Slot end   = slots.get(endIndex);
+        Slot start = getRealInventorySlot(screen, startIndex); // slots.get(startIndex);
+        Slot end   = getRealInventorySlot(screen, endIndex); // slots.get(endIndex);
 
-//        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
-//        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
+        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
+        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
 
         int startX;
         int startY;
@@ -713,11 +741,11 @@ public class CalculatorOverlay implements IOverlay {
 //        startY = getYForHotbar(slots, start, initialY, slotDy);
 //        endY = getYForHotbar(slots, end, initialY, slotDy);
 
-        startX = getXApproximated(slots, start, initialX, slotDx);
-        endX = getXApproximated(slots, end, initialX, slotDx);
+        startX = getXApproximated(screen, slots, start, initialX, slotDx);
+        endX = getXApproximated(screen, slots, end, initialX, slotDx);
 
-        startY = getYApproximated(slots, start, initialY, slotDy);
-        endY = getYApproximated(slots, end, initialY, slotDy);
+        startY = getYApproximated(screen, slots, start, initialY, slotDy);
+        endY = getYApproximated(screen, slots, end, initialY, slotDy);
 
 //        System.out.println(initialX + " " + initialY + " + " + slotDx + " " + slotDy);
 
@@ -735,15 +763,15 @@ public class CalculatorOverlay implements IOverlay {
         for (Slot slot : slots) {
             if (!(slot.container instanceof Inventory)) continue;
 
-            int localX = getXApproximated(slots, slot, initialX, slotDx);
-            int localY = getYApproximated(slots, slot, initialY, slotDy);
+            int localX = getXApproximated(screen, slots, slot, initialX, slotDx);
+            int localY = getYApproximated(screen, slots, slot, initialY, slotDy);
 
 //            int localX = slot.x;
 //            int localY = slot.y;
 
             // проверяем пересечение
             if (localX >= x1 && localX <= x2 && localY >= y1 && localY <= y2) {
-                result.add(slots.indexOf(slot)); // slot.getContainerSlot()
+                result.add(getRealSlotIndex(screen, slot));  //slots.indexOf(slot)); // slot.getContainerSlot()
             }
         }
         return result;
@@ -779,9 +807,11 @@ public class CalculatorOverlay implements IOverlay {
         } else return defaultValue;
     }
 
-    private static int getXApproximated(List<Slot> slots, Slot slot, int initialX, int dX) {
+    private static int getXApproximated(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialX, int dX) {
+        if(true) return slot.x;
+
         if (slot.container instanceof Inventory) {
-            int index = slots.indexOf(slot); // slot.getContainerSlot()
+            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
             int result = initialX + (index % 9) * dX;
 //                System.out.println("Returning overriden X " + result + " for Slot " + slot.getContainerSlot());
             return result;
@@ -789,9 +819,11 @@ public class CalculatorOverlay implements IOverlay {
         return slot.x;
     }
 
-    private static int getYApproximated(List<Slot> slots, Slot slot, int initialY, int dY) {
+    private static int getYApproximated(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialY, int dY) {
+        if(true) return slot.y;
+
         if (slot.container instanceof Inventory) {
-            int index = slots.indexOf(slot); // slot.getContainerSlot()
+            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
             int result = initialY + (index / 9) * dY;
 //                System.out.println("Returning overriden Y " + result + " for Slot " + slot.getContainerSlot());
             return result;
@@ -799,9 +831,9 @@ public class CalculatorOverlay implements IOverlay {
         return slot.y;
     }
 
-    private static int getXForHotbar(List<Slot> slots, Slot slot, int initialX, int dX) {
+    private static int getXForHotbar(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialX, int dX) {
         if (slot.container instanceof Inventory) {
-            int index = slots.indexOf(slot); // slot.getContainerSlot()
+            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
             if(index > 8) return slot.x;
             else {
                 int result = initialX + index * dX;
@@ -812,9 +844,9 @@ public class CalculatorOverlay implements IOverlay {
         return slot.x;
     }
 
-    private static int getYForHotbar(List<Slot> slots, Slot slot, int initialY, int dY) {
+    private static int getYForHotbar(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialY, int dY) {
         if (slot.container instanceof Inventory) {
-            int index = slots.indexOf(slot); // slot.getContainerSlot()
+            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
             if(index > 8) return slot.y;
             else {
                 int result = initialY + (4) * dY;
