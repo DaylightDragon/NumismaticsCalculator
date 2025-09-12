@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SelectionRenderer {
     public static void renderSelection(@NotNull GuiGraphics g, AbstractContainerScreen<?> screen) {
+//        System.out.println(UiState.selectionModeActive + " " + UiState.selectionRendered  + " " + !UiState.selectionSlotValuesCoins.isEmpty());
         if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty()) {
 //            System.out.println("Selection render");
 //            System.out.println(UiState.selectionStartPointSlotIndex + " - " + UiState.selectionEndPointSlotIndex);

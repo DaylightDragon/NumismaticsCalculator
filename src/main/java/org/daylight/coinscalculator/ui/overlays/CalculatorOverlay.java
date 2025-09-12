@@ -8,22 +8,13 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.extensions.IForgeBakedModel;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.ModColors;
 import org.daylight.coinscalculator.ModResources;
@@ -639,7 +630,8 @@ public class CalculatorOverlay implements IOverlay {
     private void updateSelectedValue(AbstractContainerScreen<?> screen) {
 //        System.out.println("updateSelectedValue" + screen.getClass().getSimpleName());
         UiState.selectionSlotValuesCoins.clear();
-        List<Integer> slots = getSlotIndexesInSelection(screen, UiState.selectionStartPointSlotIndex, UiState.selectionEndPointSlotIndex);
+        List<Integer> slots = getSlotIndexesInSelection(screen, UiState.selectionStartPointSlotIndex, UiState.selectionEndPointSlotIndex, UiState.selectionContainerClass);
+//        System.out.println(slots);
         for(Integer slotIndex : slots) {
             Slot slot = getRealInventorySlot(screen, slotIndex); // screen.getMenu().getSlot(slotIndex);
             Integer value = CoinValues.ITEM_TO_VALUE.get(slot.getItem().getItem());
@@ -671,28 +663,45 @@ public class CalculatorOverlay implements IOverlay {
     }
 
     public static int getRealSlotIndex(AbstractContainerScreen<?> screen, Slot slot) {
-        if(!(screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) return screen.getMenu().slots.indexOf(slot);
-
-        for(Slot menuSlot : screen.getMenu().slots) {
-            if(menuSlot.container instanceof Inventory && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
-                return menuSlot.getSlotIndex();
+//        if((screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) {
+            for (Slot menuSlot : screen.getMenu().slots) {
+                if (slot.container.getClass().equals(UiState.selectionContainerClass) && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
+                    return menuSlot.getSlotIndex();
+                }
             }
-        }
-        return -1;
+
+//        }
+        return screen.getMenu().slots.indexOf(slot);
     }
 
     public static Slot getRealInventorySlot(AbstractContainerScreen<?> screen, int slotIndex) {
-        if(!(screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) return screen.getMenu().getSlot(slotIndex);
-
-        for(Slot slot : screen.getMenu().slots) {
-            if(slot.container instanceof Inventory && slot.getSlotIndex() == slotIndex) {
-                return slot;
+//        if((screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) {
+            for (Slot slot : screen.getMenu().slots) {
+                if (slot.container.getClass().equals(UiState.selectionContainerClass) && slot.getSlotIndex() == slotIndex) {
+                    return slot;
+                }
             }
+//        }
+        try {
+            return screen.getMenu().getSlot(slotIndex);
+        } catch (IndexOutOfBoundsException e) {
+            return screen.getMenu().getSlot(0);
         }
-        return null;
     }
 
-    public static List<Integer> getSlotIndexesInSelection(AbstractContainerScreen<?> screen, int startIndex, int endIndex) {
+    public void onScreenChange(Screen screen) {
+//        System.out.println("clearing");
+        clearAllSelectionCoords();
+        UiState.selectionRendered = false;
+//        if(!(screen instanceof AbstractContainerScreen<?>)) UiState.selectionModeActive = false;
+    }
+
+//    public void onScreenClose() {
+//        clearAllSelectionCoords();
+//        if(!(screen instanceof AbstractContainerScreen<?>)) UiState.selectionModeActive = false;
+//    }
+
+    public static List<Integer> getSlotIndexesInSelection(AbstractContainerScreen<?> screen, int startIndex, int endIndex, Class<? extends Container> containerClass) {
         AbstractContainerMenu menu = screen.getMenu();
         List<Slot> slots = menu.slots;
 
@@ -712,13 +721,6 @@ public class CalculatorOverlay implements IOverlay {
             return List.of();
         }
 
-//        if(screen instanceof InventoryScreen inventoryScreen) {
-////            inventoryScreen.getMenu().getGridWidth()
-//            if(Minecraft.getInstance().player != null) {
-//                Minecraft.getInstance().player.getInventory().items
-//            }
-//        }
-
         int initialX = getInitialX(menu, 8);
         int initialY = getInitialY(menu, 84);
         int slotDx = getSlotDx(menu, 18);
@@ -727,8 +729,8 @@ public class CalculatorOverlay implements IOverlay {
         Slot start = getRealInventorySlot(screen, startIndex); // slots.get(startIndex);
         Slot end   = getRealInventorySlot(screen, endIndex); // slots.get(endIndex);
 
-        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
-        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
+//        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
+//        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
 
         int startX;
         int startY;
@@ -761,7 +763,7 @@ public class CalculatorOverlay implements IOverlay {
 
         List<Integer> result = new ArrayList<>();
         for (Slot slot : slots) {
-            if (!(slot.container instanceof Inventory)) continue;
+//            if (!(slot.container instanceof Inventory)) continue;
 
             int localX = getXApproximated(screen, slots, slot, initialX, slotDx);
             int localY = getYApproximated(screen, slots, slot, initialY, slotDy);
@@ -908,7 +910,7 @@ public class CalculatorOverlay implements IOverlay {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
             if(mainFloatingPanel != null) mainFloatingPanel.onClick(mouseX, mouseY);
             Slot slot = screen.getSlotUnderMouse();
-            if(isSlotValidForSelection(slot)) {
+            if(isSlotValidForSelection(slot) && pagesStackPanel.getActiveIndex() == 0 && UiState.coinCalculatorOverlayActive) { // may change, dangerous a bit
                 if(UiState.selectionModeActive) {
 //                    event.setCanceled(true);
                     UiState.selectionRendered = true;
@@ -917,6 +919,7 @@ public class CalculatorOverlay implements IOverlay {
                 UiState.selectionStartPointX = mouseX;
                 UiState.selectionStartPointY = mouseY;
                 UiState.selectionStartPointSlotIndex = screen.getSlotUnderMouse().getContainerSlot();
+                UiState.selectionContainerClass = screen.getSlotUnderMouse().container.getClass();
 
                 UiState.selectionSlotValuesCoins.clear();
             }
@@ -925,19 +928,26 @@ public class CalculatorOverlay implements IOverlay {
         return result; // true if cancel
     }
 
+    private boolean isSelectionSlotTheSameType(Slot slot) {
+        if(slot == null || UiState.selectionContainerClass == null) return false;
+        return UiState.selectionContainerClass.equals(slot.container.getClass());
+    }
+
     public boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig) {
         if (shouldRenderOnScreen(screenOrig)) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
             if(UiState.selectionModeActive) {
                 Slot slot = screen.getSlotUnderMouse();
 //                if(slot != null) System.out.println(slot.getContainerSlot() + " " + slot.container.getClass().getSimpleName());
-                if(isSlotValidForSelection(slot)) {
+                if(isSlotValidForSelection(slot) && isSelectionSlotTheSameType(slot)) {
 //                    event.setCanceled(true);
                     UiState.selectionEndPointX = mouseX;
                     UiState.selectionEndPointY = mouseY;
 
 //                    System.out.println("Setting " + screen.getSlotUnderMouse().getContainerSlot() + " slot as end in " + (screen.getSlotUnderMouse().container.getClass().getSimpleName()));
-                    UiState.selectionEndPointSlotIndex = screen.getSlotUnderMouse().getContainerSlot();
+                    UiState.selectionEndPointSlotIndex = getRealSlotIndex(screen, screen.getSlotUnderMouse());
+                    UiState.selectionContainerClass = screen.getSlotUnderMouse().container.getClass();
+//                    System.out.println(screen.getSlotUnderMouse().container.getClass().getSimpleName());
 
                     updateSelectedValue(screen);
                     return true;
@@ -953,7 +963,7 @@ public class CalculatorOverlay implements IOverlay {
             if(UiState.selectionModeActive) {
                 UiState.selectionRendered = false;
                 Slot slot = screen.getSlotUnderMouse();
-                if(!isSlotValidForSelection(slot)) {
+                if(!isSlotValidForSelection(slot) || !isSelectionSlotTheSameType(slot)) {
                     updateSelectedValue(screen);
                     displaySelectedValue();
                     clearAllSelectionCoords();
@@ -963,7 +973,7 @@ public class CalculatorOverlay implements IOverlay {
                 UiState.selectionEndPointX = mouseX;
                 UiState.selectionEndPointY = mouseY;
 
-                UiState.selectionEndPointSlotIndex = screen.getSlotUnderMouse().getContainerSlot();
+                UiState.selectionEndPointSlotIndex = getRealSlotIndex(screen, screen.getSlotUnderMouse());
 //                UiState.selectionModeActive = false;
 
 //                screen.getMenu().getGridWidth()

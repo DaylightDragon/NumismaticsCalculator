@@ -1,6 +1,7 @@
 package org.daylight.coinscalculator.events;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -44,6 +45,12 @@ public class ScreenEvents {
             ModSettingsOverlay.getInstance().relinkListeners(event);
             ModSettingsOverlay.getInstance().updateOverlayPosition(event.getScreen());
         }
+    }
+
+    @SubscribeEvent
+    public void onScreenOpen(ScreenEvent.Opening event) {
+//        Screen newScreen = event.getScreen();
+        CalculatorOverlay.getInstance().onScreenChange(event.getScreen());
     }
 
     @SubscribeEvent
