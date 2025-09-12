@@ -360,6 +360,7 @@ public class CalculatorOverlay implements IOverlay {
         sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgNormal);
         sumModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonBgHovered);
         sumModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
+        sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgSelected); // since it's default
         sumModeBtn.get().setImagePosition(UIButton.ImagePosition.IMAGE_RIGHT_KINDA);
         sumModeBtn.get().setIcon(ModResources.SUM_ICON, 12, 12);
         sumModeBtn.get().setOutlineWidth(1);
