@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.daylight.coinscalculator.ModResources;
 import org.daylight.coinscalculator.UiState;
@@ -27,6 +28,9 @@ public interface IOverlay {
 //    Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(AbstractContainerScreen<?> screen);
 
     boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig);
+    boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig);
+    void onMouseRelease(double mouseX, double mouseY, int button, Screen screenOrig);
 
     void updateOverlayPosition(Screen screen);
+    void onKeyPressed(InputEvent.Key event);
 }

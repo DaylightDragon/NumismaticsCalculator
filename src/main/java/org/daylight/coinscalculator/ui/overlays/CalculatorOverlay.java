@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.ModColors;
@@ -908,6 +909,7 @@ public class CalculatorOverlay implements IOverlay {
         });
     }
 
+    @Override
     public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
         boolean result = false;
         if (shouldRenderOnScreen(screenOrig)) {
@@ -937,6 +939,7 @@ public class CalculatorOverlay implements IOverlay {
         return UiState.selectionContainerClass.equals(slot.container.getClass());
     }
 
+    @Override
     public boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig) {
         if (shouldRenderOnScreen(screenOrig)) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
@@ -961,6 +964,7 @@ public class CalculatorOverlay implements IOverlay {
         return false; // don't cancel
     }
 
+    @Override
     public void onMouseRelease(double mouseX, double mouseY, int button, Screen screenOrig) {
         if (shouldRenderOnScreen(screenOrig)) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
@@ -990,16 +994,17 @@ public class CalculatorOverlay implements IOverlay {
     }
 
     public void onCharTyped(char codePoint, int modifiers) {
-        if(conversionInput != null) conversionInput.getEditBox().charTyped(codePoint, modifiers);
+//        if(conversionInput != null) conversionInput.getEditBox().charTyped(codePoint, modifiers);
     }
 
-    public void onKeyPressed(int keyCode, int scanCode, int modifiers) {
-//        if(conversionInput != null) conversionInput.getEditBox().keyPressed(keyCode, scanCode, modifiers);
+    @Override
+    public void onKeyPressed(InputEvent.Key event) {
+        if(mainFloatingPanel != null) mainFloatingPanel.keyPressed(event);
     }
 
-    public void onMouseScrolled(double mouseX, double mouseY, double delta) {
-//        if(conversionInput != null) conversionInput.getEditBox().mouseScrolled(mouseX, mouseY, delta);
-    }
+//    public void onMouseScroll(double mouseX, double mouseY, double delta) {
+////        if(conversionInput != null) conversionInput.getEditBox().mouseScrolled(mouseX, mouseY, delta);
+//    }
 
     public void relinkListeners(ScreenEvent.Init.Post event) {
         if(event.getScreen() instanceof AbstractContainerScreen<?> abstractContainerScreen) {

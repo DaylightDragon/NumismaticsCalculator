@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinsCalculator;
 import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
 import org.daylight.coinscalculator.ui.overlays.GuiManagerOverlay;
+import org.daylight.coinscalculator.ui.overlays.IOverlay;
 import org.daylight.coinscalculator.ui.overlays.ModSettingsOverlay;
 import org.lwjgl.glfw.GLFW;
 
@@ -19,9 +20,9 @@ import java.util.Set;
 @Mod.EventBusSubscriber(modid = CoinsCalculator.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class InputEvents {
 
-    private static CalculatorOverlay calculatorOverlay = CalculatorOverlay.getInstance();
-    private static GuiManagerOverlay guiManagerOverlay = GuiManagerOverlay.getInstance();
-    private static ModSettingsOverlay modSettingsOverlay = ModSettingsOverlay.getInstance();
+    private static IOverlay calculatorOverlay = CalculatorOverlay.getInstance();
+    private static IOverlay guiManagerOverlay = GuiManagerOverlay.getInstance();
+    private static IOverlay modSettingsOverlay = ModSettingsOverlay.getInstance();
 
     private static boolean leftButtonDown = false;
     private static boolean rightButtonDown = false;
@@ -123,8 +124,8 @@ public class InputEvents {
 
     @SubscribeEvent
     public static void onKeyPressed(InputEvent.Key event) {
-        if (calculatorOverlay == null) return;
-        calculatorOverlay.onKeyPressed(event.getKey(), event.getScanCode(), event.getModifiers());
+        if(calculatorOverlay != null) calculatorOverlay.onKeyPressed(event); // event.getKey(), event.getScanCode(), event.getModifiers());
+        if(modSettingsOverlay != null) modSettingsOverlay.onKeyPressed(event);
     }
 
 //    @SubscribeEvent
@@ -134,9 +135,8 @@ public class InputEvents {
 //    }
 
     @SubscribeEvent
-    public static void onMouseScrolled(InputEvent.MouseScrollingEvent event) {
-        if (calculatorOverlay == null) return;
-        calculatorOverlay.onMouseScrolled(event.getScrollDelta(), event.getScrollDelta(), event.getScrollDelta());
+    public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
+//        if (calculatorOverlay != null) calculatorOverlay.onMouseScroll(event.getScrollDelta(), event.getScrollDelta(), event.getScrollDelta());
     }
 
     public static int getMouseX() {

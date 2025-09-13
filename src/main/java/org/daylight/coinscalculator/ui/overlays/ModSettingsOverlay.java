@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.daylight.coinscalculator.UiState;
@@ -122,12 +123,26 @@ public class ModSettingsOverlay implements IOverlay {
         rootPanel.relinkListeners(event);
     }
 
+    @Override
     public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
         boolean result = false;
         if (shouldRenderOnScreen(screenOrig)) {
             if (rootPanel != null) rootPanel.onClick(mouseX, mouseY);
         }
         return result;
+    }
+
+    @Override
+    public boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig) {
+        return false;
+    }
+
+    @Override
+    public void onMouseRelease(double mouseX, double mouseY, int button, Screen screenOrig) {}
+
+    @Override
+    public void onKeyPressed(InputEvent.Key event) {
+        if(rootPanel != null) rootPanel.keyPressed(event);
     }
 
     public void updateOverlayPosition(Screen screen) {

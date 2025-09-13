@@ -1,12 +1,15 @@
 package org.daylight.coinscalculator.ui.elements;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
 
@@ -75,14 +78,16 @@ public class UIEditBox extends UIElement {
         super.relinkListeners(event);
 //        System.out.println("Adding listener to editBox");
         if(event.getListenersList().contains(editBox)) return;
-        event.addListener(editBox);
+//        event.addListener(editBox); // temporary disabled!
         System.out.println("added listener to " + this);
     }
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        if(Minecraft.getInstance().screen == null) editBox.render(graphics, mouseX, mouseY, partialTick);
+//        if(Minecraft.getInstance().screen == null) {
+            editBox.render(graphics, mouseX, mouseY, partialTick);
+//        }
         // EditBox renders by itself
 //        System.out.println("Rendering " + this.getClass().getSimpleName() +
 //                " at x=" + x + ", y=" + y + ", width=" + width + ", height=" + height);
@@ -101,13 +106,13 @@ public class UIEditBox extends UIElement {
 //        return false;
 //    }
 
-    public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
-        return editBox.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    public boolean onCharTyped(char codePoint, int modifiers) {
-        return editBox.charTyped(codePoint, modifiers);
-    }
+//    public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
+//        return editBox.keyPressed(keyCode, scanCode, modifiers);
+//    }
+//
+//    public boolean onCharTyped(char codePoint, int modifiers) {
+//        return editBox.charTyped(codePoint, modifiers);
+//    }
 
     public EditBox getEditBox() {
         return editBox;
@@ -119,7 +124,44 @@ public class UIEditBox extends UIElement {
         if (isEnabled() && isMouseOver(mouseX, mouseY)) {
             editBox.setFocused(true);
             return true;
-        }
+        } else editBox.setFocused(false);
+
         return false;
+    }
+
+    public void keyPressed(InputEvent.Key event) {
+        if (!isEnabled()) return;
+        if (!editBox.isFocused()) return;
+
+        int key = event.getKey();
+        int scanCode = event.getScanCode();
+        int action = event.getAction();
+
+        if (action == InputConstants.PRESS || action == InputConstants.REPEAT) {
+            if (key == GLFW.GLFW_KEY_BACKSPACE) {
+                editBox.deleteChars(-1);
+                return;
+            }
+            if (key == GLFW.GLFW_KEY_DELETE) {
+                editBox.deleteChars(1);
+                return;
+            }
+            if (key == GLFW.GLFW_KEY_LEFT) {
+                editBox.moveCursor(-1);
+                return;
+            }
+            if (key == GLFW.GLFW_KEY_RIGHT) {
+                editBox.moveCursor(1);
+                return;
+            }
+        }
+
+        if (action == InputConstants.PRESS) {
+            String name = GLFW.glfwGetKeyName(key, scanCode);
+            if (name != null && !name.isEmpty()) {
+                // Тут можно ещё учесть shift для верхнего регистра
+                editBox.insertText(name);
+            }
+        }
     }
 }

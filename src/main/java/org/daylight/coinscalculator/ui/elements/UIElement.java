@@ -1,6 +1,7 @@
 package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -131,4 +132,6 @@ public abstract class UIElement {
     }
 
     public void relinkListeners(ScreenEvent.Init.Post event) {}
+
+    public void keyPressed(InputEvent.Key event) {}
 }

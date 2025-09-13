@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -108,6 +109,7 @@ public class GuiManagerOverlay implements IOverlay {
         rootPanel.relinkListeners(event);
     }
 
+    @Override
     public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
         if(!ConfigData.showControlPanel.get()) return false;
         boolean result = false;
@@ -116,6 +118,17 @@ public class GuiManagerOverlay implements IOverlay {
         }
         return result;
     }
+
+    @Override
+    public boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig) {
+        return false;
+    }
+
+    @Override
+    public void onMouseRelease(double mouseX, double mouseY, int button, Screen screenOrig) {}
+
+    @Override
+    public void onKeyPressed(InputEvent.Key event) {}
 
     public void updateOverlayPosition(Screen screen) {
         if(rootPanel == null) return;

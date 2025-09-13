@@ -1,6 +1,7 @@
 package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.daylight.coinscalculator.UiState;
 import org.daylight.coinscalculator.util.DrawingUtils;
@@ -112,6 +113,15 @@ public abstract class UIPanel extends UIElement {
         super.relinkListeners(event);
         for(UIElement child : children) {
             child.relinkListeners(event);
+        }
+    }
+
+    @Override
+    public void keyPressed(InputEvent.Key event) {
+        if(!isEnabled()) return;
+        super.keyPressed(event);
+        for(UIElement child : children) {
+            child.keyPressed(event);
         }
     }
 
