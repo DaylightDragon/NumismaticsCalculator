@@ -444,7 +444,7 @@ public class CalculatorOverlay implements IOverlay {
 //            System.out.println("Selecting...");
             UiState.selectionModeActive = !UiState.selectionModeActive;
             if(!UiState.selectionModeActive) {
-                clearAllSelectionCoords();
+                clearAllSelectionData();
             }
         }) {
             @Override
@@ -617,7 +617,7 @@ public class CalculatorOverlay implements IOverlay {
         return true;
     }
 
-    private void clearAllSelectionCoords() {
+    private void clearAllSelectionData() {
         UiState.selectionStartPointX = -1;
         UiState.selectionStartPointY = -1;
 
@@ -626,9 +626,12 @@ public class CalculatorOverlay implements IOverlay {
 
         UiState.selectionStartPointSlotIndex = -1;
         UiState.selectionEndPointSlotIndex = -1;
+
+        UiState.selectionContainerClass = null;
     }
 
     private void updateSelectedValue(AbstractContainerScreen<?> screen) {
+        if(screen.getMenu().slots.isEmpty()) return;
 //        System.out.println("updateSelectedValue" + screen.getClass().getSimpleName());
         UiState.selectionSlotValuesCoins.clear();
         List<Integer> slots = getSlotIndexesInSelection(screen, UiState.selectionStartPointSlotIndex, UiState.selectionEndPointSlotIndex, UiState.selectionContainerClass);
@@ -692,7 +695,7 @@ public class CalculatorOverlay implements IOverlay {
 
     public void onScreenChange(Screen screen) {
 //        System.out.println("clearing");
-        clearAllSelectionCoords();
+        clearAllSelectionData();
         UiState.selectionRendered = false;
 //        if(!(screen instanceof AbstractContainerScreen<?>)) UiState.selectionModeActive = false;
     }
@@ -967,7 +970,7 @@ public class CalculatorOverlay implements IOverlay {
                 if(!isSlotValidForSelection(slot) || !isSelectionSlotTheSameType(slot)) {
                     updateSelectedValue(screen);
                     displaySelectedValue();
-                    clearAllSelectionCoords();
+                    clearAllSelectionData();
                     return;
                 }
 
@@ -981,7 +984,7 @@ public class CalculatorOverlay implements IOverlay {
                 updateSelectedValue(screen);
                 displaySelectedValue();
 
-                clearAllSelectionCoords();
+                clearAllSelectionData();
             }
         }
     }

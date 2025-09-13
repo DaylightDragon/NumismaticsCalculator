@@ -74,7 +74,9 @@ public class UIEditBox extends UIElement {
     public void relinkListeners(ScreenEvent.Init.Post event) {
         super.relinkListeners(event);
 //        System.out.println("Adding listener to editBox");
+        if(event.getListenersList().contains(editBox)) return;
         event.addListener(editBox);
+        System.out.println("added listener to " + this);
     }
 
     @Override
@@ -92,12 +94,12 @@ public class UIEditBox extends UIElement {
         return this;
     }
 
-    @Override
-    public boolean onClick(double mouseX, double mouseY) {
-//        System.out.println("UIEditBox onClick");
-//        return editBox.mouseClicked(mouseX, mouseY, 0); // 0 = left click
-        return false;
-    }
+//    @Override
+//    public boolean onClick(double mouseX, double mouseY) {
+////        System.out.println("UIEditBox onClick");
+////        return editBox.mouseClicked(mouseX, mouseY, 0); // 0 = left click
+//        return false;
+//    }
 
     public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
         return editBox.keyPressed(keyCode, scanCode, modifiers);
@@ -109,5 +111,15 @@ public class UIEditBox extends UIElement {
 
     public EditBox getEditBox() {
         return editBox;
+    }
+
+    @Override
+    public boolean onClick(double mouseX, double mouseY) {
+        super.onClick(mouseX, mouseY);
+        if (isEnabled() && isMouseOver(mouseX, mouseY)) {
+            editBox.setFocused(true);
+            return true;
+        }
+        return false;
     }
 }
