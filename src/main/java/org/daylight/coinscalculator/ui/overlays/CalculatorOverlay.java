@@ -482,7 +482,7 @@ public class CalculatorOverlay implements IOverlay {
         page2VLayout = new UIVerticalLayout();
         page2VLayout.setId("Page 2");
         page2VLayout.setSpacing(8);
-        page2VLayout.addElement(new UIText("Convert ¤ to coins", font, fontScaleTitle, ModColors.uiPrimaryText));
+        page2VLayout.addElement(new UIText("Convert ¤ to Coins", font, fontScaleTitle, ModColors.uiPrimaryText));
 
         conversionInput = new UIEditBox(font, 80, 20).allowOnlyNumeric();
 //        event.addListener(conversionInput.getEditBox()); // commented
@@ -500,7 +500,7 @@ public class CalculatorOverlay implements IOverlay {
         };
         page2VLayout.addElement(useAvailable);
 
-        conversionOutputMain.addElement(new UIText("Value in coins:", font, fontScaleTitle, ModColors.uiPrimaryText));
+        conversionOutputMain.addElement(new UIText("Value in Coins:", font, fontScaleTitle, ModColors.uiPrimaryText));
 
         conversionOutputMain.addElement(createConversionLine("sun", "Sun", () -> UiState.conversionSunMain, font));
         conversionOutputMain.addElement(createConversionLine("crown", "Crown", () -> UiState.conversionCrownMain, font));

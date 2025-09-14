@@ -10,6 +10,11 @@ With the calculator you won't need to struggle with your system calculator, sinc
 
 # Usage And Functionality
 
+Video Showcase:
+
+[![Video Showcase](images/videoShowcaseThumbnail.png)](https://www.youtube.com/watch?v=ALnLrNNucFA)
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ALnLrNNucFA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ## Total Slot Value
 
 ![Total Slot Value](images/tooltip.png)
