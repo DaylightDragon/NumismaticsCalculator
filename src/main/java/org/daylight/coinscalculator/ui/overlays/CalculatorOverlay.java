@@ -326,8 +326,8 @@ public class CalculatorOverlay implements IOverlay {
         modesPanel.get().setBackgroundVisible(true);
         modesPanel.get().setBackgroundColor(ModColors.modeSwitchPanelBg);
         modesPanel.get().setOutlineColor(ModColors.modeSwitchPanelOutline);
-        modesPanel.get().setOutlineWidth(2);
-        modesPanel.get().setPadding(4);
+        modesPanel.get().setOutlineWidth(1);
+        modesPanel.get().setPadding(6);
         modesPanel.get().setSpacing(8);
 //        modesPanel.get().setMinWidth(100);
         modesPanel.get().setCrossAxisExcludedFromLayout(true);
@@ -345,10 +345,12 @@ public class CalculatorOverlay implements IOverlay {
                 if(!result) return false;
 
                 setBgColorNormal(ModColors.modeSwitchButtonBgSelected);
+                setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
                 setOutlineWidth(1);
                 if(conversionModeBtn.get() != null) {
-                    conversionModeBtn.get().setOutlineWidth(0);
+//                    conversionModeBtn.get().setOutlineWidth(0);
                     conversionModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgNormal);
+                    conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineNormal);
                 }
 
                 if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(0);
@@ -375,10 +377,12 @@ public class CalculatorOverlay implements IOverlay {
 
 
                 setBgColorNormal(ModColors.modeSwitchButtonBgSelected);
+                setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
                 setOutlineWidth(1);
                 if(sumModeBtn.get() != null) {
-                    sumModeBtn.get().setOutlineWidth(0);
+//                    sumModeBtn.get().setOutlineWidth(0);
                     sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgNormal);
+                    sumModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineNormal);
                 }
 
                 if(pagesStackPanel != null) pagesStackPanel.setActiveIndex(1);
@@ -393,6 +397,8 @@ public class CalculatorOverlay implements IOverlay {
         conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
         conversionModeBtn.get().setImagePosition(UIButton.ImagePosition.IMAGE_RIGHT_KINDA);
         conversionModeBtn.get().setIcon(ModResources.WEIGHING_MACHINE_ICON, 12, 12);
+        conversionModeBtn.get().setOutlineWidth(1);
+        conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineNormal);
         modesPanel.get().addElement(conversionModeBtn.get());
 
 //        mainFloatingPanel.addElement(modeSwitchBtn);

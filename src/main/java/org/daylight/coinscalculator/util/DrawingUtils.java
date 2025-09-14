@@ -13,7 +13,7 @@ public class DrawingUtils {
             int right = maxX - outlineWidth;
             int bottom = maxY - outlineWidth;
             if(left < right && top < bottom) {
-                g.fill(left, top, maxX, maxY, pColor);
+                g.fill(left, top, right, bottom, pColor);
             }
 
             int x1 = minX + outlineWidth;

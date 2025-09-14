@@ -93,7 +93,11 @@ public class ModSettingsOverlay implements IOverlay {
         rootPanel = new UIVerticalLayout();
 
         UIVerticalLayout verticalLayout = new UIVerticalLayout();
-        verticalLayout.setPadding(0);
+        verticalLayout.setPadding(8);
+        verticalLayout.setBackgroundVisible(true);
+        verticalLayout.setBackgroundColor(0x884a423d);
+        verticalLayout.setOutlineColor(0xBBab8974);
+        verticalLayout.setOutlineWidth(1);
 
         verticalLayout.addElement(createOptionRow("Require \"Shift\" For Total Value Tooltip", ConfigData.requireShiftForTotalTooltip));
         verticalLayout.addElement(createOptionRow("Show Control Panel Buttons", ConfigData.showControlPanel));
