@@ -34,7 +34,10 @@ With those you can always toggle the `Main Overlay` with a key right from your i
 
 Additionally you can open the mod's `Config Screen` with a key too.  
   
-The Main Overlay contains **TWO TABS** visible on the top.  
+The Main Overlay contains **two tabs** visible on the top:  
+
+![Tabs](images/postitionAnimation.gif)
+They even have a smooth position animation! (and it's configurable)
 
 ## Summation Tab
 
