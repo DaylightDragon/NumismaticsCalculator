@@ -489,7 +489,7 @@ public class CalculatorOverlay implements IOverlay {
         conversionInput.setOnValueChange(this::onConversionTextUpdate);
         page2VLayout.addElement(conversionInput);
 
-        UiCheckBox useAvailable = new UiCheckBox("Only available", font, 1.0f, () -> {}) {
+        UiCheckBox useAvailable = new UiCheckBox("Only Available", font, 1.0f, () -> {}) {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
                 boolean result = super.onClick(mouseX, mouseY);

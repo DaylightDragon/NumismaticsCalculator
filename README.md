@@ -1,16 +1,16 @@
 # Numismatics Calculator
 
-## What This Does
+# What This Does
 
 This is a client-side forge mod that adds calculator functionality to coin items from the mod "Create: Numismatics" by IThundxr.  
 This is useful because those coins have values like `1`, `8`, `16`, `64`, `512` and those are VERY hard to calculate for random sums like "75" if you have those coins as the main economy on an SMP and you trade everything for those.  
 With the calculator you won't need to struggle with your system calculator, since this one is built into your game and has a lot of functionality specifically for this purpose.  
 
-## Usage And Functionality
+# Usage And Functionality
 
 (Some images may be a bit outdated)
 
-### Control Panel
+## Control Panel
 
 When opening your inventory, you'll see the mod's **Control Panel**.  
 
@@ -26,14 +26,24 @@ Additionally you can open the mod's `Config Screen` with a key too.
   
 The Main Overlay contains **two tabs** visible on the top.  
 
-### Summation Tab
+## Total Slot Value
+
+![Total Slot Value](images/tooltip.png)
+
+By holding down `SHIFT` (can be configured) you can see the total value of every single slot with a coin.  
+Remember, that you can check if you have the right sum available to pay someone with the `Selection` feature from the `Summation Tab` in the `Main Overlay`.
+
+## Summation Tab
 
 ![Summation Tab](images/sumMode.png)
 
 You have a text displaying your total coins **in the inventory**, and coins in the selected area.  
 You can toggle selection mode with the "Select button".  
 
-### Conversion Tab
+It even **works in CHESTS** and all other containers:
+![Summation Tab](images/chestSum.png)
+
+## Conversion Tab
 
 ![Conversion Tab](images/conversionModeDefault.png)
 
@@ -45,30 +55,29 @@ And there is a second mode accessible with the `Only available` checkbox:
 
 This mode will only work with coins in your inventory and tell you if you don't have enough.
 
-### Total Slot Value
+"Only Available" mode will take into account the cases when you **have to OVERPAY or you DON'T HAVE ENOUGH**:
 
-![Total Slot Value](images/tooltip.png)
+![Overpaying](images/overpaing.png)
 
-By holding down `SHIFT` (can be configured) you can see the total value of every single slot with a coin.  
-Remember, that you can check if you have the right sum available to pay someone with the `Selection` feature from the `Summation Tab` in the `Main Overlay`.  
+![Missing](images/missing.png)
 
-### Mod Config Screen
+## Mod Config Screen
 
 ![Mod Config Screen](images/config.png)
 
 By pressing the second button in your `Control Panel` or just by pressing a configured keybind, you can open the mod's `Config Screen`. Here you can toggle features on and off.  
 
-## Notes
+# Notes
 
 Current known bugs:
 
 - None! :D
 
-## Supported Versions
+# Supported Versions
 
 - Forge 1.20.1
 
-## Building From Source Code
+# Building From Source Code
 
 - Launch your installed [Intellij IDEA](https://www.jetbrains.com/idea/) (Community Edition will work just fine)  
 - File -> New -> Project from Version Control -> paste `https://github.com/DaylightDragon/NumismaticsCalculator.git` in there, or just clone the repository in any other way  
