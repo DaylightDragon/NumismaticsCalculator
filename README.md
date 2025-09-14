@@ -2,13 +2,21 @@
 
 # What This Does
 
-This is a client-side forge mod that adds calculator functionality to coin items from the mod "Create: Numismatics" by IThundxr.  
+This is a client-side forge mod that adds calculator functionality to coin items from the mod `"Create: Numismatics" by IThundxr`.  
+
 This is useful because those coins have values like `1`, `8`, `16`, `64`, `512` and those are VERY hard to calculate for random sums like "75" if you have those coins as the main economy on an SMP and you trade everything for those.  
+
 With the calculator you won't need to struggle with your system calculator, since this one is built into your game and has a lot of functionality specifically for this purpose.  
 
 # Usage And Functionality
 
-(Some images may be a bit outdated)
+## Total Slot Value
+
+![Total Slot Value](images/tooltip.png)
+
+By holding down `SHIFT` (can be configured) you can see the total value of every single slot with a coin.  
+
+Remember, that you can check if you have the right sum available to pay someone with the `Selection` feature from the `Summation Tab` in the `Main Overlay`.  
 
 ## Control Panel
 
@@ -17,27 +25,23 @@ When opening your inventory, you'll see the mod's **Control Panel**.
 ![Control Panel](images/controlPanel.png)
 
 It lets you toggle the visibility of the **Main Overlay** and open mod's settings  
+
 Both actions are available as keybindings too:
 
 ![Keybindings](images/keybindings.png)
 
 With those you can always toggle the `Main Overlay` with a key right from your inventory, even without the `Control Panel` visible.  
+
 Additionally you can open the mod's `Config Screen` with a key too.  
   
-The Main Overlay contains **two tabs** visible on the top.  
-
-## Total Slot Value
-
-![Total Slot Value](images/tooltip.png)
-
-By holding down `SHIFT` (can be configured) you can see the total value of every single slot with a coin.  
-Remember, that you can check if you have the right sum available to pay someone with the `Selection` feature from the `Summation Tab` in the `Main Overlay`.
+The Main Overlay contains **TWO TABS** visible on the top.  
 
 ## Summation Tab
 
 ![Summation Tab](images/sumMode.png)
 
-You have a text displaying your total coins **in the inventory**, and coins in the selected area.  
+In the first tab you have a text displaying your total coins **in the inventory**, and coins in the selected area.  
+
 You can toggle selection mode with the "Select button".  
 
 It even **works in CHESTS** and all other containers:
@@ -47,8 +51,10 @@ It even **works in CHESTS** and all other containers:
 
 ![Conversion Tab](images/conversionModeDefault.png)
 
-Here you can enter an amount of `¤` to actual coins. By default, it'll tell you a general coin composition as if you had infinite coins.  
+In the second tab you can enter an amount of `¤` to actual coins. By default, it'll tell you a general coin composition as if you had infinite coins.
+
 Since the original mod has a coin type for `1 ¤`, there is never expected any sum in return.  
+
 And there is a second mode accessible with the `Only available` checkbox:
 
 ![Only available Mode](images/conversionModeAvailable.png)
