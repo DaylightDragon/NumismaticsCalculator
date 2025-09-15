@@ -1,7 +1,6 @@
 package org.daylight.coinscalculator.ui.elements;
 
 import net.minecraft.client.gui.Font;
-import org.daylight.coinscalculator.ModColors;
 import org.daylight.coinscalculator.ModResources;
 
 public class UiCheckBox extends UIButton {

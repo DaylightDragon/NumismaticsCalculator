@@ -1,6 +1,5 @@
 package org.daylight.coinscalculator.ui.elements;
 
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 

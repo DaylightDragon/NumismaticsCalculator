@@ -3,6 +3,14 @@ plugins {
     id 'maven-publish'
 }
 
+gradle.beforeProject { proj ->
+    rootProject.properties.each { k, v ->
+        if (!proj.hasProperty(k)) {
+            proj.ext.set(k, v)
+        }
+    }
+}
+
 allprojects {
     group = property("mod_group_id")
     version = property("mod_version")
