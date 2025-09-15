@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'dev.architectury.loom' version '1.7-SNAPSHOT'
+    id 'architectury-plugin' version '3.4-SNAPSHOT'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+architectury {
+    common("common")
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${property("minecraft_version")}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${property("minecraft_version")}:${property("mapping_version")}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:0.15.3"
+    implementation(project(path: ":common", configuration: "namedElements"))
+    // fabric api если нужен:
+    // modImplementation "net.fabricmc.fabric-api:fabric-api:<версия>"
+}
+
+loom {
+    runs {
+        client {
+            client()
+            ideConfigGenerated true
+            runDir "run"
+        }
+        server {
+            server()
+            ideConfigGenerated true
+            runDir "run"
+        }
+    }
+}
