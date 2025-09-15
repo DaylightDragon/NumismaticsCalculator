@@ -1,11 +1,7 @@
 package org.daylight.coinscalculator.ui.elements;
 
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 import org.daylight.coinscalculator.ModColors;
-import org.daylight.coinscalculator.replacements.ForgeGuiGraphics;
-import org.daylight.coinscalculator.util.DrawingUtils;
+import org.daylight.coinscalculator.replacements.*;
 import org.jetbrains.annotations.NotNull;
 
 public class UIButton extends UIElement {
@@ -13,7 +9,7 @@ public class UIButton extends UIElement {
         IMAGE_LEFT, IMAGE_RIGHT_KINDA
     }
 
-    private final Font font;
+    private final IFont font;
     private final float fontScale;
     private final Runnable onClick;
 
@@ -24,7 +20,7 @@ public class UIButton extends UIElement {
     private int textColor = 0xFFFFFFFF;
 
     protected String label;
-    private ResourceLocation icon;
+    private IResourceLocation icon;
     private int iconWidth;
     private int iconHeight;
     private ImagePosition imagePosition = ImagePosition.IMAGE_LEFT;
@@ -33,7 +29,7 @@ public class UIButton extends UIElement {
     private int paddingX = 5;    // горизонтальные отступы
     private int paddingY = 6;    // вертикальные отступы
 
-    public UIButton(String label, Font font, float fontScale, Runnable onClick) {
+    public UIButton(String label, IFont font, float fontScale, Runnable onClick) {
         this.label = label;
         this.font = font;
         this.fontScale = fontScale;
@@ -46,7 +42,7 @@ public class UIButton extends UIElement {
         recalcSize();
     }
 
-    public void setIcon(ResourceLocation icon, int width, int height) {
+    public void setIcon(IResourceLocation icon, int width, int height) {
         this.icon = icon;
         this.iconWidth = width;
         this.iconHeight = height;
@@ -110,21 +106,21 @@ public class UIButton extends UIElement {
 
     @Override
     public int getPreferredHeight() {
-        int textHeight = (int) (font.lineHeight * fontScale);
+        int textHeight = (int) (font.lineHeight() * fontScale);
         int contentHeight = Math.max(textHeight, icon != null ? iconHeight : 0);
         return clampHeight(contentHeight + paddingY * 2);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull IGuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (!shouldBeRendered()) return;
 
         int bgColor = isMouseOver(mouseX, mouseY) ? bgColorHover : bgColorNormal;
-        DrawingUtils.fill(graphics, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
+        SingletonInstances.DRAWING_UTILS.fill(graphics, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
 //        graphics.fill(x, y, x + width, y + height, bgColor);
 
         int contentX = x + paddingX;
-        int contentY = y + (height - (icon != null ? Math.max(iconHeight, (int) (font.lineHeight * fontScale)) : (int) (font.lineHeight * fontScale))) / 2;
+        int contentY = y + (height - (icon != null ? Math.max(iconHeight, (int) (font.lineHeight() * fontScale)) : (int) (font.lineHeight() * fontScale))) / 2;
 
         // Рендерим иконку + текст в зависимости от imagePosition
         if (icon != null) {
@@ -135,7 +131,7 @@ public class UIButton extends UIElement {
         }
 
         if (label != null && !label.isEmpty()) {
-            DrawingUtils.drawScaledTextStatic(new ForgeGuiGraphics(graphics), label, contentX, y + (height - font.lineHeight * fontScale) / 2, textColor, fontScale, true);
+            SingletonInstances.DRAWING_UTILS.drawScaledText(graphics, label, contentX, y + (height - font.lineHeight() * fontScale) / 2, textColor, fontScale, true);
             if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT_KINDA) {
                 contentX += (int) (font.width(label) * fontScale) + spacing;
                 graphics.blit(icon, contentX, contentY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);

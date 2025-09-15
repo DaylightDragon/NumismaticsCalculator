@@ -2,7 +2,7 @@ package org.daylight.coinscalculator.replacements;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ITexture {
+public interface IResourceLocation {
     @NotNull String getPath();
 }
 

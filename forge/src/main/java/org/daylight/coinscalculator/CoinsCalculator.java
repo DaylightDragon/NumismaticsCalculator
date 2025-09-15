@@ -16,7 +16,8 @@ import org.daylight.coinscalculator.config.ConfigHandler;
 import org.daylight.coinscalculator.events.GUIEvents;
 import org.daylight.coinscalculator.events.ScreenEvents;
 import org.daylight.coinscalculator.events.TooltipEvents;
-import org.daylight.coinscalculator.replacements.ITexture;
+import org.daylight.coinscalculator.replacements.*;
+import org.daylight.coinscalculator.util.DrawingUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -30,6 +31,7 @@ public class CoinsCalculator
     public CoinsCalculator(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
+        registerCommonSingletonInstances();
 //        ConfigHandler2.load();
         context.registerConfig(ModConfig.Type.CLIENT, ConfigHandler.SPEC);
 
@@ -46,14 +48,6 @@ public class CoinsCalculator
 //        context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
 //        context.getModEventBus().addListener(GUIEvents::renderOverlay); // bad
         context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
-
-        ITexture texture = new ITexture() {
-            @Override
-            public @NotNull String getPath() {
-                return "";
-            }
-        };
-//        System.out.println("modeSwitchButtonBgSelected: " + ModColors.modeSwitchButtonBgSelected);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -75,5 +69,13 @@ public class CoinsCalculator
         public static void onClientSetup(FMLClientSetupEvent event) {
 
         }
+    }
+
+    private void registerCommonSingletonInstances() {
+        SingletonInstances.DRAWING_UTILS = new DrawingUtils();
+        SingletonInstances.RENDER_SYSTEM = new ForgeRenderSystem();
+        SingletonInstances.MOD_RESOURCES = new ForgeResources();
+        SingletonInstances.EDITBOXES = new ForgeEditBoxFactory();
+        SingletonInstances.COMPONENTS = new ForgeComponentFactory();
     }
 }

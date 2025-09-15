@@ -1,20 +1,17 @@
 package org.daylight.coinscalculator.ui.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import org.daylight.coinscalculator.replacements.ForgeGuiGraphics;
-import org.daylight.coinscalculator.util.DrawingUtils;
+import org.daylight.coinscalculator.replacements.IFont;
+import org.daylight.coinscalculator.replacements.IGuiGraphics;
+import org.daylight.coinscalculator.replacements.SingletonInstances;
 import org.jetbrains.annotations.NotNull;
 
 public class UIText extends UIElement {
     private String text;
-    private final Font font;
+    private final IFont font;
     private float scale;
     private int color;
 
-    public UIText(String text, Font font, float scale, int color) {
+    public UIText(String text, IFont font, float scale, int color) {
         this.text = text;
         this.font = font;
         this.scale = scale;
@@ -37,7 +34,7 @@ public class UIText extends UIElement {
     @Override
     public int getPreferredHeight() {
 //        System.out.println(getId() + " getPreferredHeight: " + font.lineHeight);
-        return clampHeight((int) (font.lineHeight)); //  * scale
+        return clampHeight((int) (font.lineHeight())); //  * scale
     }
 
     @Override
@@ -57,11 +54,11 @@ public class UIText extends UIElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull IGuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         if(!shouldBeRendered()) return;
 //        graphics.drawString(font, text, x, y, 0xFFFFFF);
-        DrawingUtils.drawScaledTextStatic(new ForgeGuiGraphics(graphics), text, x, y, color, scale, true);
+        SingletonInstances.DRAWING_UTILS.drawScaledText(graphics, text, x, y, color, scale, true);
     }
 
     @Override

@@ -1,0 +1,29 @@
+package org.daylight.coinscalculator.replacements;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
+
+public interface IEditBox {
+    void setFilter(@NotNull java.util.function.Predicate<String> filter);
+    void setX(int x);
+    void setY(int y);
+    void setValue(@NotNull String value);
+    boolean isFocused();
+    void setFocused(boolean focused);
+    void insertText(@NotNull String text);
+
+    void setWidth(int width);
+
+    void setHeight(int height);
+
+    void setVisible(boolean finalValue);
+
+    void setResponder(Consumer<String> onValueChange);
+
+    void deleteChars(int i);
+
+    void moveCursor(int i);
+
+    void render(@NotNull IGuiGraphics graphics, int mouseX, int mouseY, float partialTick);
+}
