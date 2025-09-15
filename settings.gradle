@@ -6,9 +6,18 @@ pluginManagement {
             url = 'https://maven.minecraftforge.net/'
         }
         maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.architectury.dev/' }
     }
 }
 
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }
+
+rootProject.name = "numismatics-calculator"
+include 'common', 'forge'
+project(':common').projectDir = file('common')
+project(':forge').projectDir = file('forge')
+//include 'fabric'
+
