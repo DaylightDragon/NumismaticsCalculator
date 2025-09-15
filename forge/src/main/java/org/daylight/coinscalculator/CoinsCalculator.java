@@ -16,6 +16,8 @@ import org.daylight.coinscalculator.config.ConfigHandler;
 import org.daylight.coinscalculator.events.GUIEvents;
 import org.daylight.coinscalculator.events.ScreenEvents;
 import org.daylight.coinscalculator.events.TooltipEvents;
+import org.daylight.coinscalculator.replacements.ITexture;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -44,6 +46,14 @@ public class CoinsCalculator
 //        context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
 //        context.getModEventBus().addListener(GUIEvents::renderOverlay); // bad
         context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
+
+        ITexture texture = new ITexture() {
+            @Override
+            public @NotNull String getPath() {
+                return "";
+            }
+        };
+//        System.out.println("modeSwitchButtonBgSelected: " + ModColors.modeSwitchButtonBgSelected);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

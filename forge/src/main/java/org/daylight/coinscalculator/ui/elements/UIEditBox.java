@@ -78,7 +78,7 @@ public class UIEditBox extends UIElement {
 //        System.out.println("Adding listener to editBox");
         if(event.getListenersList().contains(editBox)) return;
 //        event.addListener(editBox); // temporary disabled!
-        System.out.println("added listener to " + this);
+//        System.out.println("added listener to " + this);
     }
 
     @Override
