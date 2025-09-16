@@ -8,9 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import org.daylight.coinscalculator.CoinValues;
-import org.daylight.coinscalculator.CoinsCalculator;
+import org.daylight.coinscalculator.replacements.ForgeCoinValues;
 import org.daylight.coinscalculator.config.ConfigData;
 
 import java.util.List;
@@ -26,7 +24,7 @@ public class TooltipEvents {
     public static void onTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
 
-        Integer value = CoinValues.ITEM_TO_VALUE.get(stack.getItem());
+        Integer value = ForgeCoinValues.ITEM_TO_VALUE.get(stack.getItem());
         if (value != null && value > 0) {
             if(!Screen.hasShiftDown() && ConfigData.requireShiftForTotalTooltip.get()) {
                 event.getToolTip().add(holdShiftHintComponent);

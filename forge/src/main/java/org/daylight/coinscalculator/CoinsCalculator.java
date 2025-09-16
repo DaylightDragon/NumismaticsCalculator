@@ -17,6 +17,9 @@ import org.daylight.coinscalculator.events.GUIEvents;
 import org.daylight.coinscalculator.events.ScreenEvents;
 import org.daylight.coinscalculator.events.TooltipEvents;
 import org.daylight.coinscalculator.replacements.*;
+import org.daylight.coinscalculator.ui.overlays.ForgeCalculatorOverlay;
+import org.daylight.coinscalculator.ui.overlays.ForgeGuiManagerOverlay;
+import org.daylight.coinscalculator.ui.overlays.ForgeModSettingsOverlay;
 import org.daylight.coinscalculator.util.DrawingUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -77,5 +80,12 @@ public class CoinsCalculator
         SingletonInstances.MOD_RESOURCES = new ForgeResources();
         SingletonInstances.EDITBOXES = new ForgeEditBoxFactory();
         SingletonInstances.COMPONENTS = new ForgeComponentFactory();
+        SingletonInstances.COIN_VALUES = new ForgeCoinValues();
+        SingletonInstances.MINECRAFT_UTILS = new ForgeMinecraftUtilities();
+        SingletonInstances.INPUT_UTILS = new ForgeInputUtils();
+
+        SingletonInstances.CALCULATOR_OVERLAY = new ForgeCalculatorOverlay();
+        SingletonInstances.GUI_MANAGER_OVERLAY = new ForgeGuiManagerOverlay();
+        SingletonInstances.MOD_SETTINGS_OVERLAY = new ForgeModSettingsOverlay();
     }
 }

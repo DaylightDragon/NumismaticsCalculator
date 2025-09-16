@@ -3,7 +3,6 @@ package org.daylight.coinscalculator.replacements;
 import net.minecraft.client.gui.Font;
 
 public class ForgeFont implements IFont {
-
     private final Font delegate;
 
     public ForgeFont(Font delegate) {

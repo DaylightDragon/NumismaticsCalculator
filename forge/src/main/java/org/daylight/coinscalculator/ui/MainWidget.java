@@ -3,17 +3,16 @@ package org.daylight.coinscalculator.ui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import org.daylight.coinscalculator.CoinValues;
+import org.daylight.coinscalculator.replacements.ForgeCoinValues;
 import org.joml.Matrix4f;
 
 public class MainWidget {
     public static void drawWidget(Minecraft mc, RenderGuiOverlayEvent.Post event, int x, int y) {
         ItemStack stack = mc.player.getMainHandItem();
-        int value = CoinValues.ITEM_TO_VALUE.getOrDefault(stack.getItem(), 0) * stack.getCount();
+        int value = ForgeCoinValues.ITEM_TO_VALUE.getOrDefault(stack.getItem(), 0) * stack.getCount();
 
         String text = value + "¤";
 

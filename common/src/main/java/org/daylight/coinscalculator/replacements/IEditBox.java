@@ -26,4 +26,6 @@ public interface IEditBox {
     void moveCursor(int i);
 
     void render(@NotNull IGuiGraphics graphics, int mouseX, int mouseY, float partialTick);
+
+    String getValue();
 }

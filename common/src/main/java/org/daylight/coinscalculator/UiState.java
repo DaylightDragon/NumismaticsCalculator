@@ -1,7 +1,5 @@
 package org.daylight.coinscalculator;
 
-import net.minecraft.world.Container;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +19,7 @@ public class UiState {
     public static double selectionEndPointX = -1;
     public static double selectionEndPointY = -1;
     public static int selectionEndPointSlotIndex = -1;
-    public static Class<? extends Container> selectionContainerClass = null;
+    public static Class<?> selectionContainerClass = null;
     public static int conversionValue = 0;
     public static boolean conversionModeUseAvailable = false;
     public static int conversionSunMain = 0;

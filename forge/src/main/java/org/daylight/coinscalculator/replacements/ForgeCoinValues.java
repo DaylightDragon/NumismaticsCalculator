@@ -1,10 +1,9 @@
-package org.daylight.coinscalculator;
+package org.daylight.coinscalculator.replacements;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -14,22 +13,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.daylight.coinscalculator.UiState;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class CoinValues {
-    public enum CoinTypes {
-        SPUR,
-        BEVEL,
-        SPROCKET,
-        COG,
-        CROWN,
-        SUN
-    }
-
+public class ForgeCoinValues implements ICoinValues {
     public static final Map<Item, Integer> ITEM_TO_VALUE = new Object2IntOpenHashMap<>();
     public static final Map<Integer, ResourceLocation> VALUE_TO_RESOURCE_LOCATION = new Int2ObjectOpenHashMap<>();
     public static final Map<CoinTypes, Integer> TYPE_TO_VALUE = new HashMap<>();
@@ -38,7 +29,7 @@ public class CoinValues {
     public static final Map<CoinTypes, Consumer<Integer>> TYPE_TO_SET_RETURN = new HashMap<>(); // ask ai about map impl later
     public static final Map<String, TextureAtlasSprite> NAME_TO_TEXTURE_ATLAS_SPRITE = new HashMap<>();
 
-    static {
+    public static void init() {
         for (ResourceLocation id : List.of(
                 ResourceLocation.parse("numismatics:spur"),
                 ResourceLocation.parse("numismatics:bevel"),
@@ -120,5 +111,45 @@ public class CoinValues {
         }
 
         return getMissingNo();
+    }
+
+    @Override
+    public ITextureAtlasSprite getAtlasSpriteByName(String name) {
+        return new ForgeTextureAtlasSprite(NAME_TO_TEXTURE_ATLAS_SPRITE.getOrDefault(name, getMissingNo()));
+    }
+
+    @Override
+    public Consumer<Integer> getReturnCoinSetter(CoinTypes type) {
+        return TYPE_TO_SET_RETURN.get(type);
+    }
+
+    @Override
+    public Consumer<Integer> getMainCoinSetter(CoinTypes type) {
+        return TYPE_TO_SET_MAIN.get(type);
+    }
+
+    @Override
+    public CoinTypes getCoinTypeByValue(int value) {
+        return VALUE_TO_COIN_TYPE.get(value);
+    }
+
+    @Override
+    public Integer getCoinValueByItem(IItem item) {
+        if(!(item instanceof ForgeItem forgeItem)) throw new IllegalArgumentException();
+        return ITEM_TO_VALUE.getOrDefault(forgeItem.getDelegate(), 0);
+    }
+
+    @Override
+    public void resetAllMainCoins() {
+        for(Consumer<Integer> consumer : TYPE_TO_SET_RETURN.values()) {
+            consumer.accept(0);
+        }
+    }
+
+    @Override
+    public void resetAllReturnCoins() {
+        for(Consumer<Integer> consumer : TYPE_TO_SET_RETURN.values()) {
+            consumer.accept(0);
+        }
     }
 }

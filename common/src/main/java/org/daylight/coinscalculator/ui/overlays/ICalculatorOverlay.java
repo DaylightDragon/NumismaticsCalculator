@@ -1,27 +1,8 @@
 package org.daylight.coinscalculator.ui.overlays;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.ScreenEvent;
-import org.daylight.coinscalculator.CoinValues;
 import org.daylight.coinscalculator.ModColors;
-import org.daylight.coinscalculator.ModResources;
 import org.daylight.coinscalculator.UiState;
-import org.daylight.coinscalculator.config.ConfigData;
-import org.daylight.coinscalculator.ui.SelectionRenderer;
+import org.daylight.coinscalculator.replacements.*;
 import org.daylight.coinscalculator.ui.UIUpdateRequests;
 import org.daylight.coinscalculator.ui.elements.*;
 import org.daylight.coinscalculator.util.CoinChangeLimited;
@@ -35,21 +16,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CalculatorOverlay implements IOverlay {
-    private static CalculatorOverlay instance;
-    public static CalculatorOverlay getInstance() {
-        if(instance == null) instance = new CalculatorOverlay();
-        return instance;
-    }
-
-    private UIPanel mainFloatingPanel;
+public abstract class ICalculatorOverlay implements IOverlay {
+    protected UIPanel mainFloatingPanel;
     UIVerticalLayout modesAndStackPanel;
-    private UIStackLayout pagesStackPanel;
+    protected UIStackLayout pagesStackPanel;
     final AtomicReference<UIAxisLayout> modesPanel = new AtomicReference<>();
-    private UIVerticalLayout page1VLayout;
-    private UIVerticalLayout page2VLayout;
-    private UIEditBox conversionInput;
-    private Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = new Quartet<>(0, 0, 0, 0);
+    protected UIVerticalLayout page1VLayout;
+    protected UIVerticalLayout page2VLayout;
+    protected UIEditBox conversionInput;
+    protected Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = new Quartet<>(0, 0, 0, 0);
 
     public Quartet<Integer, Integer, Integer, Integer> getLastOverlayPosition() {
         return lastOverlayPosition;
@@ -69,75 +44,33 @@ public class CalculatorOverlay implements IOverlay {
         return mainFloatingPanel != null;
     }
 
-    public static boolean shouldRenderOnScreen(Screen screen) {
-        return (screen instanceof AbstractContainerScreen) || (screen instanceof CreativeModeInventoryScreen) || (screen instanceof InventoryScreen);
-    }
+    public abstract boolean shouldRenderOnScreen(IScreen screen);
 
     //    @Override
-    public void render(@NotNull GuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
-        if(!UiState.coinCalculatorOverlayActive) return;
-        if (shouldRenderOnScreen(Minecraft.getInstance().screen)) {
-            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) Minecraft.getInstance().screen;
-            if (mainFloatingPanel == null) {
-                init(screen);
-            }
-            SelectionRenderer.renderSelection(guiGraphics, screen);
-            runPositionAnimation();
-
-            if (mainFloatingPanel != null) {
-                Minecraft mc = Minecraft.getInstance();
-                if (mouseX == null)
-                    mouseX = (int) (mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getWidth());
-                if (mouseY == null)
-                    mouseY = (int) (mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getHeight());
-
-//            System.out.println("Rendering actual ui");
-//            RenderSystem.disableDepthTest();
-                if (mainFloatingPanel != null) mainFloatingPanel.render(guiGraphics, mouseX, mouseY, partialTick);
-//            RenderSystem.enableDepthTest();
-            }
-        }
-    }
+    public abstract void render(@NotNull IGuiGraphics IGuiGraphics, float partialTick, Integer mouseX, Integer mouseY);
 
     public void updateLayout() {
         if(mainFloatingPanel != null) mainFloatingPanel.layoutElements();
     }
 
-    private int positionAnimationStartY = 0;
-    private int positionAnimationEndY = 0;
-    private boolean positionAnimationActive = false;
-    private long positionAnimationStartTime = 0;
+    protected int positionAnimationStartY = 0;
+    protected int positionAnimationEndY = 0;
+    protected boolean positionAnimationActive = false;
+    protected long positionAnimationStartTime = 0;
 
-    private void replacePositionAnimationData() {
-        if(!ConfigData.overlayAnimationEnabled.get()) return;
-        if(Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
+    protected abstract void replacePositionAnimationData();
 
-        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen((AbstractContainerScreen<?>) Minecraft.getInstance().screen);
-//        System.out.println(lastOverlayPosition + " " + mainFloatingPanel.getY());
-        if (lastOverlayPosition != null && lastOverlayPosition.getB() != mainFloatingPanel.getY()) {
-            positionAnimationStartY = mainFloatingPanel.getY();
-            positionAnimationEndY = lastOverlayPosition.getB();
-            positionAnimationActive = true;
-            positionAnimationStartTime = Calendar.getInstance().getTimeInMillis();
-//            System.out.println("start");
-
-//            System.out.println("Start: " + positionAnimationStartY);
-//            System.out.println("End: " + positionAnimationEndY);
-        }
-    }
-
-    private float easeOutCubic(float t) {
+    protected float easeOutCubic(float t) {
         return 1 - (float)Math.pow(1 - t, 3);
     }
 
-    private float easeInOutSine(float t) {
+    protected float easeInOutSine(float t) {
         return -(float)Math.cos(Math.PI * t) / 2 + 0.5f;
     }
 
-    private void runPositionAnimation() {
+    protected void runPositionAnimation(int positionAnimationDuration) {
         if(!positionAnimationActive) return;
         long currentTime = Calendar.getInstance().getTimeInMillis();
-        int positionAnimationDuration = ConfigData.overlayAnimationDuration.get();
 //        System.out.println("positionAnimationDuration: " + positionAnimationDuration);
         if(currentTime - positionAnimationStartTime < positionAnimationDuration) {
             float t = (currentTime - positionAnimationStartTime) / (float) positionAnimationDuration;
@@ -213,7 +146,7 @@ public class CalculatorOverlay implements IOverlay {
         replacePositionAnimationData();
     }
 
-    private UIElement createConversionLine(String itemName, String displayName, Supplier<Integer> amount, Font font) {
+    private UIElement createConversionLine(String itemName, String displayName, Supplier<Integer> amount, IFont font) {
         UIHorizontalLayout sunCoinMain = new UIHorizontalLayout() {
             private boolean updatedInternalValues = false;
             @Override
@@ -223,7 +156,7 @@ public class CalculatorOverlay implements IOverlay {
                 updatedInternalValues = true;
             }
         };
-        UiImage sunCoinImage = new UiImage(CoinValues.NAME_TO_TEXTURE_ATLAS_SPRITE.getOrDefault(itemName, CoinValues.getMissingNo()), 16, 16);
+        UiImage sunCoinImage = new UiImage(SingletonInstances.COIN_VALUES.getAtlasSpriteByName(itemName), 16, 16);
         sunCoinMain.setEnabled(false);
         sunCoinMain.addElement(sunCoinImage);
         sunCoinMain.addElement(new UIText("", font, fontScaleText, ModColors.uiSecondaryText) {
@@ -238,12 +171,12 @@ public class CalculatorOverlay implements IOverlay {
         return sunCoinMain;
     }
 
-    public Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(AbstractContainerScreen<?> screen) {
+    public Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(IAbstractContainerScreen<?> screen) {
         int prefWGlobal = mainFloatingPanel.getPreferredWidth();
         int prefHGlobal = mainFloatingPanel.getPreferredHeight();
 
-        int screenW = screen.width;
-        int screenH = screen.height;
+        int screenW = screen.width();
+        int screenH = screen.height();
 
         int invLeft = screen.getGuiLeft();
         int left = invLeft - prefWGlobal - 10;
@@ -288,9 +221,9 @@ public class CalculatorOverlay implements IOverlay {
     private UIVerticalLayout conversionOutputMain;
     private UIVerticalLayout conversionOutputReturns;
 
-    public void init(AbstractContainerScreen<?> screen) {
+    public void init(IAbstractContainerScreen<?> screen) {
 //        System.out.println("INIT");
-        Font font = Minecraft.getInstance().font;
+        IFont font = SingletonInstances.MINECRAFT_UTILS.getMinecraftFont();
 //        Font font1 = new Font()
 
         conversionOutputMain = createConversionMainLayout();
@@ -304,14 +237,14 @@ public class CalculatorOverlay implements IOverlay {
                 UIAxisLayout modesPanelT = modesPanel.get();
                 modesPanelT.setBounds(modesPanelT.getX(), modesPanelT.getY(),
                         (int) (mainFloatingPanel.getWidth() - mainFloatingPanel.getPadding() * 2), modesPanelT.getHeight());
-                GuiManagerOverlay.getInstance().updateOverlayPosition(screen);
+                SingletonInstances.GUI_MANAGER_OVERLAY.updateOverlayPosition(screen);
 //                replacePositionAnimationData();
             }
         };
         mainFloatingPanel.setId("Main Pages VERTICAL Panel");
         mainFloatingPanel.setPadding(7);
         mainFloatingPanel.setMinWidth(135);
-//        mainFloatingPanel.setPosition(invLeft - 120, screen.getGuiTop());
+//        mainFloatingPanel.setPosition(invLeft - 120, IScreen.getGuiTop());
         mainFloatingPanel.setBackgroundVisible(true);
         mainFloatingPanel.setBackgroundColor(ModColors.uiBg);
         mainFloatingPanel.setOutlineWidth(2);
@@ -365,7 +298,7 @@ public class CalculatorOverlay implements IOverlay {
         sumModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
         sumModeBtn.get().setBgColorNormal(ModColors.modeSwitchButtonBgSelected); // since it's default
         sumModeBtn.get().setImagePosition(UIButton.ImagePosition.IMAGE_RIGHT_KINDA);
-        sumModeBtn.get().setIcon(ModResources.SUM_ICON, 12, 12);
+        sumModeBtn.get().setIcon(SingletonInstances.MOD_RESOURCES.getResourceLocation(IModResources.Type.SUM_ICON), 12, 12);
         sumModeBtn.get().setOutlineWidth(1);
         modesPanel.get().addElement(sumModeBtn.get());
 
@@ -396,7 +329,7 @@ public class CalculatorOverlay implements IOverlay {
         conversionModeBtn.get().setBgColorHover(ModColors.modeSwitchButtonBgHovered);
         conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
         conversionModeBtn.get().setImagePosition(UIButton.ImagePosition.IMAGE_RIGHT_KINDA);
-        conversionModeBtn.get().setIcon(ModResources.WEIGHING_MACHINE_ICON, 12, 12);
+        conversionModeBtn.get().setIcon(SingletonInstances.MOD_RESOURCES.getResourceLocation(IModResources.Type.WEIGHING_MACHINE_ICON), 12, 12);
         conversionModeBtn.get().setOutlineWidth(1);
         conversionModeBtn.get().setOutlineColor(ModColors.modeSwitchButtonOutlineNormal);
         modesPanel.get().addElement(conversionModeBtn.get());
@@ -471,7 +404,7 @@ public class CalculatorOverlay implements IOverlay {
                 return result;
             }
         };
-        selectSwitchBtn.setIcon(ModResources.SELECTION_DEFAULT, 16, 16);
+        selectSwitchBtn.setIcon(SingletonInstances.MOD_RESOURCES.getResourceLocation(IModResources.Type.SELECTION_DEFAULT), 16, 16);
         selectSwitchBtn.setPadding(2, 2);
         selectSwitchBtn.setImagePosition(UIButton.ImagePosition.IMAGE_LEFT);
         selectSwitchBtn.setOutlineColor(ModColors.uiSelected);
@@ -557,9 +490,9 @@ public class CalculatorOverlay implements IOverlay {
         mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
     }
 
-    public void updateOverlayPosition(Screen screen) {
-        if(screen instanceof AbstractContainerScreen<?> abstractContainerScreen) {
-            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(abstractContainerScreen);
+    public void updateOverlayPosition(IScreen IScreen) {
+        if(IScreen instanceof IAbstractContainerScreen<?> IAbstractContainerScreen) {
+            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(IAbstractContainerScreen);
 //            System.out.println("Main: " + bounds);
             lastOverlayPosition = bounds;
             mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
@@ -599,30 +532,22 @@ public class CalculatorOverlay implements IOverlay {
     }
 
     private void setConversionValues(CoinChangeLimited.Result res) {
-        for (Consumer<Integer> value : CoinValues.TYPE_TO_SET_MAIN.values()) {
-            value.accept(0);
-        }
-        for (Consumer<Integer> value : CoinValues.TYPE_TO_SET_RETURN.values()) {
-            value.accept(0);
-        }
+        SingletonInstances.COIN_VALUES.resetAllMainCoins();
+        SingletonInstances.COIN_VALUES.resetAllReturnCoins();
+
         for(Map.Entry<Integer, Integer> entry : res.getComposition().entrySet()) {
-            CoinValues.CoinTypes type = CoinValues.VALUE_TO_COIN_TYPE.get(entry.getKey());
+            ICoinValues.CoinTypes type = SingletonInstances.COIN_VALUES.getCoinTypeByValue(entry.getKey());
             if(type == null) return;
-            Consumer<Integer> consumerSetMain = CoinValues.TYPE_TO_SET_MAIN.get(type);
-            Consumer<Integer> consumerSetReturn = CoinValues.TYPE_TO_SET_RETURN.get(type);
+            Consumer<Integer> consumerSetMain = SingletonInstances.COIN_VALUES.getMainCoinSetter(type);
+            Consumer<Integer> consumerSetReturn = SingletonInstances.COIN_VALUES.getReturnCoinSetter(type);
             if(consumerSetMain != null) consumerSetMain.accept(entry.getValue());
 //            if(consumerSetReturn != null) consumerSetReturn.accept(entry.getValue());
         }
         UiState.conversionSummedOverpay = res.getOverpay();
-        Objects.requireNonNull(CoinValues.TYPE_TO_SET_RETURN.get(CoinValues.CoinTypes.SPUR)).accept(res.getOverpay());
+        Objects.requireNonNull(SingletonInstances.COIN_VALUES.getReturnCoinSetter(ICoinValues.CoinTypes.SPUR)).accept(res.getOverpay());
     }
 
-    private static boolean isSlotValidForSelection(Slot slot) {
-        if(slot == null) return false;
-        if(!(slot.container instanceof Inventory || slot.container instanceof SimpleContainer)) return false;
-        if(slot.container instanceof Inventory && slot.getContainerSlot() >= 36) return false;
-        return true;
-    }
+    protected abstract boolean isSlotValidForSelection(ISlot slot);
 
     private void clearAllSelectionData() {
         UiState.selectionStartPointX = -1;
@@ -637,16 +562,16 @@ public class CalculatorOverlay implements IOverlay {
         UiState.selectionContainerClass = null;
     }
 
-    private void updateSelectedValue(AbstractContainerScreen<?> screen) {
-        if(screen.getMenu().slots.isEmpty()) return;
-//        System.out.println("updateSelectedValue" + screen.getClass().getSimpleName());
+    private void updateSelectedValue(IAbstractContainerScreen<?> screen) {
+        if(screen.countSlots() == 0) return;
+//        System.out.println("updateSelectedValue" + IScreen.getClass().getSimpleName());
         UiState.selectionSlotValuesCoins.clear();
         List<Integer> slots = getSlotIndexesInSelection(screen, UiState.selectionStartPointSlotIndex, UiState.selectionEndPointSlotIndex, UiState.selectionContainerClass);
 //        System.out.println(slots);
         for(Integer slotIndex : slots) {
-            Slot slot = getRealInventorySlot(screen, slotIndex); // screen.getMenu().getSlot(slotIndex);
-            Integer value = CoinValues.ITEM_TO_VALUE.get(slot.getItem().getItem());
-            if(value != null) UiState.selectionSlotValuesCoins.put(slotIndex, value * slot.getItem().getCount());
+            ISlot slot = getRealInventorySlot(screen, slotIndex); // IScreen.getMenu().getSlot(slotIndex);
+            Integer value = SingletonInstances.COIN_VALUES.getCoinValueByItem(slot.getItemActual());
+            if(value != null) UiState.selectionSlotValuesCoins.put(slotIndex, value * slot.getItemStack().getCount());
             else UiState.selectionSlotValuesCoins.put(slotIndex, null);
         }
     }
@@ -661,84 +586,33 @@ public class CalculatorOverlay implements IOverlay {
         UIUpdateRequests.updateSelectedCoinsValue = true;
     }
 
-    public static List<Slot> getPlayerInventorySlots(AbstractContainerScreen<?> screen) {
-        AbstractContainerMenu menu = screen.getMenu();
-        List<Slot> slots = new ArrayList<>(Collections.nCopies(Inventory.INVENTORY_SIZE, null));
-        for(Slot slot : menu.slots) {
-            if(slot.container instanceof Inventory inventory) {
-                slots.set(inventory.items.indexOf(slot.getItem()), slot);
-            }
-        }
-//        System.out.println("Full Slots List: " + slots);
-        return slots;
-    }
+    public abstract List<ISlot> getPlayerInventorySlots(IAbstractContainerScreen<?> screen);
 
-    public static int getRealSlotIndex(AbstractContainerScreen<?> screen, Slot slot) {
-//        if((screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) {
-            for (Slot menuSlot : screen.getMenu().slots) {
-                if (slot.container.getClass().equals(UiState.selectionContainerClass) && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
-                    return menuSlot.getSlotIndex();
-                }
-            }
+    public abstract int getRealSlotIndex(IAbstractContainerScreen<?> screen, ISlot slot);
 
-//        }
-        return screen.getMenu().slots.indexOf(slot);
-    }
+    public abstract ISlot getRealInventorySlot(IAbstractContainerScreen<?> screen, int slotIndex);
 
-    public static Slot getRealInventorySlot(AbstractContainerScreen<?> screen, int slotIndex) {
-//        if((screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)) {
-            for (Slot slot : screen.getMenu().slots) {
-                if (slot.container.getClass().equals(UiState.selectionContainerClass) && slot.getSlotIndex() == slotIndex) {
-                    return slot;
-                }
-            }
-//        }
-        try {
-            return screen.getMenu().getSlot(slotIndex);
-        } catch (IndexOutOfBoundsException e) {
-            return screen.getMenu().getSlot(0);
-        }
-    }
-
-    public void onScreenChange(Screen screen) {
-//        System.out.println("clearing");
+    public void onScreenChange(IScreen IScreen) {
         clearAllSelectionData();
         UiState.selectionRendered = false;
-//        if(!(screen instanceof AbstractContainerScreen<?>)) UiState.selectionModeActive = false;
+//        if(!(IScreen instanceof IAbstractContainerScreen<?>)) UiState.selectionModeActive = false;
     }
 
 //    public void onScreenClose() {
 //        clearAllSelectionCoords();
-//        if(!(screen instanceof AbstractContainerScreen<?>)) UiState.selectionModeActive = false;
+//        if(!(IScreen instanceof IAbstractContainerScreen<?>)) UiState.selectionModeActive = false;
 //    }
 
-    public static List<Integer> getSlotIndexesInSelection(AbstractContainerScreen<?> screen, int startIndex, int endIndex, Class<? extends Container> containerClass) {
-        AbstractContainerMenu menu = screen.getMenu();
-        List<Slot> slots = menu.slots;
-
-//        System.out.println("----------getSlotIndexesInSelection----------");
-//        for(Slot slot : slots) {
-//            System.out.println(slot.index + " " + slot.getSlotIndex() + " " + slot.getContainerSlot() + " " + slot.container.getClass().getSimpleName());
-//        }
-
-//        if(screen instanceof InventoryScreen) {
-//            slots = getPlayerInventorySlots(screen);
-//            for(int i = 0; i < slots.size(); i++) {
-//                System.out.println("Inv Slots: " + i + " " + slots.get(i).getContainerSlot() + " " + slots.get(i).getSlotIndex());
-//            }
-//        }
+    public List<Integer> getSlotIndexesInSelection(IAbstractContainerScreen<?> screen, int startIndex, int endIndex, Class<?> containerClass) {
+        IAbstractContainerMenu menu = screen.getMenu();
+        List<ISlot> slots = menu.getSlots();
 
         if (startIndex < 0 || endIndex < 0 || startIndex >= slots.size() || endIndex >= slots.size()) {
             return List.of();
         }
 
-        int initialX = getInitialX(menu, 8);
-        int initialY = getInitialY(menu, 84);
-        int slotDx = getSlotDx(menu, 18);
-        int slotDy = getSlotDy(menu, 18);
-
-        Slot start = getRealInventorySlot(screen, startIndex); // slots.get(startIndex);
-        Slot end   = getRealInventorySlot(screen, endIndex); // slots.get(endIndex);
+        ISlot start = getRealInventorySlot(screen, startIndex); // slots.get(startIndex);
+        ISlot end   = getRealInventorySlot(screen, endIndex); // slots.get(endIndex);
 
 //        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
 //        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
@@ -748,41 +622,21 @@ public class CalculatorOverlay implements IOverlay {
         int endX;
         int endY;
 
-//        startX = getXForHotbar(slots, start, initialX, slotDx);
-//        endX = getXForHotbar(slots, end, initialX, slotDx);
-//
-//        startY = getYForHotbar(slots, start, initialY, slotDy);
-//        endY = getYForHotbar(slots, end, initialY, slotDy);
-
-        startX = getXApproximated(screen, slots, start, initialX, slotDx);
-        endX = getXApproximated(screen, slots, end, initialX, slotDx);
-
-        startY = getYApproximated(screen, slots, start, initialY, slotDy);
-        endY = getYApproximated(screen, slots, end, initialY, slotDy);
-
-//        System.out.println(initialX + " " + initialY + " + " + slotDx + " " + slotDy);
-
-//        System.out.println(end.getContainerSlot() + " " + (end.container instanceof Inventory) + " end slot X: " + endX + ", Y: " + endY);
+        startX = getXApproximated(start);
+        startY = getYApproximated(start);
+        endX = getXApproximated(end);
+        endY = getYApproximated(end);
 
         int x1 = Math.min(startX, endX);
         int y1 = Math.min(startY, endY);
         int x2 = Math.max(startX, endX);
         int y2 = Math.max(startY, endY);
 
-//        System.out.println("Start #" + startIndex + ": X " + startX + ", Y " + startY
-//                + " - End #" + endIndex + ": X " + endX + ", Y " + endY);
-
         List<Integer> result = new ArrayList<>();
-        for (Slot slot : slots) {
-//            if (!(slot.container instanceof Inventory)) continue;
+        for (ISlot slot : slots) {
+            int localX = getXApproximated(slot);
+            int localY = getYApproximated(slot);
 
-            int localX = getXApproximated(screen, slots, slot, initialX, slotDx);
-            int localY = getYApproximated(screen, slots, slot, initialY, slotDy);
-
-//            int localX = slot.x;
-//            int localY = slot.y;
-
-            // проверяем пересечение
             if (localX >= x1 && localX <= x2 && localY >= y1 && localY <= y2) {
                 result.add(getRealSlotIndex(screen, slot));  //slots.indexOf(slot)); // slot.getContainerSlot()
             }
@@ -790,112 +644,24 @@ public class CalculatorOverlay implements IOverlay {
         return result;
     }
 
-    private static int getInitialX(AbstractContainerMenu menu, int defaultValue) {
-        Slot slot9 = menu.slots.size() > 9 ? menu.slots.get(9) : null;
-        if(slot9 != null) {
-            return slot9.x;
-        } else return defaultValue;
+    private static int getXApproximated(ISlot slot) {
+        return slot.x();
     }
 
-    private static int getInitialY(AbstractContainerMenu menu, int defaultValue) {
-        Slot slot9 = menu.slots.size() > 9 ? menu.slots.get(9) : null;
-        if(slot9 != null) {
-            return slot9.y;
-        } else return defaultValue;
+    private static int getYApproximated(ISlot slot) {
+        return slot.y();
     }
 
-    private static int getSlotDx(AbstractContainerMenu menu, int defaultValue) {
-        Slot slot9 = menu.slots.size() > 9 ? menu.slots.get(9) : null;
-        Slot slot10 = menu.slots.size() > 10 ? menu.slots.get(10) : null;
-        if (slot9 != null && slot10 != null) {
-            return slot10.x - slot9.x;
-        } else return defaultValue;
-    }
+    protected static final ExecutorService backgroundProcessor = Executors.newSingleThreadExecutor();
 
-    private static int getSlotDy(AbstractContainerMenu menu, int defaultValue) {
-        Slot slot9 = menu.slots.size() > 9 ? menu.slots.get(9) : null;
-        Slot slot18 = menu.slots.size() > 18 ? menu.slots.get(18) : null;
-        if (slot9 != null && slot18 != null) {
-            return slot18.y - slot9.y;
-        } else return defaultValue;
-    }
-
-    private static int getXApproximated(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialX, int dX) {
-        if(true) return slot.x;
-
-        if (slot.container instanceof Inventory) {
-            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
-            int result = initialX + (index % 9) * dX;
-//                System.out.println("Returning overriden X " + result + " for Slot " + slot.getContainerSlot());
-            return result;
-        }
-        return slot.x;
-    }
-
-    private static int getYApproximated(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialY, int dY) {
-        if(true) return slot.y;
-
-        if (slot.container instanceof Inventory) {
-            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
-            int result = initialY + (index / 9) * dY;
-//                System.out.println("Returning overriden Y " + result + " for Slot " + slot.getContainerSlot());
-            return result;
-        }
-        return slot.y;
-    }
-
-    private static int getXForHotbar(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialX, int dX) {
-        if (slot.container instanceof Inventory) {
-            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
-            if(index > 8) return slot.x;
-            else {
-                int result = initialX + index * dX;
-//                System.out.println("Returning overriden X " + result + " for Slot " + slot.getContainerSlot());
-                return result;
-            }
-        }
-        return slot.x;
-    }
-
-    private static int getYForHotbar(AbstractContainerScreen<?> screen, List<Slot> slots, Slot slot, int initialY, int dY) {
-        if (slot.container instanceof Inventory) {
-            int index = getRealSlotIndex(screen, slot); // slots.indexOf(slot); // slot.getContainerSlot()
-            if(index > 8) return slot.y;
-            else {
-                int result = initialY + (4) * dY;
-//                System.out.println("Returning overriden Y " + result + " for Slot " + slot.getContainerSlot());
-                return result;
-            }
-        }
-        return slot.y;
-    }
-
-    private static final ExecutorService backgroundProcessor = Executors.newSingleThreadExecutor();
-
-    public static void requestInventorySnapshot() {
-//        System.out.println("requestInventorySnapshot called");
-        Minecraft.getInstance().execute(() -> {
-//            System.out.println("requestInventorySnapshot");
-            // На главном потоке: снимаем snapshot инвентаря
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (player == null) return;
-
-            List<ItemStack> snapshot = new ArrayList<>();
-            for (ItemStack stack : player.getInventory().items) {
-                if (!stack.isEmpty()) snapshot.add(stack.copy());
-            }
-
-            // Отправляем snapshot обратно в фон для обработки
-            backgroundProcessor.submit(() -> getInstance().processInventory(snapshot));
-        });
-    }
+    public abstract void requestInventorySnapshot(); // SingletonInstances.MINECRAFT_UTILS.execute(() -> backgroundProcessor.submit(() -> getInstance().processInventory(SingletonInstances.MINECRAFT_UTILS.getInventoryItems())));
 
     // Executed in a thread pool
-    private void processInventory(List<ItemStack> snapshot) {
+    protected void processInventory(List<IItemStack> snapshot) {
         int totalValue = 0;
         final Map<Integer, Integer> tempMap = new HashMap<>();
-        for (ItemStack stack : snapshot) {
-            Integer value = CoinValues.ITEM_TO_VALUE.get(stack.getItem());
+        for (IItemStack stack : snapshot) {
+            Integer value = SingletonInstances.COIN_VALUES.getCoinValueByItem(stack.getItem());
             if (value != null) {
                 totalValue += value * stack.getCount();
                 if(!tempMap.containsKey(value)) tempMap.put(value, stack.getCount());
@@ -904,7 +670,7 @@ public class CalculatorOverlay implements IOverlay {
         }
 
         final int totalValueCopy = totalValue;
-        Minecraft.getInstance().execute(() -> {
+        SingletonInstances.MINECRAFT_UTILS.execute(() -> {
             UiState.inventorySnapshotCoinsAmounts.clear();
             UiState.inventorySnapshotCoinsAmounts.putAll(tempMap);
             UiState.inventorySnapshotTotalCoins = totalValueCopy;
@@ -916,12 +682,12 @@ public class CalculatorOverlay implements IOverlay {
     }
 
     @Override
-    public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
+    public boolean onMouseClick(double mouseX, double mouseY, int button, IScreen screenOrig) {
         boolean result = false;
         if (shouldRenderOnScreen(screenOrig)) {
-            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
+            IAbstractContainerScreen<?> screen = screenOrig.getAsAbstractContainerScreen();
             if(mainFloatingPanel != null) mainFloatingPanel.onClick(mouseX, mouseY);
-            Slot slot = screen.getSlotUnderMouse();
+            ISlot slot = screen.getSlotUnderMouse();
             if(isSlotValidForSelection(slot) && pagesStackPanel.getActiveIndex() == 0 && UiState.coinCalculatorOverlayActive) { // may change, dangerous a bit
                 if(UiState.selectionModeActive) {
 //                    event.setCanceled(true);
@@ -930,37 +696,37 @@ public class CalculatorOverlay implements IOverlay {
                 }
                 UiState.selectionStartPointX = mouseX;
                 UiState.selectionStartPointY = mouseY;
-                UiState.selectionStartPointSlotIndex = screen.getSlotUnderMouse().getContainerSlot();
-                UiState.selectionContainerClass = screen.getSlotUnderMouse().container.getClass();
+                UiState.selectionStartPointSlotIndex = getRealSlotIndex(screen, screen.getSlotUnderMouse()); // was .getContainerSlot() before
+                UiState.selectionContainerClass = screen.getSlotUnderMouse().getContainerClass();
 
                 UiState.selectionSlotValuesCoins.clear();
             }
-//            System.out.println(screen.getSlotUnderMouse());
+//            System.out.println(IScreen.getSlotUnderMouse());
         }
         return result; // true if cancel
     }
 
-    private boolean isSelectionSlotTheSameType(Slot slot) {
+    private boolean isSelectionSlotTheSameType(ISlot slot) {
         if(slot == null || UiState.selectionContainerClass == null) return false;
-        return UiState.selectionContainerClass.equals(slot.container.getClass());
+        return UiState.selectionContainerClass.equals(slot.getContainerClass());
     }
 
     @Override
-    public boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig) {
+    public boolean onMouseDrag(double mouseX, double mouseY, int button, IScreen screenOrig) {
         if (shouldRenderOnScreen(screenOrig)) {
-            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
+            IAbstractContainerScreen<?> screen = screenOrig.getAsAbstractContainerScreen();
             if(UiState.selectionModeActive) {
-                Slot slot = screen.getSlotUnderMouse();
+                ISlot slot = screen.getSlotUnderMouse();
 //                if(slot != null) System.out.println(slot.getContainerSlot() + " " + slot.container.getClass().getSimpleName());
                 if(isSlotValidForSelection(slot) && isSelectionSlotTheSameType(slot)) {
 //                    event.setCanceled(true);
                     UiState.selectionEndPointX = mouseX;
                     UiState.selectionEndPointY = mouseY;
 
-//                    System.out.println("Setting " + screen.getSlotUnderMouse().getContainerSlot() + " slot as end in " + (screen.getSlotUnderMouse().container.getClass().getSimpleName()));
+//                    System.out.println("Setting " + IScreen.getSlotUnderMouse().getContainerSlot() + " slot as end in " + (IScreen.getSlotUnderMouse().container.getClass().getSimpleName()));
                     UiState.selectionEndPointSlotIndex = getRealSlotIndex(screen, screen.getSlotUnderMouse());
-                    UiState.selectionContainerClass = screen.getSlotUnderMouse().container.getClass();
-//                    System.out.println(screen.getSlotUnderMouse().container.getClass().getSimpleName());
+                    UiState.selectionContainerClass = screen.getSlotUnderMouse().getContainerClass();
+//                    System.out.println(IScreen.getSlotUnderMouse().container.getClass().getSimpleName());
 
                     updateSelectedValue(screen);
                     return true;
@@ -971,12 +737,12 @@ public class CalculatorOverlay implements IOverlay {
     }
 
     @Override
-    public void onMouseRelease(double mouseX, double mouseY, int button, Screen screenOrig) {
+    public void onMouseRelease(double mouseX, double mouseY, int button, IScreen screenOrig) {
         if (shouldRenderOnScreen(screenOrig)) {
-            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) screenOrig;
+            IAbstractContainerScreen<?> screen = screenOrig.getAsAbstractContainerScreen();
             if(UiState.selectionModeActive) {
                 UiState.selectionRendered = false;
-                Slot slot = screen.getSlotUnderMouse();
+                ISlot slot = screen.getSlotUnderMouse();
                 if(!isSlotValidForSelection(slot) || !isSelectionSlotTheSameType(slot)) {
                     updateSelectedValue(screen);
                     displaySelectedValue();
@@ -990,7 +756,7 @@ public class CalculatorOverlay implements IOverlay {
                 UiState.selectionEndPointSlotIndex = getRealSlotIndex(screen, screen.getSlotUnderMouse());
 //                UiState.selectionModeActive = false;
 
-//                screen.getMenu().getGridWidth()
+//                IScreen.getMenu().getGridWidth()
                 updateSelectedValue(screen);
                 displaySelectedValue();
 
@@ -1004,7 +770,7 @@ public class CalculatorOverlay implements IOverlay {
     }
 
     @Override
-    public void onKeyPressed(InputEvent.Key event) {
+    public void onKeyPressed(IKeyPressEvent event) {
         if(mainFloatingPanel != null) mainFloatingPanel.keyPressed(event);
     }
 
@@ -1012,10 +778,10 @@ public class CalculatorOverlay implements IOverlay {
 ////        if(conversionInput != null) conversionInput.getEditBox().mouseScrolled(mouseX, mouseY, delta);
 //    }
 
-    public void relinkListeners(ScreenEvent.Init.Post event) {
-        if(event.getScreen() instanceof AbstractContainerScreen<?> abstractContainerScreen) {
-            if (mainFloatingPanel == null) init(abstractContainerScreen);
+    public void relinkListeners(IRegisterListenersEvent event) {
+        if(event.isAbstractContainerScreen()) {
+            if (mainFloatingPanel == null) init(event.getAsAbstractContainerScreen());
         }
-        mainFloatingPanel.relinkListeners(event);
+        if(mainFloatingPanel != null) mainFloatingPanel.relinkListeners(event);
     }
 }

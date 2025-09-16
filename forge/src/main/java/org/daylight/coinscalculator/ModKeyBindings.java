@@ -1,11 +1,10 @@
 package org.daylight.coinscalculator;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
-import org.daylight.coinscalculator.ui.overlays.GuiManagerOverlay;
+import org.daylight.coinscalculator.replacements.SingletonInstances;
 import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
 import org.lwjgl.glfw.GLFW;
 
@@ -29,7 +28,7 @@ public class ModKeyBindings {
 
     private static void onKeyInput(InputEvent.Key event) {
         if (TOGGLE_GUI.consumeClick()) {
-            GuiManagerOverlay.toggleMainOverlayState();
+            SingletonInstances.GUI_MANAGER_OVERLAY.toggleMainOverlayState();
         }
         if (MOD_SETTINGS.consumeClick()) {
             ModSettingsScreen.setAsScreen();

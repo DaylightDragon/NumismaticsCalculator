@@ -1,47 +1,31 @@
 package org.daylight.coinscalculator.ui.overlays;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.common.ForgeConfigSpec;
-import org.daylight.coinscalculator.UiState;
-import org.daylight.coinscalculator.config.ConfigData;
-import org.daylight.coinscalculator.events.InputEvents;
+import org.daylight.coinscalculator.replacements.*;
 import org.daylight.coinscalculator.ui.elements.*;
-import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
 import org.daylight.coinscalculator.util.tuples.Quartet;
 import org.jetbrains.annotations.NotNull;
 
-public class ModSettingsOverlay implements IOverlay {
-    private static ModSettingsOverlay instance;
-    public static ModSettingsOverlay getInstance() {
-        if(instance == null) instance = new ModSettingsOverlay();
-        return instance;
-    }
-
+public abstract class IModSettingsOverlay implements IOverlay {
     private UIPanel rootPanel;
 
-    public static boolean shouldRenderOnScreen(Screen screen) {
-        return (screen instanceof ModSettingsScreen);
+    public boolean shouldRenderOnScreen(IScreen screen) {
+        return (screen instanceof IModSettingsScreen);
     }
 
-    public void render(@NotNull GuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
-        if(shouldRenderOnScreen(Minecraft.getInstance().screen)) {
-            ModSettingsScreen screen = (ModSettingsScreen) Minecraft.getInstance().screen;
+    public void render(@NotNull IGuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
+        if(shouldRenderOnScreen(SingletonInstances.MINECRAFT_UTILS.getScreen())) {
+            IModSettingsScreen screen = (IModSettingsScreen) SingletonInstances.MINECRAFT_UTILS.getScreen();
             if (rootPanel == null) init(screen);
-            rootPanel.render(guiGraphics, InputEvents.getMouseX(), InputEvents.getMouseY(), partialTick);
+            rootPanel.render(guiGraphics, SingletonInstances.INPUT_UTILS.getMouseX(), SingletonInstances.INPUT_UTILS.getMouseY(), partialTick);
         }
     }
 
-    private UIPanel createOptionRow(String name, ForgeConfigSpec.ConfigValue<?> value) {
-        Font font = Minecraft.getInstance().font;
+    private UIPanel createOptionRow(String name, IConfigValue<?> value) {
+        IFont font = SingletonInstances.MINECRAFT_UTILS.getMinecraftFont();
         UIHorizontalLayout optionRow = new UIHorizontalLayout();
         optionRow.setPadding(5);
         optionRow.setMinWidth(280);
-        if(Minecraft.getInstance().screen != null) optionRow.setMinWidth((int) (Minecraft.getInstance().screen.width * 0.65f));
+        if(SingletonInstances.MINECRAFT_UTILS.getScreen() != null) optionRow.setMinWidth((int) (SingletonInstances.MINECRAFT_UTILS.getScreen().width() * 0.65f));
         optionRow.setMainDistribution(MainDistribution.SPACE_BETWEEN);
         optionRow.setCrossAlignment(CrossAlignment.CENTER);
         optionRow.setBackgroundVisible(true);
@@ -49,7 +33,7 @@ public class ModSettingsOverlay implements IOverlay {
         optionRow.setOutlineWidth(1);
         optionRow.setOutlineColor(0xBBbf7947);
         optionRow.addElement(new UIText(name, font, 1.0f, 0xFFFFFF));
-        if(value instanceof ForgeConfigSpec.BooleanValue booleanValue) {
+        if(value instanceof IBooleanConfigValue booleanValue) {
             UIButton btn = new UIButton(booleanValue.get() ? "True" : "False", font, 1.0f, () -> {}) {
                 @Override
                 public boolean onClick(double mouseX, double mouseY) {
@@ -70,7 +54,7 @@ public class ModSettingsOverlay implements IOverlay {
             btn.setSpacing(0);
             btn.setMinWidth(37);
             optionRow.addElement(btn);
-        } else if(value instanceof ForgeConfigSpec.IntValue intValue) {
+        } else if(value instanceof IIntConfigValue intValue) {
             UIEditBox editBox = new UIEditBox(font, 40, 37);
             editBox.setText(String.valueOf(intValue.get()));
             editBox.setOnValueChange(text -> {
@@ -89,7 +73,12 @@ public class ModSettingsOverlay implements IOverlay {
         return optionRow;
     }
 
-    public void init(ModSettingsScreen screen) {
+    protected abstract IBooleanConfigValue getConfigRequireShiftForTotalTooltip(); // ConfigData.requireShiftForTotalTooltip
+    protected abstract IBooleanConfigValue getConfigShowControlPanel(); // ConfigData.showControlPanel
+    protected abstract IBooleanConfigValue getConfigOverlayAnimationEnabled(); // ConfigData.overlayAnimationEnabled
+    protected abstract IIntConfigValue getConfigOverlayAnimationDuration(); // ConfigData.overlayAnimationDuration
+
+    public void init(IModSettingsScreen screen) {
         rootPanel = new UIVerticalLayout();
 
         UIVerticalLayout verticalLayout = new UIVerticalLayout();
@@ -99,10 +88,10 @@ public class ModSettingsOverlay implements IOverlay {
         verticalLayout.setOutlineColor(0xBBab8974);
         verticalLayout.setOutlineWidth(1);
 
-        verticalLayout.addElement(createOptionRow("Require \"Shift\" For Total Value Tooltip", ConfigData.requireShiftForTotalTooltip));
-        verticalLayout.addElement(createOptionRow("Show Control Panel Buttons", ConfigData.showControlPanel));
-        verticalLayout.addElement(createOptionRow("Overlay Animation Enabled", ConfigData.overlayAnimationEnabled));
-        verticalLayout.addElement(createOptionRow("Overlay Animation Duration", ConfigData.overlayAnimationDuration));
+        verticalLayout.addElement(createOptionRow("Require \"Shift\" For Total Value Tooltip", getConfigRequireShiftForTotalTooltip()));
+        verticalLayout.addElement(createOptionRow("Show Control Panel Buttons", getConfigShowControlPanel()));
+        verticalLayout.addElement(createOptionRow("Overlay Animation Enabled", getConfigOverlayAnimationEnabled()));
+        verticalLayout.addElement(createOptionRow("Overlay Animation Duration", getConfigOverlayAnimationDuration()));
 
         rootPanel.addElement(verticalLayout);
 
@@ -113,22 +102,22 @@ public class ModSettingsOverlay implements IOverlay {
         rootPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
     }
 
-    public Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(ModSettingsScreen screen) {
+    public Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(IModSettingsScreen screen) {
         int prefWGlobal = rootPanel.getPreferredWidth();
         int prefHGlobal = rootPanel.getPreferredHeight();
 
-        return new Quartet<>((screen.width - prefWGlobal) / 2, (screen.height - prefHGlobal) / 2, prefWGlobal, prefHGlobal);
+        return new Quartet<>((screen.width() - prefWGlobal) / 2, (screen.height() - prefHGlobal) / 2, prefWGlobal, prefHGlobal);
     }
 
-    public void relinkListeners(ScreenEvent.Init.Post event) {
-        if(event.getScreen() instanceof ModSettingsScreen modSettingsScreen) {
-            if (rootPanel == null) init(modSettingsScreen);
+    public void relinkListeners(IRegisterListenersEvent event) {
+        if(event.isAbstractContainerScreen()) {
+            if (rootPanel == null) init(event.getAsModSettingsScreen());
         }
-        rootPanel.relinkListeners(event);
+        if(rootPanel != null) rootPanel.relinkListeners(event);
     }
 
     @Override
-    public boolean onMouseClick(double mouseX, double mouseY, int button, Screen screenOrig) {
+    public boolean onMouseClick(double mouseX, double mouseY, int button, IScreen screenOrig) {
         boolean result = false;
         if (shouldRenderOnScreen(screenOrig)) {
             if (rootPanel != null) rootPanel.onClick(mouseX, mouseY);
@@ -137,21 +126,21 @@ public class ModSettingsOverlay implements IOverlay {
     }
 
     @Override
-    public boolean onMouseDrag(double mouseX, double mouseY, int button, Screen screenOrig) {
+    public boolean onMouseDrag(double mouseX, double mouseY, int button, IScreen screenOrig) {
         return false;
     }
 
     @Override
-    public void onMouseRelease(double mouseX, double mouseY, int button, Screen screenOrig) {}
+    public void onMouseRelease(double mouseX, double mouseY, int button, IScreen screenOrig) {}
 
     @Override
-    public void onKeyPressed(InputEvent.Key event) {
+    public void onKeyPressed(IKeyPressEvent event) {
         if(rootPanel != null) rootPanel.keyPressed(event);
     }
 
-    public void updateOverlayPosition(Screen screen) {
+    public void updateOverlayPosition(IScreen screen) {
         if(rootPanel == null) return;
-        if(screen instanceof ModSettingsScreen modSettingsScreen) {
+        if(screen instanceof IModSettingsScreen modSettingsScreen) {
             Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(modSettingsScreen);
             rootPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
         }

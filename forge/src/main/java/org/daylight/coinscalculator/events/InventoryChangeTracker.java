@@ -7,7 +7,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
+import org.daylight.coinscalculator.replacements.SingletonInstances;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class InventoryChangeTracker {
     private static final List<Runnable> listeners = new ArrayList<>();
 
     static {
-        addListener(CalculatorOverlay::requestInventorySnapshot);
+        addListener(SingletonInstances.CALCULATOR_OVERLAY::requestInventorySnapshot);
     }
 
     public static void addListener(Runnable runnable) {

@@ -2,14 +2,11 @@ package org.daylight.coinscalculator.events;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinsCalculator;
-import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
-import org.daylight.coinscalculator.ui.overlays.CoinsOverlay;
+import org.daylight.coinscalculator.replacements.ForgeGuiGraphics;
+import org.daylight.coinscalculator.replacements.SingletonInstances;
 
 @Mod.EventBusSubscriber(modid = CoinsCalculator.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GUIEvents {
@@ -19,7 +16,7 @@ public class GUIEvents {
         event.registerAboveAll("coin_calculator_overlay", (gui, graphics, partialTick, width, height) -> {
             if (Minecraft.getInstance().screen == null) {
 //                System.out.println("render overlay");
-                CalculatorOverlay.getInstance().render(graphics, partialTick, InputEvents.getMouseX(), InputEvents.getMouseY());
+                SingletonInstances.CALCULATOR_OVERLAY.render(new ForgeGuiGraphics(graphics), partialTick, InputEvents.getMouseX(), InputEvents.getMouseY());
             }
         });
         CoinsCalculator.LOGGER.info("Registering overlays");

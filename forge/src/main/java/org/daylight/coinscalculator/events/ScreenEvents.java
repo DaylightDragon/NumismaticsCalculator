@@ -1,17 +1,14 @@
 package org.daylight.coinscalculator.events;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.daylight.coinscalculator.ModKeyBindings;
+import org.daylight.coinscalculator.replacements.*;
 import org.daylight.coinscalculator.ui.SelectionRenderer;
-import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
-import org.daylight.coinscalculator.ui.overlays.GuiManagerOverlay;
-import org.daylight.coinscalculator.ui.overlays.ModSettingsOverlay;
 import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
 
 public class ScreenEvents {
@@ -22,35 +19,41 @@ public class ScreenEvents {
 
     @SubscribeEvent
     public void onScreenRender(ScreenEvent.Render.Post event) {
-        if (CalculatorOverlay.shouldRenderOnScreen(event.getScreen())) {
-            CalculatorOverlay.getInstance().render(event.getGuiGraphics(), event.getPartialTick(), event.getMouseX(), event.getMouseY());
+        IGuiGraphics abstractGraphics = new ForgeGuiGraphics(event.getGuiGraphics());
+        IScreen abstractScreen = new ForgeScreen(event.getScreen());
+
+        if (SingletonInstances.CALCULATOR_OVERLAY.shouldRenderOnScreen(abstractScreen)) {
+            SingletonInstances.CALCULATOR_OVERLAY.render(abstractGraphics, event.getPartialTick(), event.getMouseX(), event.getMouseY());
             SelectionRenderer.renderSelection(event.getGuiGraphics(), (AbstractContainerScreen<?>) event.getScreen());
         }
-        GuiManagerOverlay.getInstance().render(event.getGuiGraphics(), event.getPartialTick(), event.getMouseX(), event.getMouseY());
-        ModSettingsOverlay.getInstance().render(event.getGuiGraphics(), event.getPartialTick(), event.getMouseX(), event.getMouseY());
+        SingletonInstances.GUI_MANAGER_OVERLAY.render(abstractGraphics, event.getPartialTick(), event.getMouseX(), event.getMouseY());
+        SingletonInstances.MOD_SETTINGS_OVERLAY.render(abstractGraphics, event.getPartialTick(), event.getMouseX(), event.getMouseY());
     }
 
     @SubscribeEvent
     public void onScreenInit(ScreenEvent.Init.Post event) {
-        if (CalculatorOverlay.shouldRenderOnScreen(event.getScreen())) {
+        IRegisterListenersEvent abstractEvent = new ForgeRegisterListenersEvent(event);
+        IScreen abstractScreen = new ForgeScreen(event.getScreen());
+
+        if (SingletonInstances.CALCULATOR_OVERLAY.shouldRenderOnScreen(abstractScreen)) {
 //            System.out.println("Relink main");
-            CalculatorOverlay.getInstance().relinkListeners(event);
-            CalculatorOverlay.getInstance().updateOverlayPosition(event.getScreen());
+            SingletonInstances.CALCULATOR_OVERLAY.relinkListeners(abstractEvent);
+            SingletonInstances.CALCULATOR_OVERLAY.updateOverlayPosition(abstractScreen);
         }
-        if(GuiManagerOverlay.shouldRenderOnScreen(event.getScreen())) {
-            GuiManagerOverlay.getInstance().relinkListeners(event);
-            GuiManagerOverlay.getInstance().updateOverlayPosition(event.getScreen());
+        if(SingletonInstances.GUI_MANAGER_OVERLAY.shouldRenderOnScreen(abstractScreen)) {
+            SingletonInstances.GUI_MANAGER_OVERLAY.relinkListeners(abstractEvent);
+            SingletonInstances.GUI_MANAGER_OVERLAY.updateOverlayPosition(abstractScreen);
         }
-        if(ModSettingsOverlay.shouldRenderOnScreen(event.getScreen())) {
-            ModSettingsOverlay.getInstance().relinkListeners(event);
-            ModSettingsOverlay.getInstance().updateOverlayPosition(event.getScreen());
+        if(SingletonInstances.MOD_SETTINGS_OVERLAY.shouldRenderOnScreen(abstractScreen)) {
+            SingletonInstances.MOD_SETTINGS_OVERLAY.relinkListeners(abstractEvent);
+            SingletonInstances.MOD_SETTINGS_OVERLAY.updateOverlayPosition(abstractScreen);
         }
     }
 
     @SubscribeEvent
     public void onScreenOpen(ScreenEvent.Opening event) {
 //        Screen newScreen = event.getScreen();
-        CalculatorOverlay.getInstance().onScreenChange(event.getScreen());
+        SingletonInstances.CALCULATOR_OVERLAY.onScreenChange(new ForgeScreen(event.getScreen()));
     }
 
     @SubscribeEvent
@@ -58,7 +61,7 @@ public class ScreenEvents {
         if (event.getScreen() instanceof AbstractContainerScreen<?>) {
             InputConstants.Key key = InputConstants.getKey(event.getKeyCode(), event.getScanCode());
             if (ModKeyBindings.TOGGLE_GUI.isActiveAndMatches(key)) {
-                GuiManagerOverlay.toggleMainOverlayState();
+                SingletonInstances.GUI_MANAGER_OVERLAY.toggleMainOverlayState();
             }
             if (ModKeyBindings.MOD_SETTINGS.isActiveAndMatches(key)) {
                 ModSettingsScreen.setAsScreen();

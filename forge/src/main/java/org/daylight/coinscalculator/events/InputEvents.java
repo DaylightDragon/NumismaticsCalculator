@@ -8,10 +8,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinsCalculator;
-import org.daylight.coinscalculator.ui.overlays.CalculatorOverlay;
-import org.daylight.coinscalculator.ui.overlays.GuiManagerOverlay;
-import org.daylight.coinscalculator.ui.overlays.IOverlay;
-import org.daylight.coinscalculator.ui.overlays.ModSettingsOverlay;
+import org.daylight.coinscalculator.replacements.ForgeKeyPressEvent;
+import org.daylight.coinscalculator.replacements.ForgeScreen;
+import org.daylight.coinscalculator.replacements.SingletonInstances;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
@@ -19,11 +18,6 @@ import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = CoinsCalculator.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class InputEvents {
-
-    private static IOverlay calculatorOverlay = CalculatorOverlay.getInstance();
-    private static IOverlay guiManagerOverlay = GuiManagerOverlay.getInstance();
-    private static IOverlay modSettingsOverlay = ModSettingsOverlay.getInstance();
-
     private static boolean leftButtonDown = false;
     private static boolean rightButtonDown = false;
 
@@ -74,17 +68,17 @@ public class InputEvents {
         double mouseY = getMouseY();
         Screen screen = mc.screen;
 
-        if (calculatorOverlay == null || screen == null) return;
+        if (SingletonInstances.CALCULATOR_OVERLAY == null || screen == null) return;
 
         int button = event.getButton();
         if (event.getAction() == GLFW.GLFW_PRESS) {
             pressedButtons.add(button);
-            if(calculatorOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
-            if(guiManagerOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
-            if(modSettingsOverlay.onMouseClick(mouseX, mouseY, event.getButton(), screen)) event.setCanceled(true);
+            if(SingletonInstances.CALCULATOR_OVERLAY.onMouseClick(mouseX, mouseY, event.getButton(), new ForgeScreen(screen))) event.setCanceled(true);
+            if(SingletonInstances.GUI_MANAGER_OVERLAY.onMouseClick(mouseX, mouseY, event.getButton(), new ForgeScreen(screen))) event.setCanceled(true);
+            if(SingletonInstances.MOD_SETTINGS_OVERLAY.onMouseClick(mouseX, mouseY, event.getButton(), new ForgeScreen(screen))) event.setCanceled(true);
         } else if (event.getAction() == GLFW.GLFW_RELEASE) {
             pressedButtons.remove(button);
-            calculatorOverlay.onMouseRelease(mouseX, mouseY, event.getButton(), screen);
+            SingletonInstances.CALCULATOR_OVERLAY.onMouseRelease(mouseX, mouseY, event.getButton(), new ForgeScreen(screen));
         }
     }
 
@@ -105,7 +99,7 @@ public class InputEvents {
                 double dx = mouseX - lastMouseX;
                 double dy = mouseY - lastMouseY;
 //                System.out.println("Mouse dragging detected: dx=" + dx + ", dy=" + dy);
-                calculatorOverlay.onMouseDrag(getMouseX(), getMouseX(), 0, Minecraft.getInstance().screen);
+                SingletonInstances.CALCULATOR_OVERLAY.onMouseDrag(getMouseX(), getMouseX(), 0, new ForgeScreen(Minecraft.getInstance().screen));
             }
         }
 
@@ -124,8 +118,8 @@ public class InputEvents {
 
     @SubscribeEvent
     public static void onKeyPressed(InputEvent.Key event) {
-        if(calculatorOverlay != null) calculatorOverlay.onKeyPressed(event); // event.getKey(), event.getScanCode(), event.getModifiers());
-        if(modSettingsOverlay != null) modSettingsOverlay.onKeyPressed(event);
+        if(SingletonInstances.CALCULATOR_OVERLAY != null) SingletonInstances.CALCULATOR_OVERLAY.onKeyPressed(new ForgeKeyPressEvent(event)); // event.getKey(), event.getScanCode(), event.getModifiers());
+        if(SingletonInstances.MOD_SETTINGS_OVERLAY != null) SingletonInstances.MOD_SETTINGS_OVERLAY.onKeyPressed(new ForgeKeyPressEvent(event));
     }
 
 //    @SubscribeEvent

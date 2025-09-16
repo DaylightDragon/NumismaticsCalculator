@@ -13,6 +13,7 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import org.jetbrains.annotations.NotNull;
 
+@Deprecated
 public class CoinsOverlay implements IGuiOverlay {
     @Override
     public void render(ForgeGui gui, @NotNull GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {

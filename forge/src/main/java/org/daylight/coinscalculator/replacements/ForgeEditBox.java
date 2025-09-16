@@ -92,4 +92,9 @@ public class ForgeEditBox implements IEditBox {
             delegate.render(forgeGraphics.getDelegate(), mouseX, mouseY, partialTick);
         }
     }
+
+    @Override
+    public String getValue() {
+        return delegate.getValue();
+    }
 }
