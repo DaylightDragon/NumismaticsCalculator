@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -27,17 +28,19 @@ public class ForgeCoinValues implements ICoinValues {
     public static final Map<Integer, CoinTypes> VALUE_TO_COIN_TYPE = new HashMap<>();
     public static final Map<CoinTypes, Consumer<Integer>> TYPE_TO_SET_MAIN = new HashMap<>(); // ask ai about map impl  later
     public static final Map<CoinTypes, Consumer<Integer>> TYPE_TO_SET_RETURN = new HashMap<>(); // ask ai about map impl later
-    public static final Map<String, TextureAtlasSprite> NAME_TO_TEXTURE_ATLAS_SPRITE = new HashMap<>();
+    private static final Map<String, TextureAtlasSprite> NAME_TO_TEXTURE_ATLAS_SPRITE = new HashMap<>();
+
+    private static List<ResourceLocation> numismaticsCoinLocations = List.of(
+            ResourceLocation.parse("numismatics:spur"),
+            ResourceLocation.parse("numismatics:bevel"),
+            ResourceLocation.parse("numismatics:sprocket"),
+            ResourceLocation.parse("numismatics:cog"),
+            ResourceLocation.parse("numismatics:crown"),
+            ResourceLocation.parse("numismatics:sun")
+    );
 
     public static void init() {
-        for (ResourceLocation id : List.of(
-                ResourceLocation.parse("numismatics:spur"),
-                ResourceLocation.parse("numismatics:bevel"),
-                ResourceLocation.parse("numismatics:sprocket"),
-                ResourceLocation.parse("numismatics:cog"),
-                ResourceLocation.parse("numismatics:crown"),
-                ResourceLocation.parse("numismatics:sun")
-        )) {
+        for (ResourceLocation id : numismaticsCoinLocations) {
             Item item = ForgeRegistries.ITEMS.getValue(id);
             if (item != null) {
                 int value = switch (id.getPath()) {
@@ -51,7 +54,7 @@ public class ForgeCoinValues implements ICoinValues {
                 };
                 ITEM_TO_VALUE.put(item, value);
                 VALUE_TO_RESOURCE_LOCATION.put(value, id);
-                NAME_TO_TEXTURE_ATLAS_SPRITE.put(id.getPath(), getCoinResourceLocation(id.getPath()));
+//                NAME_TO_TEXTURE_ATLAS_SPRITE.put(id.getPath(), getCoinResourceLocation(id.getPath()));
             }
         }
 
@@ -93,8 +96,9 @@ public class ForgeCoinValues implements ICoinValues {
 
     private static TextureAtlasSprite getCoinResourceLocation(String itemName) {
         Item item = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse("numismatics:" + itemName));
-        if(item == null || Minecraft.getInstance().level == null) {
-            return getMissingNo();
+        if(item == null) {
+//            System.out.println("item: " + item + ", level: " + Minecraft.getInstance().level);
+            return null;
         }
         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(new ItemStack(item), null, null, 0);
 
@@ -110,12 +114,19 @@ public class ForgeCoinValues implements ICoinValues {
             return quads.get(0).getSprite();
         }
 
-        return getMissingNo();
+//        System.out.println("quads empty");
+        return null;
     }
 
     @Override
     public ITextureAtlasSprite getAtlasSpriteByName(String name) {
-        return new ForgeTextureAtlasSprite(NAME_TO_TEXTURE_ATLAS_SPRITE.getOrDefault(name, getMissingNo()));
+        if(NAME_TO_TEXTURE_ATLAS_SPRITE.containsKey(name)) return new ForgeTextureAtlasSprite(NAME_TO_TEXTURE_ATLAS_SPRITE.get(name));
+        TextureAtlasSprite sprite = getCoinResourceLocation(name);
+        if(sprite != null) {
+            NAME_TO_TEXTURE_ATLAS_SPRITE.put(name, sprite);
+            return new ForgeTextureAtlasSprite(sprite);
+        }
+        else return new ForgeTextureAtlasSprite(getMissingNo());
     }
 
     @Override

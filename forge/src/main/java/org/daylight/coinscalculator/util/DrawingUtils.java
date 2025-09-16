@@ -4,12 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import org.daylight.coinscalculator.replacements.ForgeGuiGraphics;
 import org.daylight.coinscalculator.replacements.IDrawingUtils;
 import org.daylight.coinscalculator.replacements.IGuiGraphics;
 import org.jetbrains.annotations.NotNull;
 
 public class DrawingUtils implements IDrawingUtils {
-    public static void fill(@NotNull GuiGraphics g, int minX, int minY, int maxX, int maxY, int pColor, int outlineWidth, int outlineColor) {
+    public static void fillSt(@NotNull GuiGraphics g, int minX, int minY, int maxX, int maxY, int pColor, int outlineWidth, int outlineColor) {
         if(outlineWidth <= 0) {
             g.fill(minX, minY, maxX, maxY, pColor);
         } else {
@@ -36,7 +37,9 @@ public class DrawingUtils implements IDrawingUtils {
 
     @Override
     public void fill(IGuiGraphics graphics, int xMin, int yMin, int xMax, int yMax, int bgColor, int outlineWidth, int outlineColor) {
+        if(!(graphics instanceof ForgeGuiGraphics forgeGuiGraphics)) throw new IllegalArgumentException();
 
+        fillSt(forgeGuiGraphics.getDelegate(), xMin, yMin, xMax, yMax, bgColor, outlineWidth, outlineColor);
     }
 
     public static void drawScaledTextStatic(@NotNull IGuiGraphics graphics, String text, float x, float y, int color, float scale, boolean shadow) {

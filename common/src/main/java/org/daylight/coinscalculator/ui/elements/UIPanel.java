@@ -133,7 +133,9 @@ public abstract class UIPanel extends UIElement {
 
         int bgColor = getBackgroundColor();
         if(!backgroundVisible) bgColor = 0;
-        if(bgColor != 0 || (outlineColor != 0 && outlineWidth != 0)) SingletonInstances.DRAWING_UTILS.fill(g, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
+        if(bgColor != 0 || (outlineColor != 0 && outlineWidth != 0)) {
+            SingletonInstances.DRAWING_UTILS.fill(g, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
+        }
 //        g.fill(x, y, x + width, y + height, bgColor);
         for (UIElement child : children) {
 //            CoinsCalculator.LOGGER.info("child: " + child.getClass().getSimpleName() + " x: " + child.x + ", y: " + child.y + ", width: " + child.width + ", height: " + child.height);
