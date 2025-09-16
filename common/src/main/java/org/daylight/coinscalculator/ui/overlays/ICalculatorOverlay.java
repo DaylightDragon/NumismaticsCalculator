@@ -58,7 +58,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
     protected boolean positionAnimationActive = false;
     protected long positionAnimationStartTime = 0;
 
-    protected abstract void replacePositionAnimationData();
+    public abstract void replacePositionAnimationData();
 
     protected float easeOutCubic(float t) {
         return 1 - (float)Math.pow(1 - t, 3);

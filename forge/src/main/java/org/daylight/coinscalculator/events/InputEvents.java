@@ -86,6 +86,9 @@ public class InputEvents {
     private static double lastMouseX = -1;
     private static double lastMouseY = -1;
 
+    private static int lastWindowWidth = -1;
+    private static int lastWindowHeight = -1;
+
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
@@ -105,6 +108,24 @@ public class InputEvents {
 
         lastMouseX = mouseX;
         lastMouseY = mouseY;
+
+        checkWindowResize(event);
+    }
+
+    private static void checkWindowResize(TickEvent.ClientTickEvent event) {
+        var window = Minecraft.getInstance().getWindow();
+        int w = window.getGuiScaledWidth();
+        int h = window.getGuiScaledHeight();
+
+        if (w != lastWindowWidth || h != lastWindowHeight) {
+            lastWindowWidth = w;
+            lastWindowHeight = h;
+            onWindowResized(w, h);
+        }
+    }
+
+    private static void onWindowResized(int width, int height) {
+        SingletonInstances.CALCULATOR_OVERLAY.replacePositionAnimationData();
     }
 
 //    @SubscribeEvent

@@ -59,7 +59,7 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
     }
 
     @Override
-    protected void replacePositionAnimationData() {
+    public void replacePositionAnimationData() {
         if(!ConfigData.overlayAnimationEnabled.get()) return;
         if(Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
 
