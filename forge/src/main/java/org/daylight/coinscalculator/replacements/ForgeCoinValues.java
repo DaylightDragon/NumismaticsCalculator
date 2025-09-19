@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +14,8 @@ import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.daylight.coinscalculator.UiState;
+import org.daylight.coinscalculator.replacements.api.ForgeItem;
+import org.daylight.coinscalculator.replacements.api.ForgeTextureAtlasSprite;
 
 import java.util.HashMap;
 import java.util.List;

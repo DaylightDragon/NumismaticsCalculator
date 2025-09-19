@@ -5,14 +5,13 @@ import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinsCalculator;
-import org.daylight.coinscalculator.replacements.ForgeGuiGraphics;
+import org.daylight.coinscalculator.replacements.api.ForgeGuiGraphics;
 import org.daylight.coinscalculator.replacements.SingletonInstances;
 
 @Mod.EventBusSubscriber(modid = CoinsCalculator.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GUIEvents {
     @SubscribeEvent
     public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
-//        event.registerAboveAll("coins_overlay", new CoinsOverlay());
         event.registerAboveAll("coin_calculator_overlay", (gui, graphics, partialTick, width, height) -> {
             if (Minecraft.getInstance().screen == null) {
 //                System.out.println("render overlay");

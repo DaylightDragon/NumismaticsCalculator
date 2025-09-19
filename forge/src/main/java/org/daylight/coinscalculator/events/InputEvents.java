@@ -8,8 +8,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.daylight.coinscalculator.CoinsCalculator;
-import org.daylight.coinscalculator.replacements.ForgeKeyPressEvent;
-import org.daylight.coinscalculator.replacements.ForgeScreen;
+import org.daylight.coinscalculator.replacements.api.ForgeKeyPressEvent;
+import org.daylight.coinscalculator.replacements.api.ForgeScreen;
 import org.daylight.coinscalculator.replacements.SingletonInstances;
 import org.lwjgl.glfw.GLFW;
 
@@ -23,43 +23,6 @@ public class InputEvents {
 
     private static boolean leftDown = false;
     private static boolean rightDown = false;
-
-//    @SubscribeEvent
-//    public static void onMouseButton2(InputEvent.MouseButton event) {
-//        // 0 = ЛКМ, 1 = ПКМ, 2 = Средняя
-//        double mouseX = getMouseX();
-//        double mouseY = getMouseY();
-//        if (event.getButton() == 0) {
-//            leftDown = event.getAction() == 1; // 1 = PRESS, 0 = RELEASE
-//            if (leftDown) {
-//                System.out.println("ЛКМ нажата");
-//                if(inputHandler.onMouseClick(mouseX, mouseY, event.getButton(), Minecraft.getInstance().screen)) event.setCanceled(true);
-//            } else {
-//                System.out.println("ЛКМ отпущена");
-//            }
-//        }
-//        if (event.getButton() == 1) {
-//            rightDown = event.getAction() == 1;
-//        }
-//    }
-
-//    @SubscribeEvent
-//    public static void onMouseMove(InputEvent.Mouse event) {
-//        if (Minecraft.getInstance().screen == null) {
-//            if (leftDown) {
-//                System.out.println("Мышь двигается с зажатой ЛКМ: x=" + event.getMouseX() + " y=" + event.getMouseY());
-//            }
-//        }
-//    }
-
-//    @SubscribeEvent
-//    public static void onMouseClick(InputEvent.MouseButton.Pre event) {
-//        if (inputHandler == null) return;
-//        Minecraft mc = Minecraft.getInstance();
-//        double mouseX = getMouseX();
-//        double mouseY = getMouseY();
-//        if(inputHandler.onMouseClick(mouseX, mouseY, event.getButton(), mc.screen)) event.setCanceled(true);
-//    }
 
     @SubscribeEvent
     public static void onMouseButton(InputEvent.MouseButton.Pre event) {

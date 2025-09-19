@@ -3,6 +3,9 @@ package org.daylight.coinscalculator.replacements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.daylight.coinscalculator.replacements.api.ForgeFont;
+import org.daylight.coinscalculator.replacements.api.ForgeItemStack;
+import org.daylight.coinscalculator.replacements.api.ForgeScreen;
 
 import java.util.ArrayList;
 import java.util.List;

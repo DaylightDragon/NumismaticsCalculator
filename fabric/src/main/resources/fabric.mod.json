@@ -9,7 +9,7 @@
   "icon": ${mod_icon_location},
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "client": [
       ${entrypoint_main}
     ]
   },

@@ -3,8 +3,6 @@ package org.daylight.coinscalculator.ui.overlays;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -12,7 +10,11 @@ import net.minecraft.world.inventory.Slot;
 import org.daylight.coinscalculator.UiState;
 import org.daylight.coinscalculator.config.ConfigData;
 import org.daylight.coinscalculator.replacements.*;
-import org.daylight.coinscalculator.ui.SelectionRenderer;
+import org.daylight.coinscalculator.replacements.api.ForgeAbstractContainerScreen;
+import org.daylight.coinscalculator.replacements.api.ForgeGuiGraphics;
+import org.daylight.coinscalculator.replacements.api.ForgeScreen;
+import org.daylight.coinscalculator.replacements.api.ForgeSlot;
+import org.daylight.coinscalculator.ui.ForgeSelectionRenderer;
 import org.daylight.coinscalculator.util.tuples.Quartet;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +42,7 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
             if (mainFloatingPanel == null) {
                 init(new ForgeAbstractContainerScreen(screen));
             }
-            SelectionRenderer.renderSelection(forgeGraphics.getDelegate(), screen);
+            ForgeSelectionRenderer.renderSelection(forgeGraphics.getDelegate(), screen);
             runPositionAnimation(ConfigData.overlayAnimationDuration.get());
 
             if (mainFloatingPanel != null) {

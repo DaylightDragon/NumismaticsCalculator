@@ -1,0 +1,26 @@
+package org.daylight.coinscalculator.ui;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import org.daylight.coinscalculator.ModColors;
+import org.daylight.coinscalculator.UiState;
+import org.daylight.coinscalculator.replacements.*;
+import org.daylight.coinscalculator.replacements.api.ForgeAbstractContainerScreen;
+import org.jetbrains.annotations.NotNull;
+
+public class ForgeSelectionRenderer {
+    public static void renderSelection(@NotNull GuiGraphics g, AbstractContainerScreen<?> screen) {
+        IAbstractContainerScreen<?> veryAbstractContainerScreen = new ForgeAbstractContainerScreen(screen);
+
+//        System.out.println(UiState.selectionModeActive + " " + UiState.selectionRendered  + " " + !UiState.selectionSlotValuesCoins.isEmpty());
+        if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty() && !screen.getMenu().slots.isEmpty()) {
+//            System.out.println("Selection render");
+//            System.out.println(UiState.selectionStartPointSlotIndex + " - " + UiState.selectionEndPointSlotIndex);
+            for(Integer slotIndex : UiState.selectionSlotValuesCoins.keySet()) {
+                ISlot slot = SingletonInstances.CALCULATOR_OVERLAY.getRealInventorySlot(veryAbstractContainerScreen, slotIndex); // screen.getMenu().getSlot(slotIndex);
+                int color = UiState.selectionSlotValuesCoins.get(slotIndex) != null ? ModColors.selectionCoins : ModColors.selectionUsual;
+                g.fill(screen.getGuiLeft() + slot.x(), screen.getGuiTop() + slot.y(), screen.getGuiLeft() + slot.x() + 16, screen.getGuiTop() + slot.y() + 16, color);
+            }
+        }
+    }
+}

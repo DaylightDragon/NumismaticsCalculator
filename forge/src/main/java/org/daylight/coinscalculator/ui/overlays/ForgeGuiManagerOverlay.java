@@ -5,9 +5,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import org.daylight.coinscalculator.config.ConfigData;
-import org.daylight.coinscalculator.replacements.ForgeScreen;
+import org.daylight.coinscalculator.replacements.api.ForgeScreen;
 import org.daylight.coinscalculator.replacements.IScreen;
-import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
+import org.daylight.coinscalculator.ui.screens.ForgeModSettingsScreenImpl;
 
 public class ForgeGuiManagerOverlay extends IGuiManagerOverlay {
     @Override
@@ -25,6 +25,6 @@ public class ForgeGuiManagerOverlay extends IGuiManagerOverlay {
 
     @Override
     protected void onOpenSettingsBtnClicked() {
-        ModSettingsScreen.setAsScreen();
+        ForgeModSettingsScreenImpl.setAsScreen();
     }
 }

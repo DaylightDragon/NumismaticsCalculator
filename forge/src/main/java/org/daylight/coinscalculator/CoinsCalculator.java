@@ -3,7 +3,6 @@ package org.daylight.coinscalculator;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,11 +16,13 @@ import org.daylight.coinscalculator.events.GUIEvents;
 import org.daylight.coinscalculator.events.ScreenEvents;
 import org.daylight.coinscalculator.events.TooltipEvents;
 import org.daylight.coinscalculator.replacements.*;
+import org.daylight.coinscalculator.replacements.api.ForgeComponentFactory;
+import org.daylight.coinscalculator.replacements.api.ForgeEditBoxFactory;
+import org.daylight.coinscalculator.replacements.api.ForgeRenderSystem;
 import org.daylight.coinscalculator.ui.overlays.ForgeCalculatorOverlay;
 import org.daylight.coinscalculator.ui.overlays.ForgeGuiManagerOverlay;
 import org.daylight.coinscalculator.ui.overlays.ForgeModSettingsOverlay;
-import org.daylight.coinscalculator.util.DrawingUtils;
-import org.jetbrains.annotations.NotNull;
+import org.daylight.coinscalculator.util.ForgeDrawingUtils;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -39,7 +40,6 @@ public class CoinsCalculator
         context.registerConfig(ModConfig.Type.CLIENT, ConfigHandler.SPEC);
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::addCreative);
 
 //        MinecraftForge.EVENT_BUS.register(TooltipEvents.class);
 //        MinecraftForge.EVENT_BUS.register(GUIEvents.class);
@@ -54,9 +54,6 @@ public class CoinsCalculator
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
@@ -75,7 +72,7 @@ public class CoinsCalculator
     }
 
     private void registerCommonSingletonInstances() {
-        SingletonInstances.DRAWING_UTILS = new DrawingUtils();
+        SingletonInstances.DRAWING_UTILS = new ForgeDrawingUtils();
         SingletonInstances.RENDER_SYSTEM = new ForgeRenderSystem();
         SingletonInstances.MOD_RESOURCES = new ForgeResources();
         SingletonInstances.EDITBOXES = new ForgeEditBoxFactory();

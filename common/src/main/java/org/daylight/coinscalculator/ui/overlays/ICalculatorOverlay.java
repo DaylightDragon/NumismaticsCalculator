@@ -586,6 +586,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         UIUpdateRequests.updateSelectedCoinsValue = true;
     }
 
+    @Deprecated
     public abstract List<ISlot> getPlayerInventorySlots(IAbstractContainerScreen<?> screen);
 
     public abstract int getRealSlotIndex(IAbstractContainerScreen<?> screen, ISlot slot);

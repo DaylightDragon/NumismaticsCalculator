@@ -5,7 +5,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.daylight.coinscalculator.replacements.SingletonInstances;
-import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
+import org.daylight.coinscalculator.ui.screens.ForgeModSettingsScreenImpl;
 import org.lwjgl.glfw.GLFW;
 
 public class ModKeyBindings {
@@ -31,7 +31,7 @@ public class ModKeyBindings {
             SingletonInstances.GUI_MANAGER_OVERLAY.toggleMainOverlayState();
         }
         if (MOD_SETTINGS.consumeClick()) {
-            ModSettingsScreen.setAsScreen();
+            ForgeModSettingsScreenImpl.setAsScreen();
         }
     }
 }

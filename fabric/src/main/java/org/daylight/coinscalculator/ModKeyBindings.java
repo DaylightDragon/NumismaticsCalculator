@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.daylight.coinscalculator.replacements.SingletonInstances;
+import org.daylight.coinscalculator.ui.FabricModSettingsScreenImpl;
 import org.lwjgl.glfw.GLFW;
 
 public class ModKeyBindings {
@@ -32,7 +33,7 @@ public class ModKeyBindings {
                 SingletonInstances.GUI_MANAGER_OVERLAY.toggleMainOverlayState();
             }
             if (MOD_SETTINGS.wasPressed()) {
-//                ModSettingsScreen.setAsScreen(); // TODO
+                FabricModSettingsScreenImpl.setAsScreen();
             }
         });
     }

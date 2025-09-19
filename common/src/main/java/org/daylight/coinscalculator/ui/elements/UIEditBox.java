@@ -127,7 +127,7 @@ public class UIEditBox extends UIElement {
 
         int key = event.getKey();
         int scanCode = event.getScanCode();
-        int action = event.getAction();
+//        int action = event.getAction();
 
         if (event.isActionPress() || event.isActionRepeat()) {
             if (event.isBackspacePressed()) {

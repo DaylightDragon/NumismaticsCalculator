@@ -1,8 +1,8 @@
 package org.daylight.coinscalculator.ui.overlays;
 
 import org.daylight.coinscalculator.config.ConfigData;
-import org.daylight.coinscalculator.replacements.ForgeBooleanConfigValue;
-import org.daylight.coinscalculator.replacements.ForgeIntConfigValue;
+import org.daylight.coinscalculator.replacements.api.ForgeBooleanConfigValue;
+import org.daylight.coinscalculator.replacements.api.ForgeIntConfigValue;
 import org.daylight.coinscalculator.replacements.IBooleanConfigValue;
 import org.daylight.coinscalculator.replacements.IIntConfigValue;
 

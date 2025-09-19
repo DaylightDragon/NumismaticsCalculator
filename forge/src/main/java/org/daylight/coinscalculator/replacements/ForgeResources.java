@@ -2,6 +2,7 @@ package org.daylight.coinscalculator.replacements;
 
 import net.minecraft.resources.ResourceLocation;
 import org.daylight.coinscalculator.CoinsCalculator;
+import org.daylight.coinscalculator.replacements.api.ForgeResourceLocation;
 
 public class ForgeResources implements IModResources {
     public static final IResourceLocation SELECTION_DEFAULT_RESOURCE = new ForgeResourceLocation(ResourceLocation.fromNamespaceAndPath(CoinsCalculator.MODID, "textures/gui/selection_default.png"));

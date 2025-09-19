@@ -8,8 +8,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.daylight.coinscalculator.ModKeyBindings;
 import org.daylight.coinscalculator.replacements.*;
-import org.daylight.coinscalculator.ui.SelectionRenderer;
-import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
+import org.daylight.coinscalculator.replacements.api.ForgeGuiGraphics;
+import org.daylight.coinscalculator.replacements.api.ForgeRegisterListenersEvent;
+import org.daylight.coinscalculator.replacements.api.ForgeScreen;
+import org.daylight.coinscalculator.ui.ForgeSelectionRenderer;
+import org.daylight.coinscalculator.ui.screens.ForgeModSettingsScreenImpl;
 
 public class ScreenEvents {
     @SubscribeEvent
@@ -24,7 +27,7 @@ public class ScreenEvents {
 
         if (SingletonInstances.CALCULATOR_OVERLAY.shouldRenderOnScreen(abstractScreen)) {
             SingletonInstances.CALCULATOR_OVERLAY.render(abstractGraphics, event.getPartialTick(), event.getMouseX(), event.getMouseY());
-            SelectionRenderer.renderSelection(event.getGuiGraphics(), (AbstractContainerScreen<?>) event.getScreen());
+            ForgeSelectionRenderer.renderSelection(event.getGuiGraphics(), (AbstractContainerScreen<?>) event.getScreen());
         }
         SingletonInstances.GUI_MANAGER_OVERLAY.render(abstractGraphics, event.getPartialTick(), event.getMouseX(), event.getMouseY());
         SingletonInstances.MOD_SETTINGS_OVERLAY.render(abstractGraphics, event.getPartialTick(), event.getMouseX(), event.getMouseY());
@@ -64,7 +67,7 @@ public class ScreenEvents {
                 SingletonInstances.GUI_MANAGER_OVERLAY.toggleMainOverlayState();
             }
             if (ModKeyBindings.MOD_SETTINGS.isActiveAndMatches(key)) {
-                ModSettingsScreen.setAsScreen();
+                ForgeModSettingsScreenImpl.setAsScreen();
             }
         }
     }
