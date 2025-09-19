@@ -27,3 +27,9 @@ sourceSets.main.resources.srcDirs = ['src/main/resources']
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+//tasks.named("jar") {
+//    from("src/main/resources") {
+//        include("**/*")
+//    }
+//}

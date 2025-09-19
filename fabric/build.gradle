@@ -6,6 +6,7 @@ plugins {
 repositories {
 	mavenCentral()
 	maven { url "https://maven.fabricmc.net/" }
+	maven { url = "https://maven.terraformersmc.com/"}
 }
 
 def globalProps = new Properties()
@@ -55,11 +56,31 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	implementation('org.daylight:common:1.0.0')
+	modImplementation("com.terraformersmc:modmenu:7.2.2")
 }
 
 import groovy.json.JsonOutput
 
+def commonJarProvider = {
+	def artifacts = configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts
+	def artifact = artifacts.find {
+		it.moduleVersion.id.group == "org.daylight" && it.name == "common"
+	}
+	return artifact?.file
+}
+
 tasks.named('processResources', ProcessResources).configure {
+	def commonJar = commonJarProvider()
+	if (commonJar != null) {
+		from(zipTree(commonJar)) {
+			include("assets/**")
+			include("data/**")
+		}
+	}
+
+	// чтобы избежать ошибок про дубликаты
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
 	def authorsList = (project.hasProperty('mod_authors') && project.mod_authors) ?
 			project.mod_authors.split(',').collect { it.trim() }.findAll { it } : []
 
