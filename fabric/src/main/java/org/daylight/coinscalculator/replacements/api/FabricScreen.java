@@ -1,6 +1,7 @@
 package org.daylight.coinscalculator.replacements.api;
 
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import org.daylight.coinscalculator.replacements.IAbstractContainerScreen;
 import org.daylight.coinscalculator.replacements.IModSettingsScreen;
 import org.daylight.coinscalculator.replacements.IScreen;
@@ -30,7 +31,7 @@ public class FabricScreen implements IScreen {
 
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
-        return (IAbstractContainerScreen<?>) delegate;
+        return new FabricAbstractContainerScreen ((HandledScreen<?>) delegate);
     }
 
     @Override

@@ -1,29 +1,29 @@
 package org.daylight.coinscalculator.ui.overlays;
 
-import org.daylight.coinscalculator.config.ConfigData;
+import org.daylight.coinscalculator.config.ConfigHandler;
+import org.daylight.coinscalculator.replacements.FabricBooleanConfigValue;
 import org.daylight.coinscalculator.replacements.IBooleanConfigValue;
 import org.daylight.coinscalculator.replacements.IIntConfigValue;
 
-public class FabricModSettingsOverlay extends IModSettingsOverlay { // TODO
+public class FabricModSettingsOverlay extends IModSettingsOverlay {
     @Override
     protected IBooleanConfigValue getConfigRequireShiftForTotalTooltip() {
-//        return new ForgeBooleanConfigValue(ConfigData.requireShiftForTotalTooltip);
-//        return new FabricBooleanConfigValue();
+        return ConfigHandler.requireShiftForTotalTooltip;
     }
 
     @Override
     protected IBooleanConfigValue getConfigShowControlPanel() {
-//        return new ForgeBooleanConfigValue(ConfigData.showControlPanel);
+        return ConfigHandler.showControlPanel;
     }
 
     @Override
     protected IBooleanConfigValue getConfigOverlayAnimationEnabled() {
-//        return new ForgeBooleanConfigValue(ConfigData.overlayAnimationEnabled);
+        return ConfigHandler.overlayAnimationEnabled;
     }
 
     @Override
     protected IIntConfigValue getConfigOverlayAnimationDuration() {
-//        return new ForgeIntConfigValue(ConfigData.overlayAnimationDuration);
+        return ConfigHandler.overlayAnimationDuration;
     }
 }
 

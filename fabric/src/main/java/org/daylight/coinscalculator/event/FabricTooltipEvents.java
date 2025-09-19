@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import org.daylight.coinscalculator.config.ConfigData;
+import org.daylight.coinscalculator.config.ConfigHandler;
 import org.daylight.coinscalculator.replacements.FabricCoinValues;
 
 public class FabricTooltipEvents {
@@ -16,7 +16,7 @@ public class FabricTooltipEvents {
         ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
             Integer value = FabricCoinValues.ITEM_TO_VALUE.get(stack.getItem());
             if (value != null && value > 0) {
-                if (!Screen.hasShiftDown() && ConfigData.requireShiftForTotalTooltip.get()) {
+                if (!Screen.hasShiftDown() && ConfigHandler.requireShiftForTotalTooltip.get()) {
                     lines.add(holdShiftHintComponent);
                 } else {
                     Text newLine = Text.literal("Value (Total): ")

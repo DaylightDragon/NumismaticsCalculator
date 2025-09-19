@@ -18,7 +18,6 @@ public class FabricAbstractContainerMenu implements IAbstractContainerMenu {
         return delegate;
     }
 
-
     @Override
     public List<ISlot> getSlots() {
         List<ISlot> slots = new ArrayList<>();

@@ -4,12 +4,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import org.daylight.coinscalculator.UiState;
-import org.daylight.coinscalculator.config.ConfigData;
+import org.daylight.coinscalculator.config.ConfigHandler;
 import org.daylight.coinscalculator.replacements.*;
 import org.daylight.coinscalculator.replacements.api.FabricAbstractContainerScreen;
 import org.daylight.coinscalculator.replacements.api.FabricGuiGraphics;
@@ -44,7 +43,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
                 init(new FabricAbstractContainerScreen(screen));
             }
             FabricSelectionRenderer.renderSelection(forgeGraphics.getDelegate(), screen);
-            runPositionAnimation(ConfigData.overlayAnimationDuration.get());
+            runPositionAnimation(ConfigHandler.overlayAnimationDuration.get());
 
             if (mainFloatingPanel != null) {
                 MinecraftClient mc = MinecraftClient.getInstance();
@@ -61,7 +60,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
 
     @Override
     public void replacePositionAnimationData() {
-        if(!ConfigData.overlayAnimationEnabled.get()) return;
+        if(!ConfigHandler.overlayAnimationEnabled.get()) return;
         if(MinecraftClient.getInstance().currentScreen == null || !(MinecraftClient.getInstance().currentScreen instanceof HandledScreen)) return;
 
         Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen(new FabricAbstractContainerScreen ((HandledScreen<?>) MinecraftClient.getInstance().currentScreen));
@@ -80,6 +79,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
 
     @Override
     protected boolean isSlotValidForSelection(ISlot slotOrig) {
+        if(slotOrig == null) return false;
         if(!(slotOrig instanceof FabricSlot fabricSlot)) throw new IllegalArgumentException();
         Slot slot = fabricSlot.getDelegate();
         if(slot == null) return false;

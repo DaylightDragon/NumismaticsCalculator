@@ -5,6 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import org.daylight.coinscalculator.config.ConfigHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class FabricModSettingsScreenImpl extends Screen {
@@ -25,8 +26,8 @@ public class FabricModSettingsScreenImpl extends Screen {
     protected void init() {
         // Кнопка "Back"
         this.addDrawable(ButtonWidget.builder(Text.literal("Back"), b -> {
-            MinecraftClient.getInstance().setScreen(parent);
-//            ConfigHandler.SPEC.save();
+            MinecraftClient.getInstance().setScreenAndRender(parent);
+            ConfigHandler.CONFIG.save();
         }).position(this.width / 2 - 50, this.height - 40).size(100, 20).build());
     }
 
@@ -40,7 +41,7 @@ public class FabricModSettingsScreenImpl extends Screen {
     @Override
     public void close() {
         super.close();
-//        ConfigHandler.SPEC.save();
+        ConfigHandler.CONFIG.save();
     }
 
     @Override
