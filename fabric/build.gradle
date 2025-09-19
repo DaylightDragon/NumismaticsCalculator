@@ -3,17 +3,47 @@ plugins {
 	id 'maven-publish'
 }
 
-version = project.mod_version
-group = project.maven_group
-
-base {
-	archivesName = project.archives_base_name
-}
-
 repositories {
 	mavenCentral()
 	maven { url "https://maven.fabricmc.net/" }
 }
+
+def globalProps = new Properties()
+file('../gradle.properties').withInputStream { globalProps.load(it) }
+
+ext {
+	minecraft_version = project.hasProperty('minecraft_version') ? project.minecraft_version : '1.20.1'
+	yarn_mappings     = project.hasProperty('yarn_mappings') ? project.yarn_mappings : '1.20.1+build.10'
+	loader_version    = project.hasProperty('loader_version') ? project.loader_version : '0.17.2'
+	loom_version      = project.hasProperty('loom_version') ? project.loom_version : '1.11-SNAPSHOT'
+	fabric_version    = project.hasProperty('fabric_version') ? project.fabric_version : '0.92.6+1.20.1'
+	entrypoint_main    = project.hasProperty('entrypoint_main') ? project.entrypoint_main : '0.92.6+1.20.1'
+
+	mod_id          = globalProps['mod_id']
+	mod_name        = globalProps['mod_name']
+	mod_license     = globalProps['mod_license']
+	mod_version     = globalProps['mod_version']
+	mod_group_id    = globalProps['mod_group_id']
+	mod_authors     = globalProps['mod_authors']
+	mod_description = globalProps['mod_description']
+	mod_icon_location = globalProps['mod_icon_location']
+
+	create_version  = globalProps['create_version']
+	ponder_version  = globalProps['ponder_version']
+	flywheel_version = globalProps['flywheel_version']
+	registrate_version = globalProps['registrate_version']
+
+	maven_group = "org.daylight"
+	archives_base_name = "numismatics_calculator_fabric"
+}
+
+//base {
+//	archivesName = project.archives_base_name
+//}
+
+version = project.mod_version
+group = project.mod_group_id
+base.archivesName = project.mod_id
 
 dependencies {
 	// To change the versions see the gradle.properties file
@@ -27,11 +57,34 @@ dependencies {
 	implementation('org.daylight:common:1.0.0')
 }
 
-processResources {
-	inputs.property "version", project.version
+import groovy.json.JsonOutput
 
-	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
+tasks.named('processResources', ProcessResources).configure {
+	def authorsList = (project.hasProperty('mod_authors') && project.mod_authors) ?
+			project.mod_authors.split(',').collect { it.trim() }.findAll { it } : []
+
+	def toJson = { v -> JsonOutput.toJson(v ?: "") }
+
+	def replaceProperties = [
+			mod_id             : toJson(project.mod_id),
+			mod_name           : toJson(project.mod_name),
+			mod_version        : toJson(project.mod_version),
+			mod_description    : toJson(project.mod_description),
+			mod_authors        : JsonOutput.toJson(authorsList),
+			mod_license        : toJson(project.mod_license),
+			mod_icon_location  : toJson(project.mod_icon_location),
+
+			// plain, чтобы вставлять внутрь строк
+			mod_id_plain       : project.mod_id.toString(),
+
+			// зависимости (подставляем в шаблон как JSON-строки)
+			loader_version_json: toJson(">=" + project.loader_version.toString()),
+			minecraft_version_json: toJson("~" + project.minecraft_version.toString()),
+			entrypoint_main: toJson(project.entrypoint_main.toString())
+	]
+
+	filesMatching('fabric.mod.json') {
+		expand replaceProperties
 	}
 }
 
