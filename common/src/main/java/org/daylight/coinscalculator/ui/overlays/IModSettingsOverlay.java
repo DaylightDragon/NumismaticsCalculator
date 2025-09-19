@@ -9,12 +9,12 @@ public abstract class IModSettingsOverlay implements IOverlay {
     private UIPanel rootPanel;
 
     public boolean shouldRenderOnScreen(IScreen screen) {
-        return (screen instanceof IModSettingsScreen);
+        return (screen.isModSettingsScreen());
     }
 
     public void render(@NotNull IGuiGraphics guiGraphics, float partialTick, Integer mouseX, Integer mouseY) {
         if(shouldRenderOnScreen(SingletonInstances.MINECRAFT_UTILS.getScreen())) {
-            IModSettingsScreen screen = (IModSettingsScreen) SingletonInstances.MINECRAFT_UTILS.getScreen();
+            IModSettingsScreen screen = SingletonInstances.MINECRAFT_UTILS.getScreen().getAsModSettingsScreen();
             if (rootPanel == null) init(screen);
             rootPanel.render(guiGraphics, SingletonInstances.INPUT_UTILS.getMouseX(), SingletonInstances.INPUT_UTILS.getMouseY(), partialTick);
         }
@@ -110,7 +110,7 @@ public abstract class IModSettingsOverlay implements IOverlay {
     }
 
     public void relinkListeners(IRegisterListenersEvent event) {
-        if(event.isAbstractContainerScreen()) {
+        if(event.isModSettingsScreen()) {
             if (rootPanel == null) init(event.getAsModSettingsScreen());
         }
         if(rootPanel != null) rootPanel.relinkListeners(event);

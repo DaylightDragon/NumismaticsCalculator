@@ -45,6 +45,11 @@ public class ForgeRegisterListenersEvent implements IRegisterListenersEvent {
     }
 
     @Override
+    public boolean isModSettingsScreen() {
+        return delegate.getScreen() instanceof ModSettingsScreen;
+    }
+
+    @Override
     public IScreen getScreen() {
         return new ForgeScreen(delegate.getScreen());
     }

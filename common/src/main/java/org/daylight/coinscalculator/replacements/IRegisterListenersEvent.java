@@ -7,4 +7,5 @@ public interface IRegisterListenersEvent {
     IScreen getScreen();
     IAbstractContainerScreen<?> getAsAbstractContainerScreen();
     IModSettingsScreen getAsModSettingsScreen();
+    boolean isModSettingsScreen();
 }

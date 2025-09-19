@@ -1,6 +1,7 @@
 package org.daylight.coinscalculator.replacements;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import org.daylight.coinscalculator.ui.screens.ModSettingsScreen;
 
 public class ForgeAbstractContainerScreen<T> implements IAbstractContainerScreen<T> {
     private AbstractContainerScreen<?> delegate;
@@ -26,6 +27,16 @@ public class ForgeAbstractContainerScreen<T> implements IAbstractContainerScreen
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
         return new ForgeAbstractContainerScreen<>((AbstractContainerScreen<?>) delegate);
+    }
+
+    @Override
+    public IModSettingsScreen getAsModSettingsScreen() {
+        throw new UnsupportedOperationException("This screen isn't a ModSettingsScreen");
+    }
+
+    @Override
+    public boolean isModSettingsScreen() {
+        return false;
     }
 
     public int getGuiLeft() {

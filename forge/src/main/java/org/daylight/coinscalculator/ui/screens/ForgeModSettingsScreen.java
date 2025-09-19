@@ -31,4 +31,14 @@ public class ForgeModSettingsScreen implements IModSettingsScreen {
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
         throw new UnsupportedOperationException("This screen isn't a AbstractContainerScreen");
     }
+
+    @Override
+    public IModSettingsScreen getAsModSettingsScreen() {
+        return new ForgeModSettingsScreen(delegate);
+    }
+
+    @Override
+    public boolean isModSettingsScreen() {
+        return true;
+    }
 }
