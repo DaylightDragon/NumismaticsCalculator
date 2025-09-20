@@ -15,7 +15,7 @@ public class UIEditBox extends UIElement {
     }
 
     public UIEditBox allowOnlyNumeric() {
-        editBox.setFilter(text -> text.isEmpty() || text.matches("\\d+"));
+        editBox.setOnlyNumeric(true);
         return this;
     }
 

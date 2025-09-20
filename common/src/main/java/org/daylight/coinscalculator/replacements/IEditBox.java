@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 public interface IEditBox {
-    void setFilter(@NotNull java.util.function.Predicate<String> filter);
+    void setOnlyNumeric(boolean onlyNumeric);
     void setX(int x);
     void setY(int y);
     void setValue(@NotNull String value);

@@ -55,6 +55,7 @@ public class CoinChangeLimited {
         res.coins = 0;
         res.composition = new LinkedHashMap<>();
         for (int i = 0; i < values.length; i++) {
+            if(values[i] <= 0) continue;
             int amount = target / values[i];
             res.composition.put(values[i], amount);
             target -= amount * values[i];
@@ -63,16 +64,24 @@ public class CoinChangeLimited {
         return res;
     }
 
-    public static Result solveFast(int target, int[] values, int[] counts) {
+    public static Result solveLimitedFast(int target, int[] values, int[] counts) {
+        System.out.println(target + " " + Arrays.toString(values) + " " + Arrays.toString(counts));
         int n = values.length;
+
         Result res = new Result();
+        res.exact = false;
+        res.sum = 0;
+        res.coins = 0;
+        res.overpay = target;
+
         res.composition = new LinkedHashMap<>();
         int sum = 0;
         int coins = 0;
 
         // Жадно забираем от больших к меньшим
         for (int i = 0; i < n; i++) {
-            int take = Math.min(counts[i], target / values[i]);
+            if (values[i] <= 0 || counts[i] <= 0) continue;
+            int take = Math.min(counts[i], target / values[i]); // error here
             if (take > 0) {
                 res.composition.put(values[i], take);
                 target -= take * values[i];
@@ -180,7 +189,7 @@ public class CoinChangeLimited {
         int[] values = {50, 20, 10, 5};
         int[] counts = {1, 2, 1, 1};
 
-        Result res = solveFast(target, values, counts);
+        Result res = solveLimitedFast(target, values, counts);
 //        if (res != null) {
 //            System.out.println(res);
 //        } else {

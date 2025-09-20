@@ -129,7 +129,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
                 i++;
             }
 
-            res = CoinChangeLimited.solveFast(value, types, amounts);
+            res = CoinChangeLimited.solveLimitedFast(value, types, amounts);
         }
         else res = CoinChangeLimited.solveInfinite(value, values);
         if(res == null) return;

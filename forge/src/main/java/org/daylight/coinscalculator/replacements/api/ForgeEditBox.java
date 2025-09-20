@@ -21,8 +21,8 @@ public class ForgeEditBox implements IEditBox {
     }
 
     @Override
-    public void setFilter(@NotNull Predicate<String> filter) {
-        delegate.setFilter(filter);
+    public void setOnlyNumeric(boolean onlyNumeric) {
+        delegate.setFilter(text -> text.isEmpty() || text.matches("\\d+"));
     }
 
     @Override

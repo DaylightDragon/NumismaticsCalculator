@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 public class FabricEditBox implements IEditBox {
     private final TextFieldWidget delegate;
+    private boolean allowOnlyNumeric;
 
     public FabricEditBox(TextRenderer font, int x, int y, int width, int height, Text component) {
         this.delegate = new TextFieldWidget(font, x, y, width, 20, component);
@@ -24,16 +25,12 @@ public class FabricEditBox implements IEditBox {
         return delegate;
     }
 
-    private String lastText = "";
+    private boolean onlyNumeric = false;
+    private Predicate<String> filterNumeric = text -> text.isEmpty() || text.matches("\\d+");
 
     @Override
-    public void setFilter(@NotNull Predicate<String> filter) {
-        delegate.setChangedListener(newText -> {
-            if (!filter.test(newText)) {
-                delegate.setText(lastText);
-            }
-            lastText = newText;
-        });
+    public void setOnlyNumeric(boolean onlyNumeric) {
+        this.onlyNumeric = onlyNumeric;
     }
 
     @Override
@@ -48,7 +45,7 @@ public class FabricEditBox implements IEditBox {
 
     @Override
     public void setValue(@NotNull String value) {
-        delegate.setText(value);
+        delegate.setText(cleanInput(value));
     }
 
     @Override
@@ -61,9 +58,28 @@ public class FabricEditBox implements IEditBox {
         delegate.setFocused(focused);
     }
 
+    private String cleanInput(String input) {
+        if(!onlyNumeric) return input;
+        return input.replaceAll("[^0-9]", "");
+    }
+
     @Override
-    public void insertText(@NotNull String text) {
-        delegate.setText(delegate.getText() + text);
+    public void insertText(@NotNull String input) {
+        input = cleanInput(input);
+
+        String current = delegate.getText();
+        if (current == null) current = "";
+
+        int cursor = delegate.getCursor();
+        cursor = Math.max(0, Math.min(cursor, current.length())); // anti out of bounds
+
+        String before = current.substring(0, cursor);
+        String after = current.substring(cursor);
+
+        String newText = before + input + after;
+        delegate.setText(newText);
+
+        delegate.setCursor(cursor + input.length());
     }
 
     @Override
