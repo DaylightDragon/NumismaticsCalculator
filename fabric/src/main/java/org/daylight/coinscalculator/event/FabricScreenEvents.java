@@ -6,15 +6,13 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import org.daylight.coinscalculator.replacements.IGuiGraphics;
 import org.daylight.coinscalculator.replacements.IScreen;
 import org.daylight.coinscalculator.replacements.SingletonInstances;
-import org.daylight.coinscalculator.replacements.api.FabricGuiGraphics;
-import org.daylight.coinscalculator.replacements.api.FabricKeyPressEvent;
-import org.daylight.coinscalculator.replacements.api.FabricScreen;
+import org.daylight.coinscalculator.replacements.api.*;
+import org.daylight.coinscalculator.ui.FabricModSettingsScreenImpl;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,34 +29,45 @@ public class FabricScreenEvents {
 
         // Mouse button events
         ScreenEvents.AFTER_INIT.register((minecraftClient, screen, width, height) -> { // sketchy
+//            System.out.println(screen.getClass().getSimpleName() + " " + (screen instanceof HandledScreen<?>));
+            if(screen instanceof HandledScreen<?>) {
+                SingletonInstances.CALCULATOR_OVERLAY.init(new FabricAbstractContainerScreen<>((HandledScreen<?>) screen));
+                SingletonInstances.GUI_MANAGER_OVERLAY.init(new FabricAbstractContainerScreen<>((HandledScreen<?>) screen));
+            } else if(screen instanceof FabricModSettingsScreenImpl) {
+                SingletonInstances.MOD_SETTINGS_OVERLAY.init(new FabricModSettingsScreen((FabricModSettingsScreenImpl) screen));
+            }
+
             // Mouse click
-            ScreenMouseEvents.beforeMouseClick(screen).register((s, mouseX, mouseY, button) -> {
-                if(SingletonInstances.CALCULATOR_OVERLAY != null) {
-                    SingletonInstances.CALCULATOR_OVERLAY.onMouseClick(mouseX, mouseY, button, new FabricScreen(screen));
-                }
+            ScreenMouseEvents.beforeMouseClick(screen).register(FabricScreenEvents::onMouseClickUi);
+
+            ScreenMouseEvents.allowMouseClick(screen).register((screen1, mouseX, mouseY, button) -> {
+                boolean allow = !SingletonInstances.CALCULATOR_OVERLAY.shouldBlockClicks(new FabricScreen(screen), (int) mouseX, (int) mouseY);
+                if(!allow) onMouseClickUi(screen1, mouseX, mouseY, button);
+                return allow;
             });
 
             // Mouse release
             ScreenMouseEvents.beforeMouseRelease(screen).register((s, mouseX, mouseY, button) -> {
-                if(SingletonInstances.CALCULATOR_OVERLAY != null) {
-                    SingletonInstances.CALCULATOR_OVERLAY.onMouseRelease(mouseX, mouseY, button, new FabricScreen(screen));
-                }
+                pressedButtons.remove(button);
+                if(SingletonInstances.CALCULATOR_OVERLAY != null) SingletonInstances.CALCULATOR_OVERLAY.onMouseRelease(mouseX, mouseY, button, new FabricScreen(screen));
+                if(SingletonInstances.GUI_MANAGER_OVERLAY != null) SingletonInstances.GUI_MANAGER_OVERLAY.onMouseRelease(mouseX, mouseY, button, new FabricScreen(screen));
+                if(SingletonInstances.MOD_SETTINGS_OVERLAY != null) SingletonInstances.MOD_SETTINGS_OVERLAY.onMouseRelease(mouseX, mouseY, button, new FabricScreen(screen));
             });
 
-            // Key press
-            ScreenKeyboardEvents.afterKeyPress(screen).register((s, key, scancode, modifiers) -> {
-                if(SingletonInstances.CALCULATOR_OVERLAY != null) {
-                    SingletonInstances.CALCULATOR_OVERLAY.onKeyPressed(new FabricKeyPressEvent(screen, key, scancode, modifiers));
-                }
-            });
+            // Key press // Commented to not have duplicates
+//            ScreenKeyboardEvents.afterKeyPress(screen).register((s, key, scancode, modifiers) -> {
+//                if(SingletonInstances.CALCULATOR_OVERLAY != null) {
+//                    SingletonInstances.CALCULATOR_OVERLAY.onKeyPressed(new FabricKeyPressEvent(screen, key, scancode, modifiers));
+//                }
+//            });
 
             // -------- Init Events
 
-            // Рендер после рендера экрана
+            // Render
             ScreenEvents.afterRender(screen).register((screenArg, drawContext, mouseX, mouseY, tickDelta) -> {
                 IGuiGraphics g = new FabricGuiGraphics(drawContext);
                 IScreen abstractScreen = new FabricScreen(screenArg);
-
+//                System.out.println("Render");
                 if (SingletonInstances.CALCULATOR_OVERLAY.shouldRenderOnScreen(abstractScreen)) {
                     SingletonInstances.CALCULATOR_OVERLAY.render(g, tickDelta, mouseX, mouseY);
                 }
@@ -66,19 +75,16 @@ public class FabricScreenEvents {
                 SingletonInstances.MOD_SETTINGS_OVERLAY.render(g, tickDelta, mouseX, mouseY);
             });
 
-            // Обработка клавиш (аналог KeyPressed.Post)
+            // Key press
             ScreenKeyboardEvents.afterKeyPress(screen).register((screenArg, key, scancode, modifiers) -> {
                 if (screen instanceof HandledScreen<?>) {
                     if (SingletonInstances.CALCULATOR_OVERLAY != null) {
-                        // Твоё оригинальное onKeyPressed
-                        SingletonInstances.CALCULATOR_OVERLAY.onKeyPressed(new FabricKeyPressEvent(
-                                screenArg, key, scancode, modifiers
-                        ));
+                        SingletonInstances.CALCULATOR_OVERLAY.onKeyPressed(new FabricKeyPressEvent(screenArg, key, scancode, modifiers));
                     }
+                    // Gui manager overlay doesn't need this event yet
+                } else if(screen instanceof FabricModSettingsScreenImpl) {
                     if (SingletonInstances.MOD_SETTINGS_OVERLAY != null) {
-                        SingletonInstances.MOD_SETTINGS_OVERLAY.onKeyPressed(new FabricKeyPressEvent(
-                                screenArg, key, scancode, modifiers
-                        ));
+                        SingletonInstances.MOD_SETTINGS_OVERLAY.onKeyPressed(new FabricKeyPressEvent(screenArg, key, scancode, modifiers));
                     }
                 }
             });
@@ -89,10 +95,13 @@ public class FabricScreenEvents {
             double mouseX = SingletonInstances.INPUT_UTILS.getMouseX();
             double mouseY = SingletonInstances.INPUT_UTILS.getMouseY();
 
+//            System.out.println(pressedButtons);
+
             if (lastMouseX != -1 && lastMouseY != -1 && pressedButtons.contains(0)) {
                 double dx = mouseX - lastMouseX;
                 double dy = mouseY - lastMouseY;
-                if (dx != 0 || dy != 0 && SingletonInstances.CALCULATOR_OVERLAY != null) {
+//                System.out.println("a");
+                if ((dx != 0 || dy != 0) && SingletonInstances.CALCULATOR_OVERLAY != null) {
                     SingletonInstances.CALCULATOR_OVERLAY.onMouseDrag(mouseX, mouseY, 0, new FabricScreen(mc.currentScreen));
                 }
             }
@@ -118,6 +127,13 @@ public class FabricScreenEvents {
         // ------------------------ Init Events ------------------------
 
         registerInitEvents();
+    }
+
+    private static void onMouseClickUi(Screen screen, double mouseX, double mouseY, int button) {
+        pressedButtons.add(button);
+        if (SingletonInstances.CALCULATOR_OVERLAY != null) SingletonInstances.CALCULATOR_OVERLAY.onMouseClick(mouseX, mouseY, button, new FabricScreen(screen));
+        if (SingletonInstances.GUI_MANAGER_OVERLAY != null) SingletonInstances.GUI_MANAGER_OVERLAY.onMouseClick(mouseX, mouseY, button, new FabricScreen(screen));
+        if (SingletonInstances.MOD_SETTINGS_OVERLAY != null) SingletonInstances.MOD_SETTINGS_OVERLAY.onMouseClick(mouseX, mouseY, button, new FabricScreen(screen));
     }
 
     private static void registerInitEvents() {

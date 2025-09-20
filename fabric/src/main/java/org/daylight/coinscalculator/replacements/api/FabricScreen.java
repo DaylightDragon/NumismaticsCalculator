@@ -31,7 +31,7 @@ public class FabricScreen implements IScreen {
 
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
-        return new FabricAbstractContainerScreen ((HandledScreen<?>) delegate);
+        return new FabricAbstractContainerScreen<>((HandledScreen<?>) delegate);
     }
 
     @Override
@@ -42,5 +42,10 @@ public class FabricScreen implements IScreen {
     @Override
     public IModSettingsScreen getAsModSettingsScreen() {
         return new FabricModSettingsScreen((FabricModSettingsScreenImpl) delegate);
+    }
+
+    @Override
+    public boolean isAbstractContainerScreen() {
+        return delegate instanceof HandledScreen<?>;
     }
 }

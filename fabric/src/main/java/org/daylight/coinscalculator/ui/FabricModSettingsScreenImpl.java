@@ -24,8 +24,7 @@ public class FabricModSettingsScreenImpl extends Screen {
 
     @Override
     protected void init() {
-        // Кнопка "Back"
-        this.addDrawable(ButtonWidget.builder(Text.literal("Back"), b -> {
+        this.addDrawableChild(ButtonWidget.builder(Text.literal("Back"), b -> {
             MinecraftClient.getInstance().setScreenAndRender(parent);
             ConfigHandler.CONFIG.save();
         }).position(this.width / 2 - 50, this.height - 40).size(100, 20).build());
@@ -34,7 +33,7 @@ public class FabricModSettingsScreenImpl extends Screen {
     @Override
     public void render(@NotNull DrawContext graphics, int mouseX, int mouseY, float delta) {
         this.renderBackground(graphics);
-        graphics.drawTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+        graphics.drawTextWithShadow(this.textRenderer, this.title, (this.width - this.textRenderer.getWidth(this.title)) / 2, 20, 0xFFFFFF);
         super.render(graphics, mouseX, mouseY, delta);
     }
 

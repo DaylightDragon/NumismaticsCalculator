@@ -6,4 +6,5 @@ public interface IScreen {
     IAbstractContainerScreen<?> getAsAbstractContainerScreen();
     boolean isModSettingsScreen();
     IModSettingsScreen getAsModSettingsScreen();
+    boolean isAbstractContainerScreen();
 }

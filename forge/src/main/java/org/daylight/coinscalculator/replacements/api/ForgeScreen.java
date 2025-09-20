@@ -31,12 +31,17 @@ public class ForgeScreen implements IScreen {
 
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
-        return new ForgeAbstractContainerScreen((AbstractContainerScreen<?>) delegate);
+        return new ForgeAbstractContainerScreen<>((AbstractContainerScreen<?>) delegate);
     }
 
     @Override
     public IModSettingsScreen getAsModSettingsScreen() {
         return new ForgeModSettingsScreen((ForgeModSettingsScreenImpl) delegate);
+    }
+
+    @Override
+    public boolean isAbstractContainerScreen() {
+        return delegate instanceof AbstractContainerScreen<?>;
     }
 
     @Override

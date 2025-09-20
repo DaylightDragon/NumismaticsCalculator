@@ -79,6 +79,7 @@ public abstract class IModSettingsOverlay implements IOverlay {
     protected abstract IIntConfigValue getConfigOverlayAnimationDuration(); // ConfigData.overlayAnimationDuration
 
     public void init(IModSettingsScreen screen) {
+        if(rootPanel != null) return;
         rootPanel = new UIVerticalLayout();
 
         UIVerticalLayout verticalLayout = new UIVerticalLayout();
@@ -135,13 +136,14 @@ public abstract class IModSettingsOverlay implements IOverlay {
 
     @Override
     public void onKeyPressed(IKeyPressEvent event) {
+//        System.out.println("IModSettingsScreen.onKeyPressed: " + event.getKey());
         if(rootPanel != null) rootPanel.keyPressed(event);
     }
 
     public void updateOverlayPosition(IScreen screen) {
         if(rootPanel == null) return;
-        if(screen instanceof IModSettingsScreen modSettingsScreen) {
-            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(modSettingsScreen);
+        if(screen.isModSettingsScreen()) {
+            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(screen.getAsModSettingsScreen());
             rootPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
         }
     }

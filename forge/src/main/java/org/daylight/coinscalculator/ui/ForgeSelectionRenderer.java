@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ForgeSelectionRenderer {
     public static void renderSelection(@NotNull GuiGraphics g, AbstractContainerScreen<?> screen) {
-        IAbstractContainerScreen<?> veryAbstractContainerScreen = new ForgeAbstractContainerScreen(screen);
+        IAbstractContainerScreen<?> veryAbstractContainerScreen = new ForgeAbstractContainerScreen<>(screen);
 
 //        System.out.println(UiState.selectionModeActive + " " + UiState.selectionRendered  + " " + !UiState.selectionSlotValuesCoins.isEmpty());
         if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty() && !screen.getMenu().slots.isEmpty()) {

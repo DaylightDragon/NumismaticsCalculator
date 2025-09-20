@@ -64,4 +64,9 @@ public class ForgeAbstractContainerScreen<T> implements IAbstractContainerScreen
     public ISlot getSlotUnderMouse() {
         return new ForgeSlot(delegate.getSlotUnderMouse());
     }
+
+    @Override
+    public boolean isAbstractContainerScreen() {
+        return delegate instanceof AbstractContainerScreen<?>;
+    }
 }

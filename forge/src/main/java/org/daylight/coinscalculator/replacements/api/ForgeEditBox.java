@@ -22,7 +22,7 @@ public class ForgeEditBox implements IEditBox {
 
     @Override
     public void setFilter(@NotNull Predicate<String> filter) {
-        delegate.setFilter(filter::test);
+        delegate.setFilter(filter);
     }
 
     @Override

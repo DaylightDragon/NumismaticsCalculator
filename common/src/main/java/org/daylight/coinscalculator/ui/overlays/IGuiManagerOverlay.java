@@ -26,7 +26,8 @@ public abstract class IGuiManagerOverlay implements IOverlay {
     }
 
     public void toggleMainOverlayState() {
-        if(!SingletonInstances.CALCULATOR_OVERLAY.isInitialized() || !SingletonInstances.CALCULATOR_OVERLAY.shouldRenderOnScreen(SingletonInstances.MINECRAFT_UTILS.getScreen())) return;
+        if(!SingletonInstances.CALCULATOR_OVERLAY.isInitialized() ||
+                !SingletonInstances.CALCULATOR_OVERLAY.shouldRenderOnScreen(SingletonInstances.MINECRAFT_UTILS.getScreen())) return;
         UiState.coinCalculatorOverlayActive = !UiState.coinCalculatorOverlayActive;
         SingletonInstances.CALCULATOR_OVERLAY.setOverlayActive(UiState.coinCalculatorOverlayActive); // bad way kinda
         SingletonInstances.CALCULATOR_OVERLAY.updateLayout();
@@ -109,8 +110,9 @@ public abstract class IGuiManagerOverlay implements IOverlay {
 
     public void updateOverlayPosition(IScreen screen) {
         if(rootPanel == null) return;
-        if(screen instanceof IAbstractContainerScreen<?> abstractContainerScreen) {
-            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(abstractContainerScreen);
+        if(screen.isAbstractContainerScreen()) {
+//            System.out.println("screen.getAsAbstractContainerScreen(): " + screen.getAsAbstractContainerScreen());
+            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(screen.getAsAbstractContainerScreen());
             rootPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
 //            rootPanel.layoutElements();
 //            System.out.println("set " + bounds);

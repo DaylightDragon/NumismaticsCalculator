@@ -1,5 +1,6 @@
 package org.daylight.coinscalculator.replacements;
 
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.daylight.coinscalculator.ui.screens.ForgeModSettingsScreenImpl;
 
 public class ForgeModSettingsScreen implements IModSettingsScreen {
@@ -31,6 +32,11 @@ public class ForgeModSettingsScreen implements IModSettingsScreen {
     @Override
     public IModSettingsScreen getAsModSettingsScreen() {
         return new ForgeModSettingsScreen(delegate);
+    }
+
+    @Override
+    public boolean isAbstractContainerScreen() {
+        return false;
     }
 
     @Override

@@ -15,7 +15,7 @@ public class FabricEditBox implements IEditBox {
     private final TextFieldWidget delegate;
 
     public FabricEditBox(TextRenderer font, int x, int y, int width, int height, Text component) {
-        this.delegate = new TextFieldWidget(font, x, y, width, height, component);
+        this.delegate = new TextFieldWidget(font, x, y, width, 20, component);
         delegate.setWidth(width);
 //        delegate.set
     }
@@ -88,11 +88,33 @@ public class FabricEditBox implements IEditBox {
 
     @Override
     public void deleteChars(int count) {
-        int cursor = delegate.getCursor(); // delegate.getText().length();
         String text = delegate.getText();
-        if (cursor <= 0) return;
-        int start = Math.max(0, cursor - count);
-        String newText = text.substring(0, start) + text.substring(cursor);
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+
+        int cursor = delegate.getCursor();
+        cursor = Math.max(0, Math.min(cursor, text.length()));
+        if (cursor <= 0) {
+            return;
+        }
+
+        int start = Math.max(0, cursor - Math.abs(count));
+        int end = Math.max(start, Math.min(cursor, text.length()));
+
+        // if indexes are the same
+        if (start >= end) {
+            return;
+        }
+
+        String newText;
+        try {
+            newText = text.substring(0, start) + text.substring(end);
+        } catch (IndexOutOfBoundsException e) {
+            // default just in case
+            newText = text;
+        }
+
         delegate.setText(newText);
         delegate.setCursor(start);
     }

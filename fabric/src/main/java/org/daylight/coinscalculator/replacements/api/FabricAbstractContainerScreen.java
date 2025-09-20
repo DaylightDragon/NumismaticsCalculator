@@ -1,12 +1,10 @@
 package org.daylight.coinscalculator.replacements.api;
 
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import org.daylight.coinscalculator.replacements.IAbstractContainerMenu;
-import org.daylight.coinscalculator.replacements.IAbstractContainerScreen;
-import org.daylight.coinscalculator.replacements.IModSettingsScreen;
-import org.daylight.coinscalculator.replacements.ISlot;
+import org.daylight.coinscalculator.mixins.HandledScreenAccessor;
+import org.daylight.coinscalculator.replacements.*;
 
-public class FabricAbstractContainerScreen implements IAbstractContainerScreen {
+public class FabricAbstractContainerScreen<T> implements IAbstractContainerScreen<T> {
     private HandledScreen<?> delegate;
 
     public FabricAbstractContainerScreen(HandledScreen<?> delegate) {
@@ -19,11 +17,18 @@ public class FabricAbstractContainerScreen implements IAbstractContainerScreen {
 
     @Override
     public int getGuiLeft() {
+        if(delegate instanceof HandledScreenAccessor handledScreenAccessor) {
+//            System.out.println("handledScreenAccessor " + handledScreenAccessor.getGuiLeft() + " " + handledScreenAccessor.getGuiTop());
+            return handledScreenAccessor.getGuiLeft();
+        }
         return delegate.getNavigationFocus().getLeft();
     }
 
     @Override
     public int getGuiTop() {
+        if(delegate instanceof HandledScreenAccessor handledScreenAccessor) {
+            return handledScreenAccessor.getGuiTop();
+        }
         return delegate.getNavigationFocus().getTop();
     }
 
@@ -39,22 +44,25 @@ public class FabricAbstractContainerScreen implements IAbstractContainerScreen {
 
     @Override
     public ISlot getSlotUnderMouse() {
+        if(delegate instanceof HandledScreenAccessor handledScreenAccessor) {
+            return new FabricSlot(handledScreenAccessor.invokeGetSlotAt(SingletonInstances.INPUT_UTILS.getMouseX(), SingletonInstances.INPUT_UTILS.getMouseY()));
+        }
         return null;
     }
 
     @Override
     public int width() {
-        return 0;
+        return delegate.width;
     }
 
     @Override
     public int height() {
-        return 0;
+        return delegate.height;
     }
 
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
-        return null;
+        return new FabricAbstractContainerScreen<>((HandledScreen<?>) delegate);
     }
 
     @Override
@@ -64,6 +72,11 @@ public class FabricAbstractContainerScreen implements IAbstractContainerScreen {
 
     @Override
     public IModSettingsScreen getAsModSettingsScreen() {
-        return null;
+        throw new UnsupportedOperationException("This is not a ModSettingsScreen");
+    }
+
+    @Override
+    public boolean isAbstractContainerScreen() {
+        return delegate instanceof HandledScreen<?>;
     }
 }

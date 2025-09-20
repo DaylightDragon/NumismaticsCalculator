@@ -30,7 +30,7 @@ public class FabricModSettingsScreen implements IModSettingsScreen {
 
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
-        return null;
+        throw new UnsupportedOperationException("This is not an AbstractContainerScreen");
     }
 
     @Override
@@ -40,6 +40,11 @@ public class FabricModSettingsScreen implements IModSettingsScreen {
 
     @Override
     public IModSettingsScreen getAsModSettingsScreen() {
-        return null;
+        return this;
+    }
+
+    @Override
+    public boolean isAbstractContainerScreen() {
+        return false;
     }
 }

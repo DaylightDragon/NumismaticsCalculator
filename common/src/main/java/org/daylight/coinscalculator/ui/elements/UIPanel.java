@@ -133,6 +133,7 @@ public abstract class UIPanel extends UIElement {
 
         int bgColor = getBackgroundColor();
         if(!backgroundVisible) bgColor = 0;
+//        System.out.println("c" + bgColor + " " + outlineColor + " " + outlineWidth);
         if(bgColor != 0 || (outlineColor != 0 && outlineWidth != 0)) {
             SingletonInstances.DRAWING_UTILS.fill(g, x, y, x + width, y + height, bgColor, outlineWidth, outlineColor);
         }

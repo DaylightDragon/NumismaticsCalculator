@@ -69,6 +69,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
     }
 
     protected void runPositionAnimation(int positionAnimationDuration) {
+//        System.out.println(positionAnimationActive + " " + positionAnimationStartTime + " " + positionAnimationDuration);
         if(!positionAnimationActive) return;
         long currentTime = Calendar.getInstance().getTimeInMillis();
 //        System.out.println("positionAnimationDuration: " + positionAnimationDuration);
@@ -222,6 +223,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
     private UIVerticalLayout conversionOutputReturns;
 
     public void init(IAbstractContainerScreen<?> screen) {
+        if(mainFloatingPanel != null) return;
 //        System.out.println("INIT");
         IFont font = SingletonInstances.MINECRAFT_UTILS.getMinecraftFont();
 //        Font font1 = new Font()
@@ -308,7 +310,6 @@ public abstract class ICalculatorOverlay implements IOverlay {
                 boolean result = super.onClick(mouseX, mouseY);
                 if(!result) return false;
 
-
                 setBgColorNormal(ModColors.modeSwitchButtonBgSelected);
                 setOutlineColor(ModColors.modeSwitchButtonOutlineSelected);
                 setOutlineWidth(1);
@@ -386,6 +387,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
             if(!UiState.selectionModeActive) {
                 clearAllSelectionData();
             }
+            System.out.println("selectionModeActive after click: " + UiState.selectionModeActive);
         }) {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
@@ -490,10 +492,10 @@ public abstract class ICalculatorOverlay implements IOverlay {
         mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
     }
 
-    public void updateOverlayPosition(IScreen IScreen) {
-        if(IScreen instanceof IAbstractContainerScreen<?> IAbstractContainerScreen) {
-            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(IAbstractContainerScreen);
-//            System.out.println("Main: " + bounds);
+    public void updateOverlayPosition(IScreen screen) {
+        if(screen.isAbstractContainerScreen()) {
+            Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(screen.getAsAbstractContainerScreen());
+//            System.out.println("ICalculatorOverlay bounds: " + bounds);
             lastOverlayPosition = bounds;
             mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
         }
@@ -593,15 +595,15 @@ public abstract class ICalculatorOverlay implements IOverlay {
 
     public abstract ISlot getRealInventorySlot(IAbstractContainerScreen<?> screen, int slotIndex);
 
-    public void onScreenChange(IScreen IScreen) {
+    public void onScreenChange(IScreen screen) {
         clearAllSelectionData();
         UiState.selectionRendered = false;
-//        if(!(IScreen instanceof IAbstractContainerScreen<?>)) UiState.selectionModeActive = false;
+//        if(!(screen instanceof IAbstractContainerScreen<?>)) UiState.selectionModeActive = false;
     }
 
 //    public void onScreenClose() {
 //        clearAllSelectionCoords();
-//        if(!(IScreen instanceof IAbstractContainerScreen<?>)) UiState.selectionModeActive = false;
+//        if(!(screen instanceof IAbstractContainerScreen<?>)) UiState.selectionModeActive = false;
 //    }
 
     public List<Integer> getSlotIndexesInSelection(IAbstractContainerScreen<?> screen, int startIndex, int endIndex, Class<?> containerClass) {
@@ -680,6 +682,23 @@ public abstract class ICalculatorOverlay implements IOverlay {
             if(conversionInput != null) onConversionTextUpdate(conversionInput.getEditBox().getValue());
             UIUpdateRequests.updateTotalCoinsValue = true;
         });
+    }
+
+    public boolean shouldBlockClicks(IScreen screenOrig, int mouseX, int mouseY) {
+        boolean result = false;
+        if (shouldRenderOnScreen(screenOrig)) {
+            IAbstractContainerScreen<?> screen = screenOrig.getAsAbstractContainerScreen();
+            ISlot slot = screen.getSlotUnderMouse();
+            if (isSlotValidForSelection(slot) && pagesStackPanel.getActiveIndex() == 0 && UiState.coinCalculatorOverlayActive) {
+                if (UiState.selectionModeActive) {
+                    result = true;
+                }
+            }
+        }
+
+//        boolean result = UiState.selectionRendered;
+        System.out.println("shouldBlockClicks " + result);
+        return result;
     }
 
     @Override
