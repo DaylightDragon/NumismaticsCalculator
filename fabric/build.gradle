@@ -5,8 +5,24 @@ plugins {
 
 repositories {
 	mavenCentral()
+	maven {
+		name "ModMaven"
+		url "https://modmaven.dev"
+	}
 	maven { url "https://maven.fabricmc.net/" }
-	maven { url = "https://maven.terraformersmc.com/"}
+	maven { url "https://maven.createmod.net/" }
+	maven { url "https://mvn.devos.one/releases" }    // Create/Flywheel Fabric
+	maven { url "https://mvn.devos.one/snapshots" }   // Create dev snapshots
+	maven { url "https://maven.tterrag.com/" }        // Flywheel
+	maven { url "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" } // ForgeConfigAPIPort (Fabric)
+	maven { url "https://maven.terraformersmc.com/" } // ModMenu
+	maven { url "https://maven.ithundxr.dev/releases" } // Create Numismatics
+
+	// Random repos just in case
+	maven { url = "https://maven.parchmentmc.org" } // Parchment mappings
+	maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
+	maven { url "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // Forge config api port
+	maven { url "https://jitpack.io/" } // Mixin Extras, Fabric ASM
 }
 
 def globalProps = new Properties()
@@ -47,16 +63,21 @@ group = project.mod_group_id
 base.archivesName = project.mod_id
 
 dependencies {
-	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	implementation('org.daylight:common:1.0.0')
 	modImplementation("com.terraformersmc:modmenu:7.2.2")
+
+//	modRuntimeOnly "com.simibubi.create:create-fabric-$minecraft_version:6.0.7.0+mc1.20.1-build.1631" // 0.5.1-j-build.1631+mc1.20.1
+	modRuntimeOnly "com.simibubi.create:create-fabric-$minecraft_version:0.5.1-j-build.1631+mc1.20.1"
+	modRuntimeOnly "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:1.20.1-8.0.0"
+//	modRuntimeOnly 'fuzs.forgeconfigapiport:forgeconfigapiport-fabric:5.0.6'
+	modRuntimeOnly "dev.ithundxr.createnumismatics:CreateNumismatics-fabric-${project.minecraft_version}:1.0.11+fabric-mc1.20.1"
+
+//	modRuntimeOnly "com.jozufozu.flywheel:flywheel-fabric-${project.minecraft_version}:0.6.11-4"
 }
 
 import groovy.json.JsonOutput
