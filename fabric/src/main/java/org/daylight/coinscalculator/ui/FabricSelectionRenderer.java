@@ -26,7 +26,8 @@ public class FabricSelectionRenderer {
 //            System.out.println(UiState.selectionStartPointSlotIndex + " - " + UiState.selectionEndPointSlotIndex);
             for(Integer slotIndex : UiState.selectionSlotValuesCoins.keySet()) {
                 ISlot slot = SingletonInstances.CALCULATOR_OVERLAY.getRealInventorySlot(veryAbstractContainerScreen, slotIndex); // screen.getMenu().getSlot(slotIndex);
-                int color = UiState.selectionSlotValuesCoins.get(slotIndex) != null ? ModColors.selectionCoins : ModColors.selectionUsual;
+                Integer value = UiState.selectionSlotValuesCoins.get(slotIndex);
+                int color = (value != null && value > 0) ? ModColors.selectionCoins : ModColors.selectionUsual;
                 g.fill(handledScreenAccessor.getGuiLeft() + slot.x(), handledScreenAccessor.getGuiTop() + slot.y(),
                         handledScreenAccessor.getGuiLeft() + slot.x() + 16, handledScreenAccessor.getGuiTop() + slot.y() + 16,
                         color);

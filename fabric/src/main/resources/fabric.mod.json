@@ -20,6 +20,7 @@
     "fabricloader": ${loader_version_json},
     "minecraft": ${minecraft_version_json},
     "java": ">=17",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "numismatics": ">=1.0.11+fabric-mc1.20.1"
   }
 }
