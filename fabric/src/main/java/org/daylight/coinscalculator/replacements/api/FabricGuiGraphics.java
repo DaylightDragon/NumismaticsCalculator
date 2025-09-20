@@ -1,7 +1,10 @@
 package org.daylight.coinscalculator.replacements.api;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.item.Item;
 import org.daylight.coinscalculator.replacements.*;
 import org.jetbrains.annotations.NotNull;
@@ -44,18 +47,11 @@ public class FabricGuiGraphics implements IGuiGraphics {
     }
 
     @Override
-    public void blit(int x, int y, int i, int width, int height, ITextureAtlasSprite sprite) { // TODO test
+    public void blit(int x, int y, int i, int width, int height, ITextureAtlasSprite sprite) {
         if (!(sprite instanceof FabricTextureAtlasSprite atlasSprite)) throw new IllegalArgumentException();
         Sprite s = atlasSprite.getDelegate();
-        delegate.drawTexture(
-                s.getAtlasId(),
-                x, y,                    // screen coordinates
-                (int)(s.getMinU() * s.getContents().getWidth()),
-                (int)(s.getMinV() * s.getContents().getHeight()),
-                width, height,           // size on screen
-                s.getContents().getWidth(),
-                s.getContents().getHeight()
-        );
+
+        delegate.drawSprite(x, y, i, width, height, s);
     }
 
     @Override
