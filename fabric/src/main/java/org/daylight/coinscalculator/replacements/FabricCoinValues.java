@@ -144,7 +144,7 @@ public class FabricCoinValues implements ICoinValues {
 
     @Override
     public void resetAllMainCoins() {
-        for(Consumer<Integer> consumer : TYPE_TO_SET_RETURN.values()) {
+        for(Consumer<Integer> consumer : TYPE_TO_SET_MAIN.values()) {
             consumer.accept(0);
         }
     }

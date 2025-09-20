@@ -133,7 +133,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         }
         else res = CoinChangeLimited.solveInfinite(value, values);
         if(res == null) return;
-//        System.out.println(res);
+        System.out.println(res);
         setConversionValues(res);
 
         UIUpdateRequests.updateConversionValuesMain = true;
@@ -148,19 +148,20 @@ public abstract class ICalculatorOverlay implements IOverlay {
     }
 
     private UIElement createConversionLine(String itemName, String displayName, Supplier<Integer> amount, IFont font) {
-        UIHorizontalLayout sunCoinMain = new UIHorizontalLayout() {
+        UIHorizontalLayout coinMain = new UIHorizontalLayout() {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
                 super.updateInternalValues();
+//                System.out.println("main amount for " + displayName + ": " + amount.get());
                 if(!updatedInternalValues || UIUpdateRequests.updateConversionValuesMain || UIUpdateRequests.updateConversionReturns) updateVisibilityIfAvailable(this, amount.get());
                 updatedInternalValues = true;
             }
         };
         UiImage sunCoinImage = new UiImage(SingletonInstances.COIN_VALUES.getAtlasSpriteByName(itemName), 16, 16);
-        sunCoinMain.setEnabled(false);
-        sunCoinMain.addElement(sunCoinImage);
-        sunCoinMain.addElement(new UIText("", font, fontScaleText, ModColors.uiSecondaryText) {
+        coinMain.setEnabled(false);
+        coinMain.addElement(sunCoinImage);
+        coinMain.addElement(new UIText("", font, fontScaleText, ModColors.uiSecondaryText) {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
@@ -169,7 +170,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
                 updatedInternalValues = true;
             }
         });
-        return sunCoinMain;
+        return coinMain;
     }
 
     public Quartet<Integer, Integer, Integer, Integer> getOverlayBoundsForScreen(IAbstractContainerScreen<?> screen) {
@@ -539,13 +540,16 @@ public abstract class ICalculatorOverlay implements IOverlay {
 
         for(Map.Entry<Integer, Integer> entry : res.getComposition().entrySet()) {
             ICoinValues.CoinTypes type = SingletonInstances.COIN_VALUES.getCoinTypeByValue(entry.getKey());
-            if(type == null) return;
+            if(type == null) continue;
             Consumer<Integer> consumerSetMain = SingletonInstances.COIN_VALUES.getMainCoinSetter(type);
             Consumer<Integer> consumerSetReturn = SingletonInstances.COIN_VALUES.getReturnCoinSetter(type);
             if(consumerSetMain != null) consumerSetMain.accept(entry.getValue());
+            System.out.println("Set " + entry.getValue() + " to " + type);
 //            if(consumerSetReturn != null) consumerSetReturn.accept(entry.getValue());
         }
+
         UiState.conversionSummedOverpay = res.getOverpay();
+        System.out.println("conversionSummedOverpay " + UiState.conversionSummedOverpay);
         Objects.requireNonNull(SingletonInstances.COIN_VALUES.getReturnCoinSetter(ICoinValues.CoinTypes.SPUR)).accept(res.getOverpay());
     }
 
