@@ -32,12 +32,12 @@ public class ForgeCoinValues implements ICoinValues {
     private static final Map<String, TextureAtlasSprite> NAME_TO_TEXTURE_ATLAS_SPRITE = new HashMap<>();
 
     private static List<ResourceLocation> numismaticsCoinLocations = List.of(
-            ResourceLocation.parse("numismatics:spur"),
-            ResourceLocation.parse("numismatics:bevel"),
-            ResourceLocation.parse("numismatics:sprocket"),
-            ResourceLocation.parse("numismatics:cog"),
-            ResourceLocation.parse("numismatics:crown"),
-            ResourceLocation.parse("numismatics:sun")
+            new ResourceLocation("numismatics:spur"), // ResourceLocation.parse
+            new ResourceLocation("numismatics:bevel"),
+            new ResourceLocation("numismatics:sprocket"),
+            new ResourceLocation("numismatics:cog"),
+            new ResourceLocation("numismatics:crown"),
+            new ResourceLocation("numismatics:sun")
     );
 
     public static void init() {
@@ -88,15 +88,15 @@ public class ForgeCoinValues implements ICoinValues {
         TYPE_TO_SET_RETURN.put(CoinTypes.SUN, value -> UiState.conversionSunOverpay = value);
     }
 
-    private static final ResourceLocation BLOCK_ATLAS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/atlas/blocks.png");
-    private static final ResourceLocation MISSINGNO = ResourceLocation.parse("minecraft:missingno");
+    private static final ResourceLocation BLOCK_ATLAS = new ResourceLocation("minecraft", "textures/atlas/blocks.png"); // ResourceLocation.fromNamespaceAndPath forge
+    private static final ResourceLocation MISSINGNO = new ResourceLocation("minecraft:missingno"); // ResourceLocation.parse
 
     public static TextureAtlasSprite getMissingNo() {
         return Minecraft.getInstance().getTextureAtlas(BLOCK_ATLAS).apply(MISSINGNO);
     }
 
     private static TextureAtlasSprite getCoinResourceLocation(String itemName) {
-        Item item = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse("numismatics:" + itemName));
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation("numismatics:" + itemName)); // ResourceLocation.parse forge
         if(item == null) {
 //            System.out.println("item: " + item + ", level: " + Minecraft.getInstance().level);
             return null;

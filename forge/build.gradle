@@ -102,8 +102,10 @@ dependencies {
 }
 
 tasks.named("jar", Jar).configure {
-    archiveBaseName.set(rootProject.property("mod_id"))
+    archiveBaseName.set(rootProject.property("mod_id") + "-forge-neoforge_" + rootProject.property("minecraft_version"))
     archiveVersion.set(rootProject.property("mod_version"))
+
+    from project(":common").sourceSets.main.output
 
     finalizedBy("reobfJar")
 }
@@ -115,6 +117,7 @@ tasks.named('processResources', ProcessResources).configure {
             forge_version          : rootProject.property("forge_version"),
             forge_version_range    : rootProject.property("forge_version_range"),
             loader_version_range   : rootProject.property("loader_version_range"),
+            neoforge_loader_version_range   : rootProject.property("neoforge_loader_version_range"),
             mod_id                 : rootProject.property("mod_id"),
             mod_name               : rootProject.property("mod_name"),
             mod_license            : rootProject.property("mod_license"),
@@ -125,10 +128,10 @@ tasks.named('processResources', ProcessResources).configure {
     ]
     inputs.properties replaceProperties
 
-    from(project(':common').sourceSets.main.resources.srcDirs) {
-        into ''
-    }
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+//    from(project(':common').sourceSets.main.resources.srcDirs) {
+//        into ''
+//    }
+    filesMatching(['META-INF/mods.toml', 'META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
 }

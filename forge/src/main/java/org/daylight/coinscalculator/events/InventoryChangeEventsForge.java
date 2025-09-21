@@ -20,7 +20,7 @@ public class InventoryChangeEventsForge {
     private static final int CHECK_INTERVAL = 10; // every ticks
     private static final List<Runnable> listeners = new ArrayList<>();
 
-    static {
+    public static void init() {
         addListener(SingletonInstances.CALCULATOR_OVERLAY::requestInventorySnapshot);
     }
 

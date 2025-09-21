@@ -127,7 +127,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
             }
         }
 
-        System.out.println("returning default");
+//        System.out.println("returning default");
 
         return screen.getScreenHandler().slots.indexOf(slot);
     }

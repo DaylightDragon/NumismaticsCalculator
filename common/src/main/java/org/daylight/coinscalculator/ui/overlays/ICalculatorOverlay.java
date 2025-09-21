@@ -625,8 +625,8 @@ public abstract class ICalculatorOverlay implements IOverlay {
 
         if(start == null || end == null) return List.of();
 
-        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + getRealSlotIndex(screen, start, null) + " " + getRealSlotIndex(screen, end, null) + ")");
-        System.out.println("Start-End Containers: " + start.getContainerClass().getSimpleName() + " " + end.getContainerClass().getSimpleName());
+//        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + getRealSlotIndex(screen, start, null) + " " + getRealSlotIndex(screen, end, null) + ")");
+//        System.out.println("Start-End Containers: " + start.getContainerClass().getSimpleName() + " " + end.getContainerClass().getSimpleName());
 
         int startX;
         int startY;
@@ -726,7 +726,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
                 UiState.selectionStartPointY = mouseY;
                 ISlot slotUnderMouse = screen.getSlotUnderMouse();
                 int realSlotIndexUnderMouse = getRealSlotIndex(screen, slotUnderMouse, slotUnderMouse.getContainerClass());
-                System.out.println(slotUnderMouse.getContainerClass().getSimpleName() + " start index: " + realSlotIndexUnderMouse);
+//                System.out.println(slotUnderMouse.getContainerClass().getSimpleName() + " start index: " + realSlotIndexUnderMouse);
                 UiState.selectionStartPointSlotIndex = realSlotIndexUnderMouse; // was .getContainerSlot() before
                 UiState.selectionContainerClass = screen.getSlotUnderMouse().getContainerClass();
 
@@ -756,7 +756,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
 
                     ISlot slotUnderMouse = screen.getSlotUnderMouse();
                     int realSlotIndexUnderMouse = getRealSlotIndex(screen, slotUnderMouse, null);
-                    System.out.println(slotUnderMouse.getContainerClass().getSimpleName() + " drag end index: " + realSlotIndexUnderMouse);
+//                    System.out.println(slotUnderMouse.getContainerClass().getSimpleName() + " drag end index: " + realSlotIndexUnderMouse);
                     UiState.selectionEndPointSlotIndex = realSlotIndexUnderMouse;
                     UiState.selectionContainerClass = screen.getSlotUnderMouse().getContainerClass();
 //                    System.out.println(IScreen.getSlotUnderMouse().container.getClass().getSimpleName());
@@ -788,7 +788,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
 
                 ISlot slotUnderMouse = screen.getSlotUnderMouse();
                 int realSlotIndexUnderMouse = getRealSlotIndex(screen, slotUnderMouse, null);
-                System.out.println(slotUnderMouse.getContainerClass().getSimpleName() + " end index: " + realSlotIndexUnderMouse);
+//                System.out.println(slotUnderMouse.getContainerClass().getSimpleName() + " end index: " + realSlotIndexUnderMouse);
                 UiState.selectionEndPointSlotIndex = realSlotIndexUnderMouse;
 //                UiState.selectionModeActive = false;
 

@@ -66,7 +66,7 @@ ext {
 
 version = project.mod_version
 group = project.mod_group_id
-base.archivesName = project.mod_id
+base.archivesName = project.mod_id + "-fabric_" + rootProject.property("minecraft_version")
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"

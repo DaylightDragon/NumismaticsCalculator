@@ -88,7 +88,7 @@ public class InputEvents {
     }
 
     private static void onWindowResized(int width, int height) {
-        SingletonInstances.CALCULATOR_OVERLAY.replacePositionAnimationData();
+        if(SingletonInstances.CALCULATOR_OVERLAY != null) SingletonInstances.CALCULATOR_OVERLAY.replacePositionAnimationData();
     }
 
 //    @SubscribeEvent

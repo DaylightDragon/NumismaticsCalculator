@@ -7,6 +7,6 @@ import org.daylight.coinscalculator.replacements.IRenderSystem;
 public class ForgeRenderSystem implements IRenderSystem {
     @Override
     public void setShaderTexture(int slot, String resourceLocation) {
-        RenderSystem.setShaderTexture(slot, ResourceLocation.parse(resourceLocation));
+        RenderSystem.setShaderTexture(slot, new ResourceLocation(resourceLocation)); // ResourceLocation.parse
     }
 }

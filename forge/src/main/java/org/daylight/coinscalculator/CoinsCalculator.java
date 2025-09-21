@@ -13,6 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.daylight.coinscalculator.config.ConfigHandler;
 import org.daylight.coinscalculator.events.GUIEvents;
+import org.daylight.coinscalculator.events.InventoryChangeEventsForge;
 import org.daylight.coinscalculator.events.ScreenEvents;
 import org.daylight.coinscalculator.events.TooltipEvents;
 import org.daylight.coinscalculator.replacements.*;
@@ -31,6 +32,8 @@ public class CoinsCalculator
 {
     public static final String MODID = "numismaticscalculator";
     public static final Logger LOGGER = LogUtils.getLogger();
+
+    public CoinsCalculator() {}
 
     public CoinsCalculator(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
@@ -51,6 +54,8 @@ public class CoinsCalculator
 //        context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
 //        context.getModEventBus().addListener(GUIEvents::renderOverlay); // bad
         context.getModEventBus().addListener(GUIEvents::onRegisterGuiOverlays);
+
+        InventoryChangeEventsForge.init();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
