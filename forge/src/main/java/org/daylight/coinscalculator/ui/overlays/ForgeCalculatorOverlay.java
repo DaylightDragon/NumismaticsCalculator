@@ -107,7 +107,7 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
     }
 
     @Override
-    public int getRealSlotIndex(IAbstractContainerScreen<?> screenOrig, ISlot slotOrig) {
+    public int getRealSlotIndex(IAbstractContainerScreen<?> screenOrig, ISlot slotOrig, Class<?> overwriteTargetClass) {
         if(!(screenOrig instanceof ForgeAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
         AbstractContainerScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
@@ -115,11 +115,13 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
         Slot slot = forgeSlot.getDelegate();
 
         Class<?> targetContainerClass = UiState.selectionContainerClass;
+        if(overwriteTargetClass != null) targetContainerClass = overwriteTargetClass;
         if(targetContainerClass == null) {
             if(screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen) targetContainerClass = Inventory.class;
         }
+
         for (Slot menuSlot : screen.getMenu().slots) {
-            if (slot.container.getClass().equals(targetContainerClass) && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
+            if (menuSlot.container.getClass().equals(targetContainerClass) && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
                 return menuSlot.getSlotIndex();
             }
         }
@@ -137,11 +139,11 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
                 return new ForgeSlot(slot);
             }
         }
-//        }
+
         try {
             return new ForgeSlot(screen.getMenu().getSlot(slotIndex));
         } catch (IndexOutOfBoundsException e) {
-            return new ForgeSlot(screen.getMenu().getSlot(0));
+            return null;
         }
     }
 

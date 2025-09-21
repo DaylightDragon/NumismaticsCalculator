@@ -15,10 +15,6 @@ public class FabricSelectionRenderer {
     public static void renderSelection(@NotNull DrawContext g, HandledScreen<?> screen) {
         IAbstractContainerScreen<?> veryAbstractContainerScreen = new FabricAbstractContainerScreen<>(screen);
 
-//        System.out.println("selectionModeActive " + UiState.selectionModeActive +
-//        ", selectionSlotValuesCoins " + UiState.selectionSlotValuesCoins.size() +
-//       ", slots " + screen.getScreenHandler().slots.size());
-//        System.out.println(UiState.selectionModeActive + " " + UiState.selectionRendered + " " + !UiState.selectionSlotValuesCoins.isEmpty() + " " + !screen.getScreenHandler().slots.isEmpty());
         if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty() && !screen.getScreenHandler().slots.isEmpty()) {
 //            System.out.println("Selection render");
             if(!(screen instanceof HandledScreenAccessor handledScreenAccessor)) return;
@@ -26,6 +22,7 @@ public class FabricSelectionRenderer {
 //            System.out.println(UiState.selectionStartPointSlotIndex + " - " + UiState.selectionEndPointSlotIndex);
             for(Integer slotIndex : UiState.selectionSlotValuesCoins.keySet()) {
                 ISlot slot = SingletonInstances.CALCULATOR_OVERLAY.getRealInventorySlot(veryAbstractContainerScreen, slotIndex); // screen.getMenu().getSlot(slotIndex);
+                if(slot == null) continue;
                 Integer value = UiState.selectionSlotValuesCoins.get(slotIndex);
                 int color = (value != null && value > 0) ? ModColors.selectionCoins : ModColors.selectionUsual;
                 g.fill(handledScreenAccessor.getGuiLeft() + slot.x(), handledScreenAccessor.getGuiTop() + slot.y(),

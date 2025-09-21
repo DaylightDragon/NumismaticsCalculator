@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -20,10 +21,7 @@ import org.daylight.coinscalculator.ui.FabricSelectionRenderer;
 import org.daylight.coinscalculator.util.tuples.Quartet;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class FabricCalculatorOverlay extends ICalculatorOverlay {
     @Override
@@ -110,7 +108,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
     }
 
     @Override
-    public int getRealSlotIndex(IAbstractContainerScreen<?> screenOrig, ISlot slotOrig) {
+    public int getRealSlotIndex(IAbstractContainerScreen<?> screenOrig, ISlot slotOrig, Class<?> overwriteTargetClass) {
         if(!(screenOrig instanceof FabricAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
         HandledScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
@@ -118,15 +116,18 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
         Slot slot = forgeSlot.getDelegate();
 
         Class<?> targetContainerClass = UiState.selectionContainerClass;
+        if(overwriteTargetClass != null) targetContainerClass = overwriteTargetClass;
         if(targetContainerClass == null) {
             if(screen instanceof InventoryScreen || screen instanceof CreativeInventoryScreen) targetContainerClass = PlayerInventory.class;
         }
 
         for (Slot menuSlot : screen.getScreenHandler().slots) {
-            if (slot.inventory.getClass().equals(targetContainerClass) && menuSlot.getIndex() == slot.getIndex()) {
+            if (menuSlot.inventory.getClass().equals(targetContainerClass) && menuSlot.getIndex() == slot.getIndex()) {
                 return menuSlot.getIndex();
             }
         }
+
+        System.out.println("returning default");
 
         return screen.getScreenHandler().slots.indexOf(slot);
     }
@@ -141,11 +142,11 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
                 return new FabricSlot(slot);
             }
         }
-//        }
+
         try {
             return new FabricSlot(screen.getScreenHandler().getSlot(slotIndex));
         } catch (IndexOutOfBoundsException e) {
-            return new FabricSlot(screen.getScreenHandler().getSlot(0));
+            return null;
         }
     }
 
