@@ -65,7 +65,7 @@ public class CoinChangeLimited {
     }
 
     public static Result solveLimitedFast(int target, int[] values, int[] counts) {
-        System.out.println(target + " " + Arrays.toString(values) + " " + Arrays.toString(counts));
+//        System.out.println(target + " " + Arrays.toString(values) + " " + Arrays.toString(counts));
         int n = values.length;
 
         Result res = new Result();

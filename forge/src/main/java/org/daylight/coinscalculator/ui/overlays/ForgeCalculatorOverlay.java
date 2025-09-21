@@ -3,6 +3,8 @@ package org.daylight.coinscalculator.ui.overlays;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -40,7 +42,7 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
         if (shouldRenderOnScreen(new ForgeScreen(Minecraft.getInstance().screen))) {
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) Minecraft.getInstance().screen;
             if (mainFloatingPanel == null) {
-                init(new ForgeAbstractContainerScreen(screen));
+                init(new ForgeAbstractContainerScreen<>(screen));
             }
             ForgeSelectionRenderer.renderSelection(forgeGraphics.getDelegate(), screen);
             runPositionAnimation(ConfigData.overlayAnimationDuration.get());
@@ -65,7 +67,7 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
         if(!ConfigData.overlayAnimationEnabled.get()) return;
         if(Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
 
-        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen(new ForgeAbstractContainerScreen ((AbstractContainerScreen<?>) Minecraft.getInstance().screen));
+        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen(new ForgeAbstractContainerScreen<>((AbstractContainerScreen<?>) Minecraft.getInstance().screen));
 //        System.out.println(lastOverlayPosition + " " + mainFloatingPanel.getY());
         if (lastOverlayPosition != null && lastOverlayPosition.getB() != mainFloatingPanel.getY()) {
             positionAnimationStartY = mainFloatingPanel.getY();
@@ -85,13 +87,13 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
         Slot slot = forgeSlot.getDelegate();
         if(slot == null) return false;
         if(!(slot.container instanceof Inventory || slot.container instanceof SimpleContainer)) return false;
-        if(slot.container instanceof Inventory && slot.getContainerSlot() >= 36) return false;
+        if(slot.container instanceof Inventory && slot.getContainerSlot() >= 36) return false; // ?= 36 is wierd
         return true;
     }
 
     @Override
     public List<ISlot> getPlayerInventorySlots(IAbstractContainerScreen<?> screenOrig) {
-        if(!(screenOrig instanceof ForgeAbstractContainerScreen forgeAbstractContainerScreen)) throw new IllegalArgumentException();
+        if(!(screenOrig instanceof ForgeAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
         AbstractContainerScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
         AbstractContainerMenu menu = screen.getMenu();
@@ -106,14 +108,18 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
 
     @Override
     public int getRealSlotIndex(IAbstractContainerScreen<?> screenOrig, ISlot slotOrig) {
-        if(!(screenOrig instanceof ForgeAbstractContainerScreen forgeAbstractContainerScreen)) throw new IllegalArgumentException();
+        if(!(screenOrig instanceof ForgeAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
         AbstractContainerScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
         if(!(slotOrig instanceof ForgeSlot forgeSlot)) throw new IllegalArgumentException();
         Slot slot = forgeSlot.getDelegate();
 
+        Class<?> targetContainerClass = UiState.selectionContainerClass;
+        if(targetContainerClass == null) {
+            if(screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen) targetContainerClass = Inventory.class;
+        }
         for (Slot menuSlot : screen.getMenu().slots) {
-            if (slot.container.getClass().equals(UiState.selectionContainerClass) && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
+            if (slot.container.getClass().equals(targetContainerClass) && menuSlot.getSlotIndex() == slot.getSlotIndex()) {
                 return menuSlot.getSlotIndex();
             }
         }
@@ -123,7 +129,7 @@ public class ForgeCalculatorOverlay extends ICalculatorOverlay {
 
     @Override
     public ISlot getRealInventorySlot(IAbstractContainerScreen<?> screenOrig, int slotIndex) {
-        if(!(screenOrig instanceof ForgeAbstractContainerScreen forgeAbstractContainerScreen)) throw new IllegalArgumentException();
+        if(!(screenOrig instanceof ForgeAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
         AbstractContainerScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
         for (Slot slot : screen.getMenu().slots) {

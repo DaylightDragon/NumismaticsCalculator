@@ -19,4 +19,6 @@ public class ModColors {
     public static final int modeSwitchButtonOutlineNormal = 0x8857402b;
     public static final int modeSwitchButtonOutlineSelected = 0xDDe09748;
     public static final int modeSwitchButtonBgSelected = 0xDD694428;
+    public static final int tooltipGrayColor = 0x808080;
+    public static final int tooltipHighlightColor = 0xffbb33;
 }

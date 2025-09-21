@@ -2,7 +2,9 @@ package org.daylight.coinscalculator.ui.overlays;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.screen.ScreenHandler;
@@ -115,8 +117,13 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
         if(!(slotOrig instanceof FabricSlot forgeSlot)) throw new IllegalArgumentException();
         Slot slot = forgeSlot.getDelegate();
 
+        Class<?> targetContainerClass = UiState.selectionContainerClass;
+        if(targetContainerClass == null) {
+            if(screen instanceof InventoryScreen || screen instanceof CreativeInventoryScreen) targetContainerClass = PlayerInventory.class;
+        }
+
         for (Slot menuSlot : screen.getScreenHandler().slots) {
-            if (slot.inventory.getClass().equals(UiState.selectionContainerClass) && menuSlot.getIndex() == slot.getIndex()) {
+            if (slot.inventory.getClass().equals(targetContainerClass) && menuSlot.getIndex() == slot.getIndex()) {
                 return menuSlot.getIndex();
             }
         }

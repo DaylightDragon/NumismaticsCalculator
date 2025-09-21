@@ -133,7 +133,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         }
         else res = CoinChangeLimited.solveInfinite(value, values);
         if(res == null) return;
-        System.out.println(res);
+//        System.out.println(res);
         setConversionValues(res);
 
         UIUpdateRequests.updateConversionValuesMain = true;
@@ -388,7 +388,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
             if(!UiState.selectionModeActive) {
                 clearAllSelectionData();
             }
-            System.out.println("selectionModeActive after click: " + UiState.selectionModeActive);
+//            System.out.println("selectionModeActive after click: " + UiState.selectionModeActive);
         }) {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
@@ -544,12 +544,12 @@ public abstract class ICalculatorOverlay implements IOverlay {
             Consumer<Integer> consumerSetMain = SingletonInstances.COIN_VALUES.getMainCoinSetter(type);
             Consumer<Integer> consumerSetReturn = SingletonInstances.COIN_VALUES.getReturnCoinSetter(type);
             if(consumerSetMain != null) consumerSetMain.accept(entry.getValue());
-            System.out.println("Set " + entry.getValue() + " to " + type);
+//            System.out.println("Set " + entry.getValue() + " to " + type);
 //            if(consumerSetReturn != null) consumerSetReturn.accept(entry.getValue());
         }
 
         UiState.conversionSummedOverpay = res.getOverpay();
-        System.out.println("conversionSummedOverpay " + UiState.conversionSummedOverpay);
+//        System.out.println("conversionSummedOverpay " + UiState.conversionSummedOverpay);
         Objects.requireNonNull(SingletonInstances.COIN_VALUES.getReturnCoinSetter(ICoinValues.CoinTypes.SPUR)).accept(res.getOverpay());
     }
 
@@ -621,8 +621,8 @@ public abstract class ICalculatorOverlay implements IOverlay {
         ISlot start = getRealInventorySlot(screen, startIndex); // slots.get(startIndex);
         ISlot end   = getRealInventorySlot(screen, endIndex); // slots.get(endIndex);
 
-//        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + start.getContainerSlot() + " " + end.getContainerSlot() + ")");
-//        System.out.println("Start-End Containers: " + start.container.getClass().getSimpleName() + " " + end.container.getClass().getSimpleName());
+//        System.out.println("Start-End Slots: " + startIndex + " " + endIndex + " (" + getRealSlotIndex(screen, start) + " " + getRealSlotIndex(screen, end) + ")");
+//        System.out.println("Start-End Containers: " + start.getContainerClass().getSimpleName() + " " + end.getContainerClass().getSimpleName());
 
         int startX;
         int startY;
@@ -701,7 +701,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         }
 
 //        boolean result = UiState.selectionRendered;
-        System.out.println("shouldBlockClicks " + result);
+//        System.out.println("shouldBlockClicks " + result);
         return result;
     }
 
