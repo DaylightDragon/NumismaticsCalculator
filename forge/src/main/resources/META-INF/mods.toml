@@ -6,10 +6,10 @@ license = "MIT"
 [[mods]]
 modId = "numismaticscalculator"
 version = "${version}"
-displayName = "NumismaticsCalculator"
-authors = ""
+displayName = "Numismatics Calculator"
+authors = "Daylight"
 description = '''
-
+A client-side utility mod that adds a calculation menu for coin items from the mod "Create: Numismatics".
 '''
 logoFile = "assets/numismaticscalculator/icon.png"
 
@@ -27,3 +27,9 @@ versionRange = "[1.20.1,)"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies.numismaticscalculator]]
+modId="numismatics"
+mandatory=true
+versionRange="[0,)"
+ordering="AFTER"
+side="CLIENT"

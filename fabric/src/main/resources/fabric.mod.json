@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "numismaticscalculator",
   "version": "${version}",
-  "name": "NumismaticsCalculator",
-  "description": "",
+  "name": "Numismatics Calculator",
+  "description": "A client-side utility mod that adds a calculation menu for coin items from the mod \"Create: Numismatics\".",
   "authors": [
-    ""
+    "Daylight"
   ],
   "contact": {
     "homepage": ""
@@ -27,7 +27,8 @@
     "fabricloader": ">=0.17.2",
     "minecraft": "~1.20.1",
     "java": ">=17",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "numismatics": "*"
   },
   "suggests": {
     "another-mod": "*"
