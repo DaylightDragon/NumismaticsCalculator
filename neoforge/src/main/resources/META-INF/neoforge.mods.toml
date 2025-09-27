@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "numismaticscalculator"
+version = "${version}"
+displayName = "Numismatics Calculator"
+authors = "Daylight"
+description = '''
+A client-side utility mod that adds a calculation menu for coin items from the mod "Create: Numismatics".
+'''
+logoFile = "assets/numismaticscalculator/icon.png"
+
+[[dependencies.numismaticscalculator]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.numismaticscalculator]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+
+[[mixins]]
+config = "numismaticscalculator.mixins.json"
