@@ -14,7 +14,7 @@ public class FabricTooltipEvents {
             .append(Text.literal(" to view total value").setStyle(Style.EMPTY.withColor(ModColors.tooltipGrayColor)));
 
     public static void register() {
-        ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
+        ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
             Integer value = FabricCoinValues.ITEM_TO_VALUE.get(stack.getItem());
             if (value != null && value > 0) {
                 if (!Screen.hasShiftDown() && ConfigHandler.requireShiftForTotalTooltip.get()) {

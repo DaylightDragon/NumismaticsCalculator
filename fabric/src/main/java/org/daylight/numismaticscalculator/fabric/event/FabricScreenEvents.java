@@ -118,7 +118,7 @@ public class FabricScreenEvents {
             if (client.currentScreen != null) return;
             SingletonInstances.CALCULATOR_OVERLAY.render(
                     new FabricGuiGraphics(graphics),
-                    tickDelta,
+                    tickDelta.getTickDelta(true), // what is it
                     SingletonInstances.INPUT_UTILS.getMouseX(),
                     SingletonInstances.INPUT_UTILS.getMouseY()
             );

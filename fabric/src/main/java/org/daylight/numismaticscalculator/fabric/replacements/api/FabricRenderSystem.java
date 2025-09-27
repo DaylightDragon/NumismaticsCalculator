@@ -7,6 +7,6 @@ import org.daylight.numismaticscalculator.replacements.IRenderSystem;
 public class FabricRenderSystem implements IRenderSystem {
     @Override
     public void setShaderTexture(int slot, String resourceLocation) {
-        RenderSystem.setShaderTexture(slot, new Identifier(resourceLocation));
+        RenderSystem.setShaderTexture(slot, Identifier.tryParse(resourceLocation));
     }
 }

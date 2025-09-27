@@ -33,12 +33,12 @@ public class FabricCoinValues implements ICoinValues {
     private static final Map<String, Sprite> NAME_TO_SPRITE = new HashMap<>();
 
     private static final List<Identifier> numismaticsCoinIds = List.of(
-            new Identifier("numismatics", "spur"),
-            new Identifier("numismatics", "bevel"),
-            new Identifier("numismatics", "sprocket"),
-            new Identifier("numismatics", "cog"),
-            new Identifier("numismatics", "crown"),
-            new Identifier("numismatics", "sun")
+            Identifier.of("numismatics", "spur"),
+            Identifier.of("numismatics", "bevel"),
+            Identifier.of("numismatics", "sprocket"),
+            Identifier.of("numismatics", "cog"),
+            Identifier.of("numismatics", "crown"),
+            Identifier.of("numismatics", "sun")
     );
 
     public static void init() {
@@ -88,8 +88,8 @@ public class FabricCoinValues implements ICoinValues {
         TYPE_TO_SET_RETURN.put(CoinTypes.SUN, value -> UiState.conversionSunOverpay = value);
     }
 
-    private static final Identifier BLOCK_ATLAS = new Identifier("minecraft", "textures/atlas/blocks.png");
-    private static final Identifier MISSINGNO = new Identifier("minecraft", "missingno");
+    private static final Identifier BLOCK_ATLAS = Identifier.of("minecraft", "textures/atlas/blocks.png");
+    private static final Identifier MISSINGNO = Identifier.of("minecraft", "missingno");
 
     public static Sprite getMissingNo() {
         return MinecraftClient.getInstance()
@@ -98,7 +98,7 @@ public class FabricCoinValues implements ICoinValues {
     }
 
     private static Sprite getCoinSprite(String itemName) {
-        Item item = Registries.ITEM.get(new Identifier("numismatics", itemName));
+        Item item = Registries.ITEM.get(Identifier.of("numismatics", itemName));
         if (item == null) {
             return null;
         }

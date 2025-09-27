@@ -79,7 +79,7 @@ public class FabricEditBox implements IEditBox {
         String newText = before + input + after;
         delegate.setText(newText);
 
-        delegate.setCursor(cursor + input.length());
+        delegate.setCursor(cursor + input.length(), false);
     }
 
     @Override
@@ -132,12 +132,12 @@ public class FabricEditBox implements IEditBox {
         }
 
         delegate.setText(newText);
-        delegate.setCursor(start);
+        delegate.setCursor(start, false);
     }
 
     @Override
     public void moveCursor(int i) {
-        delegate.moveCursor(i); // no method
+        delegate.moveCursor(i, false); // no method
     }
 
     @Override

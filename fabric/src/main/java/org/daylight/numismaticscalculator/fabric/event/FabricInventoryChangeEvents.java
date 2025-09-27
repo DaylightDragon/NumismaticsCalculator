@@ -68,7 +68,7 @@ public class FabricInventoryChangeEvents {
         if (stack.isEmpty()) return 0L;
         long h = stack.getItem().hashCode();
         h = h * 31 + stack.getCount();
-        if (stack.getNbt() != null) h = h * 31 + 1;
+        if (!stack.getComponents().isEmpty()) h = h * 31 + 1;
         return h;
     }
 
