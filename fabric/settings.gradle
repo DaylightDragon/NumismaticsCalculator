@@ -16,4 +16,7 @@ dependencyResolutionManagement {
 	}
 }
 
-includeBuild('../common')
+//includeBuild('../common')
+
+include(":common")
+project(":common").projectDir = file("../common")

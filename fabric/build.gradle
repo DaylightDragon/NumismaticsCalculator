@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
+//	id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 java {
@@ -74,7 +75,10 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	implementation('org.daylight:common:1.0.0')
+//	implementation('org.daylight:common:1.1.0')
+	implementation(project(":common"))
+//	loom.include(project(":common"))
+
 	modImplementation("com.terraformersmc:modmenu:7.2.2")
 
 //	modRuntimeOnly "com.simibubi.create:create-fabric-$minecraft_version:6.0.7.0+mc1.20.1-build.1631" // 0.5.1-j-build.1631+mc1.20.1
@@ -94,6 +98,20 @@ def commonJarProvider = {
 		it.moduleVersion.id.group == "org.daylight" && it.name == "common"
 	}
 	return artifact?.file
+}
+
+//shadowJar {
+//	from(project(":common").sourceSets.main.output)
+//	from(project(":common").sourceSets.main.resources)
+//	zip64 = true
+//}
+
+tasks.named("jar") {
+	from(project(":common").sourceSets.main.output)
+}
+
+tasks.named("remapJar") {
+	from(project(":common").sourceSets.main.output)
 }
 
 tasks.named('processResources', ProcessResources).configure {

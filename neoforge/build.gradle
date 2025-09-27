@@ -2,7 +2,7 @@ plugins {
     id 'idea'
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev.legacyforge' version '2.0.91'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.107'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -115,6 +115,7 @@ legacyForge {
         // but multi mod projects should define one per mod
         "${mod_id}" {
             sourceSet(sourceSets.main)
+//            source project(":common").sourceSets.main
         }
     }
 }
@@ -164,6 +165,19 @@ dependencies {
 //    compileOnly("dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_version}")
 //    runtimeOnly("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
 //    runtimeOnly("com.tterrag.registrate:Registrate:${registrate_version}")
+
+    compileOnly "org.jetbrains:annotations:24.0.1"
+
+//    implementation('org.daylight:common:1.1.0')
+    implementation project(":common")
+    runtimeOnly project(':common')
+    //    minecraft project(":common")
+}
+
+afterEvaluate {
+    tasks.withType(JavaExec).configureEach {
+        classpath += project(":common").sourceSets.main.output
+    }
 }
 
 // Uncomment the lines below if you wish to configure mixin. The mixin file should be named modid.mixins.json.
@@ -183,6 +197,41 @@ jar {
     ])
 }
 */
+
+tasks.named("jar", Jar).configure {
+//    archiveBaseName.set(rootProject.property("mod_id") + "-forge-neoforge_" + rootProject.property("minecraft_version"))
+//    archiveVersion.set(rootProject.property("mod_version"))
+
+    from project(":common").sourceSets.main.output
+
+//    finalizedBy("reobfJar")
+}
+
+sourceSets.main {
+//    compileClasspath += project(":common").sourceSets.main.output
+//    runtimeClasspath += project(":common").sourceSets.main.output
+}
+
+tasks.withType(JavaExec).configureEach {
+    classpath += project(":common").sourceSets.main.output
+}
+
+tasks.named("jar", Jar).configure {
+    // jar артефакт из конфигурации (в твоём случае common)
+    def commonArtifact = configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.find {
+        it.moduleVersion.id.group == "org.daylight" && it.name == "common"
+    }?.file
+
+    if (commonArtifact != null && commonArtifact.exists()) {
+        from(zipTree(commonArtifact)) {
+            // исключаем лишнее
+            exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
+            exclude "META-INF/MANIFEST.MF"
+        }
+    } else {
+        logger.warn("⚠ common.jar не найден, jar будет собран без него")
+    }
+}
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.

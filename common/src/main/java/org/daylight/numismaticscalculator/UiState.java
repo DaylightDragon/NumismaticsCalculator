@@ -1,0 +1,38 @@
+package org.daylight.numismaticscalculator;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class UiState {
+    public static Map<Integer, Integer> inventorySnapshotCoinsAmounts = new HashMap<>();
+    public static int inventorySnapshotTotalCoins = 0;
+    public static boolean coinCalculatorOverlayActive = false;
+    public static float globalPanelSpacingModifier = 0.8f;
+    public static float globalPanelPaddingModifier = 0.8f;
+    public static int selectedCoinsValue = 0;
+    public static Map<Integer, Integer> selectionSlotValuesCoins = new HashMap<>();
+    public static boolean selectionModeActive = false;
+    public static boolean selectionRendered = false;
+    public static double selectionStartPointX = -1;
+    public static double selectionStartPointY = -1;
+    public static int selectionStartPointSlotIndex = -1;
+    public static double selectionEndPointX = -1;
+    public static double selectionEndPointY = -1;
+    public static int selectionEndPointSlotIndex = -1;
+    public static Class<?> selectionContainerClass = null;
+    public static int conversionValue = 0;
+    public static boolean conversionModeUseAvailable = false;
+    public static int conversionSunMain = 0;
+    public static int conversionSummedOverpay = 0;
+    public static int conversionSunOverpay = 0;
+    public static int conversionCrownMain = 0;
+    public static int conversionCrownOverpay = 0;
+    public static int conversionCogMain = 0;
+    public static int conversionCogOverpay = 0;
+    public static int conversionSprocketMain = 0;
+    public static int conversionSprocketOverpay = 0;
+    public static int conversionBevelMain = 0;
+    public static int conversionBevelOverpay = 0;
+    public static int conversionSpurMain = 0;
+    public static int conversionSpurOverpay = 0;
+}

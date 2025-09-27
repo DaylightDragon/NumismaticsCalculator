@@ -102,7 +102,7 @@ dependencies {
 }
 
 tasks.named("jar", Jar).configure {
-    archiveBaseName.set(rootProject.property("mod_id") + "-forge-neoforge_" + rootProject.property("minecraft_version"))
+    archiveBaseName.set(rootProject.property("mod_id") + "-forge_" + rootProject.property("minecraft_version"))
     archiveVersion.set(rootProject.property("mod_version"))
 
     from project(":common").sourceSets.main.output
