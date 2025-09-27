@@ -1,26 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": ${mod_id},
-  "version": ${mod_version},
-  "name": ${mod_name},
-  "description": ${mod_description},
-  "authors": ${mod_authors},
-  "license": ${mod_license},
-  "icon": ${mod_icon_location},
+  "id": "numismaticscalculator",
+  "version": "${version}",
+  "name": "NumismaticsCalculator",
+  "description": "",
+  "authors": [
+    ""
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "MIT",
+  "icon": "assets/numismaticscalculator/icon.png",
   "environment": "*",
   "entrypoints": {
+    "main": [
+    ],
     "client": [
-      ${entrypoint_main}
+      "org.daylight.numismaticscalculator.fabric.CoinsCalculator"
     ]
   },
   "mixins": [
-    "${mod_id_plain}.mixins.json"
+    "numismaticscalculator.mixins.json"
   ],
   "depends": {
-    "fabricloader": ${loader_version_json},
-    "minecraft": ${minecraft_version_json},
+    "fabricloader": ">=0.17.2",
+    "minecraft": "~1.20.1",
     "java": ">=17",
-    "fabric-api": "*",
-    "numismatics": ">=1.0.11+fabric-mc1.20.1"
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
   }
 }

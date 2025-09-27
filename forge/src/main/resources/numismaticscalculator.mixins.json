@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "org.daylight.numismaticscalculator.forge.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

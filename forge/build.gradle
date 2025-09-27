@@ -1,154 +1,69 @@
 plugins {
-    id 'java'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.1.4'
-    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow'
 }
 
-base {
-    archivesName = "${rootProject.property("mod_id")}"
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+loom {
+    forge {
+        mixinConfig "numismaticscalculator.mixins.json"
     }
 }
 
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-
-minecraft {
-    mappings channel: rootProject.property("mapping_channel"), version: rootProject.property("mapping_version")
-
-    copyIdeResources = true
-
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                "${rootProject.property("mod_id")}" {
-                    source sourceSets.main
-                    source project(':common').sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property 'forge.enabledGameTestNamespaces', rootProject.property("mod_id")
-            property "mixin.env.remapRefMap", "true"
-            property "mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg"
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', rootProject.property("mod_id")
-            args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', rootProject.property("mod_id")
-        }
-
-        data {
-            workingDirectory project.file('run-data')
-            args "--mod", rootProject.property("mod_id"),
-                    "--all",
-                    "--output", file("src/generated/resources/"),
-                    "--existing", file("src/main/resources/")
-        }
-    }
+architectury {
+    platformSetupLoomIde()
+    forge()
 }
 
-//sourceSets.main.resources { srcDir "src/generated/resources" }
+configurations {
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
 
-sourceSets.main.resources.srcDirs += 'src/generated/resources'
-
-//sourceSets.main.resources {
-//    srcDir "src/generated/resources"
-//    project(":common").sourceSets.main.resources.srcDirs.each { dir ->
-//        srcDir dir
-//    }
-//}
+    // Files in this configuration will be bundled into your mod using the Shadow plugin.
+    // Don't use the `shadow` configuration from the plugin itself as it's meant for excluding files.
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+}
 
 repositories {
-    maven { url "https://maven.createmod.net" }
-    maven { url "https://maven.ithundxr.dev/mirror" } // Registrate
-    maven { url "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
-    maven { url "https://maven.ithundxr.dev/releases" }
-    flatDir { dirs "libs" }
+    maven { url = uri("https://maven.parchmentmc.org/") }
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${rootProject.property("minecraft_version")}-${rootProject.property("forge_version")}"
-    implementation project(':common')
-
-    runtimeOnly fg.deobf("com.simibubi.create:create-${rootProject.property("minecraft_version")}:${rootProject.property("create_version")}:slim") { transitive = false }
-    runtimeOnly fg.deobf("net.createmod.ponder:Ponder-Forge-${rootProject.property("minecraft_version")}:${rootProject.property("ponder_version")}")
-    compileOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-${rootProject.property("minecraft_version")}:${rootProject.property("flywheel_version")}")
-    runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-${rootProject.property("minecraft_version")}:${rootProject.property("flywheel_version")}")
-    runtimeOnly fg.deobf("com.tterrag.registrate:Registrate:${rootProject.property("registrate_version")}")
-
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-    implementation "io.github.llamalad7:mixinextras-forge:0.4.1"
-
-    compileOnly fg.deobf("dev.ithundxr.createnumismatics:CreateNumismatics-forge-1.20.1:1.0.15+forge-mc1.20.1") {
-        transitive = false
+//    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_mappings}@zip")
     }
-    runtimeOnly fg.deobf("dev.ithundxr.createnumismatics:CreateNumismatics-forge-1.20.1:1.0.15+forge-mc1.20.1") {
-        transitive = false
+
+    forge "net.minecraftforge:forge:$rootProject.forge_version"
+
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    shadowBundle project(path: ':common', configuration: 'transformProductionForge')
+}
+
+processResources {
+    from("../common/src/main/resources") {
+        include "assets/**"
+    }
+
+    inputs.property 'version', project.version
+
+    filesMatching('META-INF/mods.toml') {
+        expand version: project.version
     }
 }
 
-tasks.named("jar", Jar).configure {
-    archiveBaseName.set(rootProject.property("mod_id") + "-forge_" + rootProject.property("minecraft_version"))
-    archiveVersion.set(rootProject.property("mod_version"))
-
-    from project(":common").sourceSets.main.output
-
-    finalizedBy("reobfJar")
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = 'dev-shadow'
 }
 
-tasks.named('processResources', ProcessResources).configure {
-    def replaceProperties = [
-            minecraft_version      : rootProject.property("minecraft_version"),
-            minecraft_version_range: rootProject.property("minecraft_version_range"),
-            forge_version          : rootProject.property("forge_version"),
-            forge_version_range    : rootProject.property("forge_version_range"),
-            loader_version_range   : rootProject.property("loader_version_range"),
-            neoforge_loader_version_range   : rootProject.property("neoforge_loader_version_range"),
-            mod_id                 : rootProject.property("mod_id"),
-            mod_name               : rootProject.property("mod_name"),
-            mod_license            : rootProject.property("mod_license"),
-            mod_version            : rootProject.property("mod_version"),
-            mod_authors            : rootProject.property("mod_authors"),
-            mod_description        : rootProject.property("mod_description"),
-            mod_icon_location      : rootProject.property("mod_icon_location")
-    ]
-    inputs.properties replaceProperties
-
-//    from(project(':common').sourceSets.main.resources.srcDirs) {
-//        into ''
-//    }
-    filesMatching(['META-INF/mods.toml', 'META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
-}
-
-publishing {
-    publications {
-        register("mavenJava", MavenPublication) {
-            artifact tasks.named("jar")
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = "UTF-8"
+remapJar {
+    input.set shadowJar.archiveFile
 }

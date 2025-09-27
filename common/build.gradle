@@ -1,40 +1,12 @@
-plugins {
-    id 'java'
-    id("java-library")
-}
-
-version = "1.1.0"
-group = "org.daylight"
-//name = "numismatics-calculator-core"
-
-base {
-    archivesName = "common"
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-    withJavadocJar()
-    withSourcesJar()
-}
-
-repositories {
-    mavenCentral()
+architectury {
+    common rootProject.enabled_platforms.split(',')
 }
 
 dependencies {
-    compileOnly "org.jetbrains:annotations:24.0.1"
+    // We depend on Fabric Loader here to use the Fabric @Environment annotations,
+    // which get remapped to the correct annotations on each platform.
+    // Do NOT use other classes from Fabric Loader.
+
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 }
-
-sourceSets.main.resources.srcDirs = ['src/main/resources']
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-//tasks.named("jar") {
-//    from("src/main/resources") {
-//        include("**/*")
-//    }
-//}

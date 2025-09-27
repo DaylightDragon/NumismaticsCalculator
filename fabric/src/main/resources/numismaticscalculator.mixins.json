@@ -1,9 +1,8 @@
 {
   "required": true,
-  "package": "org.daylight.numismaticscalculator.mixins",
+  "package": "org.daylight.numismaticscalculator.fabric.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PlayerInventoryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

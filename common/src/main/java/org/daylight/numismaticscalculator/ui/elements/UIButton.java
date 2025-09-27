@@ -1,7 +1,10 @@
 package org.daylight.numismaticscalculator.ui.elements;
 
 import org.daylight.numismaticscalculator.ModColors;
-import org.daylight.numismaticscalculator.replacements.*;
+import org.daylight.numismaticscalculator.replacements.IFont;
+import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
+import org.daylight.numismaticscalculator.replacements.IResourceLocation;
+import org.daylight.numismaticscalculator.replacements.SingletonInstances;
 import org.jetbrains.annotations.NotNull;
 
 public class UIButton extends UIElement {
