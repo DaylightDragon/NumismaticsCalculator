@@ -92,8 +92,10 @@ Feel free to let me known if you encounter any.
 
 # Supported Versions
 
-- 1.20.1 - Forge (broken in 1.21.1), Fabric (and Quilt)  
-- 1.21.1 - NeoForge
+- 1.20.1 - Forge, Fabric (+Quilt) (**\*CHECK `architectury/1.20.1` BRANCH**)  
+- 1.21.1 - NeoForge, Fabric (+Quilt)
+
+\* 1.21.1 Forge is broken at the moment, idk how to correctly register non-screen overlays there  
 
 # Building From Source Code
 
