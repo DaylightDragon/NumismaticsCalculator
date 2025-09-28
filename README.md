@@ -1,5 +1,7 @@
 # Numismatics Calculator
 
+### ! Make sure to check the correct repository branch for your version! (1.20.1 / 1.21.1) !
+
 # What This Does
 
 This is a client-side forge mod that adds calculator functionality to coin items from the mod `"Create: Numismatics" by IThundxr`.  
@@ -90,8 +92,8 @@ Feel free to let me known if you encounter any.
 
 # Supported Versions
 
-- 1.20.1 - Forge, Fabric (and Quilt)  
-- `1.21.1 - Coming Soon (NeoForge)`  
+- 1.20.1 - Forge (broken in 1.21.1), Fabric (and Quilt)  
+- 1.21.1 - NeoForge
 
 # Building From Source Code
 
@@ -99,12 +101,11 @@ Feel free to let me known if you encounter any.
 
 - Launch your installed [Intellij IDEA](https://www.jetbrains.com/idea/) (Community Edition will work just fine)  
 - File -> New -> Project from Version Control -> paste `https://github.com/DaylightDragon/NumismaticsCalculator.git` in there, or just clone the repository in any other way  
-- Select JDK 23 (read below\*), [Adoptium Temurin JDK](https://adoptium.net/temurin/releases?version=23&os=any&arch=any&mode=filter) recommended  
+- Select JDK 21 (read below\*), [Adoptium Temurin JDK](https://adoptium.net/temurin/releases?version=21&os=any&arch=any&mode=filter) recommended  
 - Let `Gradle` load/sync the project's configuration. Or manually start it by finding the `Gradle` icon (elephant) on the right and pressing "Sync all Gradle projects" (2 arrows)  
 - Make sure the bar on the bottom right disappeared after loading everything  
 - In `Gradle` tasks now use `forge / fabric -> Tasks -> loom -> runClient` and to run the game and `forge / fabric -> Tasks -> build -> build` to create a jar in `/(forge/fabric)/build/libs/<...>.jar`.
 
 ## Extra notes:
 
-The final version (Architectury branch) of the project has been using **GraalVm JDK 23 with language level 17**.  
-So I'm not sure what else the project runs ideally on, haven't check.  
+The final version (Architectury branch **1.21.1**) of the project has been using **Temurin JDK 21 with default language level**.  
