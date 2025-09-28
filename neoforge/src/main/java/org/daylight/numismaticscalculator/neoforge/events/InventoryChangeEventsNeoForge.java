@@ -1,19 +1,21 @@
-package org.daylight.numismaticscalculator.forge.events;
+package org.daylight.numismaticscalculator.neoforge.events;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.daylight.numismaticscalculator.replacements.SingletonInstances;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
-public class InventoryChangeEventsForge {
+@OnlyIn(Dist.CLIENT) // scary
+public class InventoryChangeEventsNeoForge {
     private static final Minecraft MC = Minecraft.getInstance();
     private static long[] lastHashes;
     private static int tickCounter = 0;
@@ -28,9 +30,14 @@ public class InventoryChangeEventsForge {
         listeners.add(runnable);
     }
 
+    public static void register(IEventBus modBus) {
+        modBus.addListener(InventoryChangeEventsNeoForge::onClientTick);
+    }
+
+
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.ClientTickEvent.Phase.END) return;
+    public static void onClientTick(ClientTickEvent.Post event) {
+//        if (event.phase != TickEvent.ClientTickEvent.Phase.END) return;
 
         tickCounter++;
         if (tickCounter < CHECK_INTERVAL && lastHashes != null) return;
