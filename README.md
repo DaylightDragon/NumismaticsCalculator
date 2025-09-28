@@ -1,5 +1,7 @@
 # Numismatics Calculator
 
+### ! Make sure to check the correct repository branch for your version! (1.20.1 / 1.21.1) !
+
 # What This Does
 
 This is a client-side forge mod that adds calculator functionality to coin items from the mod `"Create: Numismatics" by IThundxr`.  
@@ -91,7 +93,7 @@ Feel free to let me known if you encounter any.
 # Supported Versions
 
 - 1.20.1 - Forge, Fabric (and Quilt)  
-- `1.21.1 - Coming Soon (NeoForge)`  
+- 1.21.1 - Fabric, NeoForge (**\*CHECK `architectury/1.21.1` BRANCH**) 
 
 # Building From Source Code
 
