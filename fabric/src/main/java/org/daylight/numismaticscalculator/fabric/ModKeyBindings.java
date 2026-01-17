@@ -38,8 +38,8 @@ public class ModKeyBindings {
             long window = client.getWindow().getHandle();
 
             // TOGGLE GUI
-            InputUtil.Key toggleBound = TOGGLE_GUI.getDefaultKey();
-            if (toggleBound.getCategory() == InputUtil.Type.KEYSYM) {
+            InputUtil.Key toggleBound = KeyBindingHelper.getBoundKeyOf(TOGGLE_GUI);
+            if (toggleBound.getCategory() == InputUtil.Type.KEYSYM && toggleBound.getCode() != -1) {
                 boolean down = InputUtil.isKeyPressed(window, toggleBound.getCode());
                 if (down && !prevToggleDown && !isTextFieldFocused(client)) {
                     SingletonInstances.GUI_MANAGER_OVERLAY.toggleMainOverlayState();
@@ -48,8 +48,8 @@ public class ModKeyBindings {
             }
 
             // MOD SETTINGS
-            InputUtil.Key settingsBound = MOD_SETTINGS.getDefaultKey();
-            if (settingsBound.getCategory() == InputUtil.Type.KEYSYM) {
+            InputUtil.Key settingsBound = KeyBindingHelper.getBoundKeyOf(MOD_SETTINGS);
+            if (settingsBound.getCategory() == InputUtil.Type.KEYSYM && settingsBound.getCode() != -1) {
                 boolean down = InputUtil.isKeyPressed(window, settingsBound.getCode());
                 if (down && !prevSettingsDown && !isTextFieldFocused(client)) {
                     FabricModSettingsScreenImpl.setAsScreen();
