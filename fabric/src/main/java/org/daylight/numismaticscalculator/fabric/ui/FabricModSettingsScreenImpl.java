@@ -25,9 +25,14 @@ public class FabricModSettingsScreenImpl extends Screen {
     @Override
     protected void init() {
         this.addDrawableChild(ButtonWidget.builder(Text.literal("Back"), b -> {
-            MinecraftClient.getInstance().setScreenAndRender(parent);
-            ConfigHandler.CONFIG.save();
+            handleClosing();
         }).position(this.width / 2 - 50, this.height - 40).size(100, 20).build());
+    }
+
+    private void handleClosing() {
+        if(parent != null) MinecraftClient.getInstance().setScreenAndRender(parent);
+        else super.close();
+        ConfigHandler.CONFIG.save();
     }
 
     @Override
@@ -39,8 +44,7 @@ public class FabricModSettingsScreenImpl extends Screen {
 
     @Override
     public void close() {
-        super.close();
-        ConfigHandler.CONFIG.save();
+        handleClosing();
     }
 
     @Override
