@@ -3,6 +3,7 @@ package org.daylight.numismaticscalculator.fabric;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.daylight.numismaticscalculator.fabric.client.CoinsCalculator;
@@ -36,6 +37,8 @@ public class ModKeyBindings {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client == null || client.getWindow() == null) return;
             long window = client.getWindow().getHandle();
+
+            if(client.currentScreen instanceof KeybindsScreen || isTextFieldFocused(client)) return;
 
             // TOGGLE GUI
             InputUtil.Key toggleBound = KeyBindingHelper.getBoundKeyOf(TOGGLE_GUI);
