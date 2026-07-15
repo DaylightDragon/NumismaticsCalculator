@@ -1,0 +1,35 @@
+{
+  "key.categories.numismaticscalculator": "Numismatics Calculator",
+  "key.numismaticscalculator.toggle_overlay": "Показать/Скрыть Калькулятор",
+  "key.numismaticscalculator.mod_settings": "Открыть настройки",
+
+  "item.numismaticscalculator.coin.tooltip.total_value.inactive": "§7Удерживайте §6§lSHIFT§r§7 для полной стоимости",
+  "item.numismaticscalculator.coin.tooltip.total_value.active": "Номинал (Суммарный): %s¤",
+
+  "gui.numismaticscalculator.overlay.sumpage.total_available": "Всего Доступно: %s ¤",
+  "gui.numismaticscalculator.overlay.sumpage.selected": "Выделено: %s ¤",
+  "gui.numismaticscalculator.overlay.sumpage.select_btn": "Выделить",
+
+  "gui.numismaticscalculator.overlay.comvertpage.convert_title": "Конвертировать ¤",
+  "gui.numismaticscalculator.overlay.comvertpage.only_available_checkbox": "Только в Наличии",
+  "gui.numismaticscalculator.overlay.comvertpage.value_in_coins_header": "Ценность в Монетах:",
+  "gui.numismaticscalculator.overlay.comvertpage.overpaying_warning": "Переплата: %s",
+  "gui.numismaticscalculator.overlay.comvertpage.missing_warning": "Не хватает: %s",
+
+  "gui.numismaticscalculator.overlay.settings.value.true": "Да",
+  "gui.numismaticscalculator.overlay.settings.value.false": "Нет",
+
+  "gui.numismaticscalculator.settings.title": "Настройки Калькулятора",
+  "gui.numismaticscalculator.settings.back": "Назад",
+  "gui.numismaticscalculator.settings.option.require_shift_for_total_tooltip": "Показывать общую стоимость только с \"Shift\"",
+  "gui.numismaticscalculator.settings.option.show_control_buttons": "Показывать кнопки в инвентаре",
+  "gui.numismaticscalculator.settings.option.overlay_animation_enabled": "Использовать анимацию движения меню калькулятора",
+  "gui.numismaticscalculator.settings.option.overlay_shift_animation_duration": "Длительность анимации меню",
+
+  "item.numismaticscalculator.coin.sun": "Солнышко",
+  "item.numismaticscalculator.coin.crown": "Коронка",
+  "item.numismaticscalculator.coin.cog": "Шестерёнка",
+  "item.numismaticscalculator.coin.sprocket": "Звёздочка",
+  "item.numismaticscalculator.coin.bevel": "Фаска",
+  "item.numismaticscalculator.coin.spur": "Шпора"
+}

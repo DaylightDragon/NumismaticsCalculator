@@ -8,11 +8,13 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import org.daylight.numismaticscalculator.UiState;
 import org.daylight.numismaticscalculator.fabric.replacements.api.*;
 import org.daylight.numismaticscalculator.fabric.ui.FabricModSettingsScreenImpl;
 import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
 import org.daylight.numismaticscalculator.replacements.IScreen;
 import org.daylight.numismaticscalculator.replacements.SingletonInstances;
+import org.daylight.numismaticscalculator.ui.overlays.ICalculatorOverlay;
 
 import java.util.HashSet;
 import java.util.Set;

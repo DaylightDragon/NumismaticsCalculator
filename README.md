@@ -108,5 +108,4 @@ Feel free to let me known if you encounter any.
 
 ## Extra notes:
 
-The final version (Architectury branch) of the project has been using **GraalVm JDK 23 with language level 17**.  
-So I'm not sure what else the project runs ideally on, haven't check.  
+The final version (Architectury branch) of the project has been using **Temurin JDK 23 with language level 21**.  

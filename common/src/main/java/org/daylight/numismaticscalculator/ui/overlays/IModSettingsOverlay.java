@@ -1,5 +1,6 @@
 package org.daylight.numismaticscalculator.ui.overlays;
 
+import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.replacements.*;
 import org.daylight.numismaticscalculator.ui.elements.*;
 import org.daylight.numismaticscalculator.util.tuples.Quartet;
@@ -20,7 +21,7 @@ public abstract class IModSettingsOverlay implements IOverlay {
         }
     }
 
-    private UIPanel createOptionRow(String name, IConfigValue<?> value) {
+    private UIPanel createOptionRow(Component name, IConfigValue<?> value) {
         IFont font = SingletonInstances.MINECRAFT_UTILS.getMinecraftFont();
         UIHorizontalLayout optionRow = new UIHorizontalLayout();
         optionRow.setPadding(5);
@@ -34,13 +35,13 @@ public abstract class IModSettingsOverlay implements IOverlay {
         optionRow.setOutlineColor(0xBBbf7947);
         optionRow.addElement(new UIText(name, font, 1.0f, 0xFFFFFF));
         if(value instanceof IBooleanConfigValue booleanValue) {
-            UIButton btn = new UIButton(booleanValue.get() ? "True" : "False", font, 1.0f, () -> {}) {
+            UIButton btn = new UIButton(booleanValue.get() ? Component.translatable("gui.numismaticscalculator.overlay.settings.value.true") : Component.translatable("gui.numismaticscalculator.overlay.settings.value.false"), font, 1.0f, () -> {}) {
                 @Override
                 public boolean onClick(double mouseX, double mouseY) {
                     boolean result = super.onClick(mouseX, mouseY);
                     if(!result) return false;
                     booleanValue.set(!booleanValue.get());
-                    setLabel(booleanValue.get() ? "True" : "False");
+                    setLabel(booleanValue.get() ? Component.translatable("gui.numismaticscalculator.overlay.settings.value.true") : Component.translatable("gui.numismaticscalculator.overlay.settings.value.false"));
                     setTextColor(booleanValue.get() ? 0xb9ff8a : 0xff8a8a);
 //                    System.out.println(width);
 //                    System.out.println("CLICK");
@@ -57,6 +58,7 @@ public abstract class IModSettingsOverlay implements IOverlay {
         } else if(value instanceof IIntConfigValue intValue) {
             UIEditBox editBox = new UIEditBox(font, 40, 37);
             editBox.setText(String.valueOf(intValue.get()));
+            editBox.allowOnlyNumeric();
             editBox.setOnValueChange(text -> {
                 if(text.isBlank()) text = "0";
                 int userValue;
@@ -89,10 +91,10 @@ public abstract class IModSettingsOverlay implements IOverlay {
         verticalLayout.setOutlineColor(0xBBab8974);
         verticalLayout.setOutlineWidth(1);
 
-        verticalLayout.addElement(createOptionRow("Require \"Shift\" For Total Value Tooltip", getConfigRequireShiftForTotalTooltip()));
-        verticalLayout.addElement(createOptionRow("Show Control Panel Buttons", getConfigShowControlPanel()));
-        verticalLayout.addElement(createOptionRow("Overlay Animation Enabled", getConfigOverlayAnimationEnabled()));
-        verticalLayout.addElement(createOptionRow("Overlay Animation Duration", getConfigOverlayAnimationDuration()));
+        verticalLayout.addElement(createOptionRow(Component.translatable("gui.numismaticscalculator.settings.option.require_shift_for_total_tooltip"), getConfigRequireShiftForTotalTooltip()));
+        verticalLayout.addElement(createOptionRow(Component.translatable("gui.numismaticscalculator.settings.option.show_control_buttons"), getConfigShowControlPanel()));
+        verticalLayout.addElement(createOptionRow(Component.translatable("gui.numismaticscalculator.settings.option.overlay_animation_enabled"), getConfigOverlayAnimationEnabled()));
+        verticalLayout.addElement(createOptionRow(Component.translatable("gui.numismaticscalculator.settings.option.overlay_shift_animation_duration"), getConfigOverlayAnimationDuration()));
 
         rootPanel.addElement(verticalLayout);
 

@@ -6,6 +6,7 @@ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.daylight.numismaticscalculator.UiState;
 import org.daylight.numismaticscalculator.forge.ModKeyBindings;
 import org.daylight.numismaticscalculator.forge.replacements.api.ForgeGuiGraphics;
 import org.daylight.numismaticscalculator.forge.replacements.api.ForgeRegisterListenersEvent;
@@ -16,6 +17,7 @@ import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
 import org.daylight.numismaticscalculator.replacements.IRegisterListenersEvent;
 import org.daylight.numismaticscalculator.replacements.IScreen;
 import org.daylight.numismaticscalculator.replacements.SingletonInstances;
+import org.daylight.numismaticscalculator.ui.overlays.ICalculatorOverlay;
 
 public class ScreenEvents {
     @SubscribeEvent
@@ -60,6 +62,11 @@ public class ScreenEvents {
     public void onScreenOpen(ScreenEvent.Opening event) {
 //        Screen newScreen = event.getScreen();
         SingletonInstances.CALCULATOR_OVERLAY.onScreenChange(new ForgeScreen(event.getScreen()));
+    }
+
+    @SubscribeEvent
+    public void onScreenClose(ScreenEvent.Closing event) {
+        SingletonInstances.CALCULATOR_OVERLAY.disableSelection();
     }
 
     @SubscribeEvent

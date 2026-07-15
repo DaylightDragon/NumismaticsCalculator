@@ -1,5 +1,6 @@
 package org.daylight.numismaticscalculator.ui.elements;
 
+import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.replacements.IFont;
 import org.daylight.numismaticscalculator.replacements.IModResources;
 import org.daylight.numismaticscalculator.replacements.SingletonInstances;
@@ -7,7 +8,7 @@ import org.daylight.numismaticscalculator.replacements.SingletonInstances;
 public class UiCheckBox extends UIButton {
     protected boolean selected = false;
 
-    public UiCheckBox(String label, IFont font, float fontScale, Runnable onClick) {
+    public UiCheckBox(Component label, IFont font, float fontScale, Runnable onClick) {
         super(label, font, fontScale, onClick);
         setIcon(SingletonInstances.MOD_RESOURCES.getResourceLocation(IModResources.Type.CHECKBOX_NORMAL), 14, 14);
         setImagePosition(ImagePosition.IMAGE_LEFT);

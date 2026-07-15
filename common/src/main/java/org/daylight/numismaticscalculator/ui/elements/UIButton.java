@@ -1,5 +1,6 @@
 package org.daylight.numismaticscalculator.ui.elements;
 
+import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.ModColors;
 import org.daylight.numismaticscalculator.replacements.IFont;
 import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
@@ -22,7 +23,7 @@ public class UIButton extends UIElement {
     private int outlineColor = 0x00000000;
     private int textColor = 0xFFFFFFFF;
 
-    protected String label;
+    protected Component label;
     private IResourceLocation icon;
     private int iconWidth;
     private int iconHeight;
@@ -32,7 +33,7 @@ public class UIButton extends UIElement {
     private int paddingX = 5;    // горизонтальные отступы
     private int paddingY = 6;    // вертикальные отступы
 
-    public UIButton(String label, IFont font, float fontScale, Runnable onClick) {
+    public UIButton(@NotNull Component label, IFont font, float fontScale, Runnable onClick) {
         this.label = label;
         this.font = font;
         this.fontScale = fontScale;
@@ -40,7 +41,7 @@ public class UIButton extends UIElement {
         recalcSize();
     }
 
-    public void setLabel(String label) {
+    public void setLabel(@NotNull Component label) {
         this.label = label;
         recalcSize();
     }
@@ -96,7 +97,7 @@ public class UIButton extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        int textWidth = (label != null && !label.isEmpty()) ? (int) (font.width(label) * fontScale) : 0;
+        int textWidth = (int) (font.width(label.getString()) * fontScale);
         int totalWidth = textWidth + paddingX * 2;
         if (icon != null) {
             totalWidth += iconWidth;
@@ -125,18 +126,20 @@ public class UIButton extends UIElement {
         int contentX = x + paddingX;
         int contentY = y + (height - (icon != null ? Math.max(iconHeight, (int) (font.lineHeight() * fontScale)) : (int) (font.lineHeight() * fontScale))) / 2;
 
+        String labelText = label.getString();
+
         // Рендерим иконку + текст в зависимости от imagePosition
         if (icon != null) {
             if (imagePosition == ImagePosition.IMAGE_LEFT) {
                 graphics.blit(icon, contentX, contentY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
-                contentX += iconWidth + (label != null && !label.isEmpty() ? spacing : 0);
+                contentX += iconWidth + (!label.getString().isEmpty() ? spacing : 0);
             }
         }
 
-        if (label != null && !label.isEmpty()) {
-            SingletonInstances.DRAWING_UTILS.drawScaledText(graphics, label, contentX, y + (height - font.lineHeight() * fontScale) / 2, textColor, fontScale, true);
+        if (!labelText.isEmpty()) {
+            SingletonInstances.DRAWING_UTILS.drawScaledText(graphics, labelText, contentX, y + (height - font.lineHeight() * fontScale) / 2, textColor, fontScale, true);
             if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT_KINDA) {
-                contentX += (int) (font.width(label) * fontScale) + spacing;
+                contentX += (int) (font.width(labelText) * fontScale) + spacing;
                 graphics.blit(icon, contentX, contentY, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
             }
         } else if (icon != null && imagePosition == ImagePosition.IMAGE_RIGHT_KINDA) {

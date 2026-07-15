@@ -1,5 +1,6 @@
 package org.daylight.numismaticscalculator.ui.overlays;
 
+import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.ModColors;
 import org.daylight.numismaticscalculator.UiState;
 import org.daylight.numismaticscalculator.replacements.*;
@@ -24,6 +25,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
     protected UIVerticalLayout page1VLayout;
     protected UIVerticalLayout page2VLayout;
     protected UIEditBox conversionInput;
+    protected UIButton selectSwitchBtn;
     protected Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = new Quartet<>(0, 0, 0, 0);
 
     public Quartet<Integer, Integer, Integer, Integer> getLastOverlayPosition() {
@@ -98,9 +100,9 @@ public abstract class ICalculatorOverlay implements IOverlay {
         el.setEnabled(amountNow > 0);
     }
 
-    public void setConversionText(UIText text, String name, int amount) {
+    public void setConversionText(UIText text, Component name, int amount) {
 //        updateVisibilityIfAvailable(text, amount);
-        if(amount > 0) text.setText(amount + " * " + name);
+        if(amount > 0) text.setText(Component.literal(amount + " * ").append(name));
     }
 
     private void onConversionTextUpdate(String text) {
@@ -147,7 +149,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         replacePositionAnimationData();
     }
 
-    private UIElement createConversionLine(String itemName, String displayName, Supplier<Integer> amount, IFont font) {
+    private UIElement createConversionLine(String itemName, Component displayName, Supplier<Integer> amount, IFont font) {
         UIHorizontalLayout coinMain = new UIHorizontalLayout() {
             private boolean updatedInternalValues = false;
             @Override
@@ -161,7 +163,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         UiImage sunCoinImage = new UiImage(SingletonInstances.COIN_VALUES.getAtlasSpriteByName(itemName), 16, 16);
         coinMain.setEnabled(false);
         coinMain.addElement(sunCoinImage);
-        coinMain.addElement(new UIText("", font, fontScaleText, ModColors.uiSecondaryText) {
+        coinMain.addElement(new UIText(Component.empty(), font, fontScaleText, ModColors.uiSecondaryText) {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
@@ -274,7 +276,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         final AtomicReference<UIButton> sumModeBtn = new AtomicReference<>();
         final AtomicReference<UIButton> conversionModeBtn = new AtomicReference<>();
 
-        sumModeBtn.set(new UIButton("", font, fontScaleButton, () -> {}) {
+        sumModeBtn.set(new UIButton(Component.empty(), font, fontScaleButton, () -> {}) {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
                 boolean result = super.onClick(mouseX, mouseY);
@@ -305,7 +307,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
         sumModeBtn.get().setOutlineWidth(1);
         modesPanel.get().addElement(sumModeBtn.get());
 
-        conversionModeBtn.set(new UIButton("", font, fontScaleButton, () -> {}) {
+        conversionModeBtn.set(new UIButton(Component.empty(), font, fontScaleButton, () -> {}) {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
                 boolean result = super.onClick(mouseX, mouseY);
@@ -357,32 +359,32 @@ public abstract class ICalculatorOverlay implements IOverlay {
         page1VLayout = new UIVerticalLayout();
         page1VLayout.setId("Page 1");
         page1VLayout.setSpacing(8);
-        page1VLayout.addElement(new UIText("", font, fontScaleText, ModColors.uiPrimaryText) {
+        page1VLayout.addElement(new UIText(Component.empty(), font, fontScaleText, ModColors.uiPrimaryText) {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
                 super.updateInternalValues();
                 if(!updatedInternalValues || UIUpdateRequests.updateTotalCoinsValue) {
-                    setText("Total Available: " + UiState.inventorySnapshotTotalCoins + " ¤"); // Value
+                    setText(Component.translatable("gui.numismaticscalculator.overlay.sumpage.total_available", UiState.inventorySnapshotTotalCoins)); // Value
                     UIUpdateRequests.updateTotalCoinsValue = false;
                 }
                 updatedInternalValues = true;
             }
         });
 //        page1VLayout.addElement(new UiSpace(0, 5));
-        page1VLayout.addElement(new UIText("", font, fontScaleText, ModColors.uiPrimaryText) {
+        page1VLayout.addElement(new UIText(Component.empty(), font, fontScaleText, ModColors.uiPrimaryText) {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
                 super.updateInternalValues();
                 if(!updatedInternalValues || UIUpdateRequests.updateSelectedCoinsValue) {
-                    setText("Selected: " + UiState.selectedCoinsValue + " ¤");
+                    setText(Component.translatable("gui.numismaticscalculator.overlay.sumpage.selected", UiState.selectedCoinsValue));
                     UIUpdateRequests.updateSelectedCoinsValue = false;
                 }
                 updatedInternalValues = true;
             }
         });
-        UIButton selectSwitchBtn = new UIButton("Select", font, fontScaleButton, () -> {
+        selectSwitchBtn = new UIButton(Component.translatable("gui.numismaticscalculator.overlay.sumpage.select_btn"), font, fontScaleButton, () -> {
 //            System.out.println("Selecting...");
             UiState.selectionModeActive = !UiState.selectionModeActive;
             if(!UiState.selectionModeActive) {
@@ -418,14 +420,14 @@ public abstract class ICalculatorOverlay implements IOverlay {
         page2VLayout = new UIVerticalLayout();
         page2VLayout.setId("Page 2");
         page2VLayout.setSpacing(8);
-        page2VLayout.addElement(new UIText("Convert ¤ to Coins", font, fontScaleTitle, ModColors.uiPrimaryText));
+        page2VLayout.addElement(new UIText(Component.translatable("gui.numismaticscalculator.overlay.comvertpage.convert_title"), font, fontScaleTitle, ModColors.uiPrimaryText));
 
         conversionInput = new UIEditBox(font, 80, 20).allowOnlyNumeric();
 //        event.addListener(conversionInput.getEditBox()); // commented
         conversionInput.setOnValueChange(this::onConversionTextUpdate);
         page2VLayout.addElement(conversionInput);
 
-        UiCheckBox useAvailable = new UiCheckBox("Only Available", font, 1.0f, () -> {}) {
+        UiCheckBox useAvailable = new UiCheckBox(Component.translatable("gui.numismaticscalculator.overlay.comvertpage.only_available_checkbox"), font, 1.0f, () -> {}) {
             @Override
             public boolean onClick(double mouseX, double mouseY) {
                 boolean result = super.onClick(mouseX, mouseY);
@@ -436,17 +438,17 @@ public abstract class ICalculatorOverlay implements IOverlay {
         };
         page2VLayout.addElement(useAvailable);
 
-        conversionOutputMain.addElement(new UIText("Value in Coins:", font, fontScaleTitle, ModColors.uiPrimaryText));
+        conversionOutputMain.addElement(new UIText(Component.translatable("gui.numismaticscalculator.overlay.comvertpage.value_in_coins_header"), font, fontScaleTitle, ModColors.uiPrimaryText));
 
-        conversionOutputMain.addElement(createConversionLine("sun", "Sun", () -> UiState.conversionSunMain, font));
-        conversionOutputMain.addElement(createConversionLine("crown", "Crown", () -> UiState.conversionCrownMain, font));
-        conversionOutputMain.addElement(createConversionLine("cog", "Cog", () -> UiState.conversionCogMain, font));
-        conversionOutputMain.addElement(createConversionLine("sprocket", "Sprocket", () -> UiState.conversionSprocketMain, font));
-        conversionOutputMain.addElement(createConversionLine("bevel", "Bevel", () -> UiState.conversionBevelMain, font));
-        conversionOutputMain.addElement(createConversionLine("spur", "Spur", () -> UiState.conversionSpurMain, font));
+        conversionOutputMain.addElement(createConversionLine("sun", Component.translatable("item.numismaticscalculator.coin.sun"), () -> UiState.conversionSunMain, font));
+        conversionOutputMain.addElement(createConversionLine("crown", Component.translatable("item.numismaticscalculator.coin.crown"), () -> UiState.conversionCrownMain, font));
+        conversionOutputMain.addElement(createConversionLine("cog", Component.translatable("item.numismaticscalculator.coin.cog"), () -> UiState.conversionCogMain, font));
+        conversionOutputMain.addElement(createConversionLine("sprocket", Component.translatable("item.numismaticscalculator.coin.sprocket"), () -> UiState.conversionSprocketMain, font));
+        conversionOutputMain.addElement(createConversionLine("bevel", Component.translatable("item.numismaticscalculator.coin.bevel"), () -> UiState.conversionBevelMain, font));
+        conversionOutputMain.addElement(createConversionLine("spur", Component.translatable("item.numismaticscalculator.coin.spur"), () -> UiState.conversionSpurMain, font));
 
         conversionOutputMain.addElement(new UiSpace(0, 1));
-        conversionOutputMain.addElement(new UIText("Expected in return:", font, fontScaleTitle, ModColors.uiPrimaryText) {
+        conversionOutputMain.addElement(new UIText(Component.empty(), font, fontScaleTitle, ModColors.uiPrimaryText) {
             private boolean updatedInternalValues = false;
             @Override
             public void updateInternalValues() {
@@ -456,7 +458,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
                         if(UiState.conversionModeUseAvailable && UiState.conversionSummedOverpay != 0) {
                             setEnabled(true);
                             setColor(ModColors.uiWarningText);
-                            setText("Overpaying: " + UiState.conversionSummedOverpay);
+                            setText(Component.translatable("gui.numismaticscalculator.overlay.comvertpage.overpaying_warning", UiState.conversionSummedOverpay));
                         } else {
                             setEnabled(false);
                         }
@@ -465,19 +467,19 @@ public abstract class ICalculatorOverlay implements IOverlay {
                     } else {
                         setEnabled(true);
                         setColor(ModColors.uiErrorText);
-                        setText("Missing amount: " + -UiState.conversionSummedOverpay);
+                        setText(Component.translatable("gui.numismaticscalculator.overlay.comvertpage.missing_warning",  -UiState.conversionSummedOverpay));
                     }
                 }
                 updatedInternalValues = true;
             }
         });
 
-        conversionOutputReturns.addElement(createConversionLine("sun", "Sun", () -> UiState.conversionSunOverpay, font));
-        conversionOutputReturns.addElement(createConversionLine("crown", "Crown", () -> UiState.conversionCrownOverpay, font));
-        conversionOutputReturns.addElement(createConversionLine("cog", "Cog", () -> UiState.conversionCogOverpay, font));
-        conversionOutputReturns.addElement(createConversionLine("sprocket", "Sprocket", () -> UiState.conversionSprocketOverpay, font));
-        conversionOutputReturns.addElement(createConversionLine("bevel", "Bevel", () -> UiState.conversionBevelOverpay, font));
-        conversionOutputReturns.addElement(createConversionLine("spur", "Spur", () -> UiState.conversionSpurOverpay, font));
+        conversionOutputReturns.addElement(createConversionLine("sun", Component.translatable("item.numismaticscalculator.coin.sun"), () -> UiState.conversionSunOverpay, font));
+        conversionOutputReturns.addElement(createConversionLine("crown", Component.translatable("item.numismaticscalculator.coin.crown"), () -> UiState.conversionCrownOverpay, font));
+        conversionOutputReturns.addElement(createConversionLine("cog", Component.translatable("item.numismaticscalculator.coin.cog"), () -> UiState.conversionCogOverpay, font));
+        conversionOutputReturns.addElement(createConversionLine("sprocket", Component.translatable("item.numismaticscalculator.coin.sprocket"), () -> UiState.conversionSprocketOverpay, font));
+        conversionOutputReturns.addElement(createConversionLine("bevel", Component.translatable("item.numismaticscalculator.coin.bevel"), () -> UiState.conversionBevelOverpay, font));
+        conversionOutputReturns.addElement(createConversionLine("spur", Component.translatable("item.numismaticscalculator.coin.spur"), () -> UiState.conversionSpurOverpay, font));
 
         page2VLayout.addElement(conversionOutputMain);
 //        page2VLayout.addElement(new UiSpace(0, 2));
@@ -491,6 +493,15 @@ public abstract class ICalculatorOverlay implements IOverlay {
         Quartet<Integer, Integer, Integer, Integer> bounds = getOverlayBoundsForScreen(screen);
         lastOverlayPosition = bounds;
         mainFloatingPanel.setBounds(bounds.getA(), bounds.getB(), bounds.getC(), bounds.getD());
+    }
+
+    public void disableSelection() {
+        if(selectSwitchBtn != null) selectSwitchBtn.setOutlineWidth(0);
+        if(selectSwitchBtn != null) mainFloatingPanel.layoutElements();
+        if(UiState.selectionModeActive) {
+            ICalculatorOverlay.clearAllSelectionData();
+        }
+        UiState.selectionModeActive = false;
     }
 
     public void updateOverlayPosition(IScreen screen) {
@@ -555,7 +566,7 @@ public abstract class ICalculatorOverlay implements IOverlay {
 
     protected abstract boolean isSlotValidForSelection(ISlot slot);
 
-    private void clearAllSelectionData() {
+    public static void clearAllSelectionData() {
         UiState.selectionStartPointX = -1;
         UiState.selectionStartPointY = -1;
 
