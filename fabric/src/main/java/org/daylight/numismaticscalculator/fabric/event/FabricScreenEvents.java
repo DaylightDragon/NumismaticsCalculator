@@ -5,9 +5,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.daylight.numismaticscalculator.fabric.replacements.api.*;
 import org.daylight.numismaticscalculator.fabric.ui.FabricModSettingsScreenImpl;
 import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
@@ -25,14 +25,14 @@ public class FabricScreenEvents {
     private static int lastWindowHeight = -1;
 
     public static void initializeScreenEvents() {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
         // Mouse button events
         ScreenEvents.AFTER_INIT.register((minecraftClient, screen, width, height) -> { // sketchy
 //            System.out.println(screen.getClass().getSimpleName() + " " + (screen instanceof HandledScreen<?>));
-            if(screen instanceof HandledScreen<?>) {
-                SingletonInstances.CALCULATOR_OVERLAY.init(new FabricAbstractContainerScreen<>((HandledScreen<?>) screen));
-                SingletonInstances.GUI_MANAGER_OVERLAY.init(new FabricAbstractContainerScreen<>((HandledScreen<?>) screen));
+            if(screen instanceof AbstractContainerScreen<?>) {
+                SingletonInstances.CALCULATOR_OVERLAY.init(new FabricAbstractContainerScreen<>((AbstractContainerScreen<?>) screen));
+                SingletonInstances.GUI_MANAGER_OVERLAY.init(new FabricAbstractContainerScreen<>((AbstractContainerScreen<?>) screen));
             } else if(screen instanceof FabricModSettingsScreenImpl) {
                 SingletonInstances.MOD_SETTINGS_OVERLAY.init(new FabricModSettingsScreen((FabricModSettingsScreenImpl) screen));
             }
@@ -77,7 +77,7 @@ public class FabricScreenEvents {
 
             // Key press
             ScreenKeyboardEvents.afterKeyPress(screen).register((screenArg, key, scancode, modifiers) -> {
-                if (screen instanceof HandledScreen<?>) {
+                if (screen instanceof AbstractContainerScreen<?>) {
                     if (SingletonInstances.CALCULATOR_OVERLAY != null) {
                         SingletonInstances.CALCULATOR_OVERLAY.onKeyPressed(new FabricKeyPressEvent(screenArg, key, scancode, modifiers));
                     }
@@ -102,7 +102,7 @@ public class FabricScreenEvents {
                 double dy = mouseY - lastMouseY;
 //                System.out.println("a");
                 if ((dx != 0 || dy != 0) && SingletonInstances.CALCULATOR_OVERLAY != null) {
-                    SingletonInstances.CALCULATOR_OVERLAY.onMouseDrag(mouseX, mouseY, 0, new FabricScreen(mc.currentScreen));
+                    SingletonInstances.CALCULATOR_OVERLAY.onMouseDrag(mouseX, mouseY, 0, new FabricScreen(mc.screen));
                 }
             }
 
@@ -114,11 +114,11 @@ public class FabricScreenEvents {
 
         // Render events
         HudRenderCallback.EVENT.register((graphics, tickDelta) -> {
-            MinecraftClient client = MinecraftClient.getInstance();
-            if (client.currentScreen != null) return;
+            Minecraft client = Minecraft.getInstance();
+            if (client.screen != null) return;
             SingletonInstances.CALCULATOR_OVERLAY.render(
                     new FabricGuiGraphics(graphics),
-                    tickDelta.getTickDelta(true), // what is it
+                    tickDelta.getGameTimeDeltaPartialTick(true), // what is it
                     SingletonInstances.INPUT_UTILS.getMouseX(),
                     SingletonInstances.INPUT_UTILS.getMouseY()
             );
@@ -165,9 +165,9 @@ public class FabricScreenEvents {
     }
 
     private static void checkWindowResize() {
-        var window = MinecraftClient.getInstance().getWindow();
-        int w = window.getScaledWidth();
-        int h = window.getScaledHeight();
+        var window = Minecraft.getInstance().getWindow();
+        int w = window.getGuiScaledWidth();
+        int h = window.getGuiScaledHeight();
 
         if (w != lastWindowWidth || h != lastWindowHeight) {
             lastWindowWidth = w;

@@ -1,7 +1,7 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.daylight.numismaticscalculator.fabric.ui.FabricModSettingsScreenImpl;
 import org.daylight.numismaticscalculator.replacements.IAbstractContainerScreen;
 import org.daylight.numismaticscalculator.replacements.IModSettingsScreen;
@@ -30,7 +30,7 @@ public class FabricScreen implements IScreen {
 
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
-        return new FabricAbstractContainerScreen<>((HandledScreen<?>) delegate);
+        return new FabricAbstractContainerScreen<>((AbstractContainerScreen<?>) delegate);
     }
 
     @Override
@@ -45,6 +45,6 @@ public class FabricScreen implements IScreen {
 
     @Override
     public boolean isAbstractContainerScreen() {
-        return delegate instanceof HandledScreen<?>;
+        return delegate instanceof AbstractContainerScreen<?>;
     }
 }

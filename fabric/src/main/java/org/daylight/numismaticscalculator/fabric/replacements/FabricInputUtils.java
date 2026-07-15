@@ -1,18 +1,18 @@
 package org.daylight.numismaticscalculator.fabric.replacements;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.daylight.numismaticscalculator.replacements.IInputUtils;
 
 public class FabricInputUtils implements IInputUtils {
     @Override
     public int getMouseX() {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        return (int) (mc.mouse.getX() * mc.getWindow().getScaledWidth() / mc.getWindow().getWidth());
+        Minecraft mc = Minecraft.getInstance();
+        return (int) (mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getWidth());
     }
 
     @Override
     public int getMouseY() {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        return (int) (mc.mouse.getY() * mc.getWindow().getScaledHeight() / mc.getWindow().getHeight());
+        Minecraft mc = Minecraft.getInstance();
+        return (int) (mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getHeight());
     }
 }

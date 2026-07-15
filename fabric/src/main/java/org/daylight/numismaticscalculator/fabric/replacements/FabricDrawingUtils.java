@@ -1,9 +1,9 @@
 package org.daylight.numismaticscalculator.fabric.replacements;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricGuiGraphics;
 import org.daylight.numismaticscalculator.replacements.IDrawingUtils;
 import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class FabricDrawingUtils implements IDrawingUtils {
     public static void fillSt(@NotNull IGuiGraphics graphics, int minX, int minY, int maxX, int maxY, int pColor, int outlineWidth, int outlineColor) {
         if(!(graphics instanceof FabricGuiGraphics fabricGuiGraphics)) throw new IllegalArgumentException();
-        DrawContext g = fabricGuiGraphics.getDelegate();
+        GuiGraphics g = fabricGuiGraphics.getDelegate();
         if(outlineWidth <= 0) {
             g.fill(minX, minY, maxX, maxY, pColor);
         } else {
@@ -45,28 +45,28 @@ public class FabricDrawingUtils implements IDrawingUtils {
 
     public static void drawScaledTextStatic(@NotNull IGuiGraphics graphics, String text, float x, float y, int color, float scale, boolean shadow) {
         if(!(graphics instanceof FabricGuiGraphics fabricGuiGraphics)) throw new IllegalArgumentException();
-        DrawContext context = fabricGuiGraphics.getDelegate();
-        MatrixStack matrices = context.getMatrices(); // это MatrixStack
-        matrices.push(); // MatrixStack имеет pushPose/popPose
+        GuiGraphics context = fabricGuiGraphics.getDelegate();
+        PoseStack matrices = context.pose(); // это MatrixStack
+        matrices.pushPose(); // MatrixStack имеет pushPose/popPose
 
         matrices.translate(x, y, 0);
         matrices.scale(scale, scale, 1f);
 
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        Font textRenderer = Minecraft.getInstance().font;
 
-        textRenderer.draw(
+        textRenderer.drawInBatch(
                 text,
                 0f, 0f, // локальные координаты после translate
                 color,
                 shadow,
-                matrices.peek().getPositionMatrix(), // преобразование в Matrix4f
-                MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(),
-                TextRenderer.TextLayerType.NORMAL,
+                matrices.last().pose(), // преобразование в Matrix4f
+                Minecraft.getInstance().renderBuffers().bufferSource(),
+                Font.DisplayMode.NORMAL,
                 0, // background color
                 0xF000F0 // light
         );
 
-        matrices.pop();
+        matrices.popPose();
     }
 
     @Override

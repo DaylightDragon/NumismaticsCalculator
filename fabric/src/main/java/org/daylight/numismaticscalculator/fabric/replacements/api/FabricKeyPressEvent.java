@@ -1,6 +1,6 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import org.daylight.numismaticscalculator.replacements.IKeyPressEvent;
 import org.lwjgl.glfw.GLFW;
 

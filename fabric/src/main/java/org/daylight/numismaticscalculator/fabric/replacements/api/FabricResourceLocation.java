@@ -1,16 +1,16 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.daylight.numismaticscalculator.replacements.IResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public class FabricResourceLocation implements IResourceLocation {
-    private Identifier delegate;
-    public FabricResourceLocation(Identifier delegate) {
+    private ResourceLocation delegate;
+    public FabricResourceLocation(ResourceLocation delegate) {
         this.delegate = delegate;
     }
 
-    public Identifier getDelegate() {
+    public ResourceLocation getDelegate() {
         return delegate;
     }
 

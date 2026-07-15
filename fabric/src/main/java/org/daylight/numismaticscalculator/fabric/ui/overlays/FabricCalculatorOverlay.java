@@ -1,14 +1,14 @@
 package org.daylight.numismaticscalculator.fabric.ui.overlays;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import org.daylight.numismaticscalculator.UiState;
 import org.daylight.numismaticscalculator.fabric.config.ConfigHandler;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricAbstractContainerScreen;
@@ -29,7 +29,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
         if(!(screenOriginal instanceof FabricScreen FabricScreen)) throw new IllegalArgumentException();
         Screen screen = FabricScreen.getDelegate();
 
-        return screen instanceof HandledScreen<?>;
+        return screen instanceof AbstractContainerScreen<?>;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
 
 //        System.out.println(UiState.coinCalculatorOverlayActive);
         if(!UiState.coinCalculatorOverlayActive) return;
-        if (shouldRenderOnScreen(new FabricScreen(MinecraftClient.getInstance().currentScreen))) {
-            HandledScreen<?> screen = (HandledScreen<?>) MinecraftClient.getInstance().currentScreen;
+        if (shouldRenderOnScreen(new FabricScreen(Minecraft.getInstance().screen))) {
+            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) Minecraft.getInstance().screen;
             if (mainFloatingPanel == null) {
                 init(new FabricAbstractContainerScreen<>(screen));
             }
@@ -49,7 +49,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
 
 //            System.out.println(mainFloatingPanel);
             if (mainFloatingPanel != null) {
-                MinecraftClient mc = MinecraftClient.getInstance();
+                Minecraft mc = Minecraft.getInstance();
                 if (mouseX == null) mouseX = SingletonInstances.INPUT_UTILS.getMouseX();
                 if (mouseY == null) mouseY = SingletonInstances.INPUT_UTILS.getMouseY();
 
@@ -65,9 +65,9 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
     public void replacePositionAnimationData() {
 //        System.out.println("replacePositionAnimationData");
         if(!ConfigHandler.overlayAnimationEnabled.get()) return;
-        if(MinecraftClient.getInstance().currentScreen == null || !(MinecraftClient.getInstance().currentScreen instanceof HandledScreen)) return;
+        if(Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof AbstractContainerScreen)) return;
 
-        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen(new FabricAbstractContainerScreen<>((HandledScreen<?>) MinecraftClient.getInstance().currentScreen));
+        Quartet<Integer, Integer, Integer, Integer> lastOverlayPosition = getOverlayBoundsForScreen(new FabricAbstractContainerScreen<>((AbstractContainerScreen<?>) Minecraft.getInstance().screen));
 //        System.out.println(lastOverlayPosition + " " + mainFloatingPanel.getY());
         if (lastOverlayPosition != null && lastOverlayPosition.getB() != mainFloatingPanel.getY()) {
             positionAnimationStartY = mainFloatingPanel.getY();
@@ -87,21 +87,21 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
         if(!(slotOrig instanceof FabricSlot fabricSlot)) throw new IllegalArgumentException();
         Slot slot = fabricSlot.getDelegate();
         if(slot == null) return false;
-        if(!(slot.inventory instanceof PlayerInventory || slot.inventory instanceof SimpleInventory)) return false;
-        if(slot.inventory instanceof PlayerInventory && slot.getIndex() >= ((PlayerInventory) slot.inventory).main.size()) return false;
+        if(!(slot.container instanceof Inventory || slot.container instanceof SimpleContainer)) return false;
+        if(slot.container instanceof Inventory && slot.index >= ((Inventory) slot.container).items.size()) return false;
         return true;
     }
 
     @Override
     public List<ISlot> getPlayerInventorySlots(IAbstractContainerScreen<?> screenOrig) {
         if(!(screenOrig instanceof FabricAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
-        HandledScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
+        AbstractContainerScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
-        ScreenHandler menu = screen.getScreenHandler();
+        AbstractContainerMenu menu = screen.getMenu();
         List<ISlot> slots = new ArrayList<>(Collections.nCopies(menu.slots.size(), null));
         for(Slot slot : menu.slots) {
-            if(slot.inventory instanceof PlayerInventory playerInventory) {
-                slots.set(playerInventory.main.indexOf(slot.getStack()), new FabricSlot(slot));
+            if(slot.container instanceof Inventory playerInventory) {
+                slots.set(playerInventory.items.indexOf(slot.getItem()), new FabricSlot(slot));
             }
         }
         return slots;
@@ -110,7 +110,7 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
     @Override
     public int getRealSlotIndex(IAbstractContainerScreen<?> screenOrig, ISlot slotOrig, Class<?> overwriteTargetClass) {
         if(!(screenOrig instanceof FabricAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
-        HandledScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
+        AbstractContainerScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
         if(!(slotOrig instanceof FabricSlot forgeSlot)) throw new IllegalArgumentException();
         Slot slot = forgeSlot.getDelegate();
@@ -118,33 +118,33 @@ public class FabricCalculatorOverlay extends ICalculatorOverlay {
         Class<?> targetContainerClass = UiState.selectionContainerClass;
         if(overwriteTargetClass != null) targetContainerClass = overwriteTargetClass;
         if(targetContainerClass == null) {
-            if(screen instanceof InventoryScreen || screen instanceof CreativeInventoryScreen) targetContainerClass = PlayerInventory.class;
+            if(screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen) targetContainerClass = Inventory.class;
         }
 
-        for (Slot menuSlot : screen.getScreenHandler().slots) {
-            if (menuSlot.inventory.getClass().equals(targetContainerClass) && menuSlot.getIndex() == slot.getIndex()) {
-                return menuSlot.getIndex();
+        for (Slot menuSlot : screen.getMenu().slots) {
+            if (menuSlot.container.getClass().equals(targetContainerClass) && menuSlot.index == slot.index) {
+                return menuSlot.index;
             }
         }
 
 //        System.out.println("returning default");
 
-        return screen.getScreenHandler().slots.indexOf(slot);
+        return screen.getMenu().slots.indexOf(slot);
     }
 
     @Override
     public ISlot getRealInventorySlot(IAbstractContainerScreen<?> screenOrig, int slotIndex) {
         if(!(screenOrig instanceof FabricAbstractContainerScreen<?> forgeAbstractContainerScreen)) throw new IllegalArgumentException();
-        HandledScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
+        AbstractContainerScreen<?> screen = forgeAbstractContainerScreen.getDelegate();
 
-        for (Slot slot : screen.getScreenHandler().slots) {
-            if (slot.inventory.getClass().equals(UiState.selectionContainerClass) && slot.getIndex() == slotIndex) {
+        for (Slot slot : screen.getMenu().slots) {
+            if (slot.container.getClass().equals(UiState.selectionContainerClass) && slot.index == slotIndex) {
                 return new FabricSlot(slot);
             }
         }
 
         try {
-            return new FabricSlot(screen.getScreenHandler().getSlot(slotIndex));
+            return new FabricSlot(screen.getMenu().getSlot(slotIndex));
         } catch (IndexOutOfBoundsException e) {
             return null;
         }

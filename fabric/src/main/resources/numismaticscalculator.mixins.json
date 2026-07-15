@@ -11,7 +11,7 @@
     "requireAnnotations": true
   },
   "client": [
-    "HandledScreenAccessor",
+    "AbstractContainerScreenAccessor",
     "HandledScreenMixin"
   ]
 }

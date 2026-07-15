@@ -1,8 +1,8 @@
 package org.daylight.numismaticscalculator.fabric.replacements;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricFont;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricItemStack;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricScreen;
@@ -17,24 +17,24 @@ import java.util.List;
 public class FabricMinecraftUtilities implements IMinecraftUtilities {
     @Override
     public IFont getMinecraftFont() {
-        return new FabricFont(MinecraftClient.getInstance().textRenderer);
+        return new FabricFont(Minecraft.getInstance().font);
     }
 
     @Override
     public void execute(Runnable runnable) {
-        MinecraftClient.getInstance().execute(runnable);
+        Minecraft.getInstance().execute(runnable);
     }
 
     @Override
     public List<IItemStack> getInventoryItems() {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return new ArrayList<>();
 
         List<IItemStack> snapshot = new ArrayList<>();
-        for (ItemStack stack : player.getInventory().main) {
+        for (ItemStack stack : player.getInventory().items) {
             if (!stack.isEmpty()) snapshot.add(new FabricItemStack(stack.copy()));
         }
-        for (ItemStack stack : player.getInventory().offHand) {
+        for (ItemStack stack : player.getInventory().offhand) {
             if (!stack.isEmpty()) snapshot.add(new FabricItemStack(stack.copy()));
         }
         for (ItemStack stack : player.getInventory().armor) {
@@ -46,6 +46,6 @@ public class FabricMinecraftUtilities implements IMinecraftUtilities {
 
     @Override
     public IScreen getScreen() {
-        return new FabricScreen(MinecraftClient.getInstance().currentScreen);
+        return new FabricScreen(Minecraft.getInstance().screen);
     }
 }

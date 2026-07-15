@@ -1,10 +1,10 @@
 package org.daylight.numismaticscalculator.fabric.ui;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.daylight.numismaticscalculator.ModColors;
 import org.daylight.numismaticscalculator.UiState;
-import org.daylight.numismaticscalculator.fabric.mixins.HandledScreenAccessor;
+import org.daylight.numismaticscalculator.fabric.mixins.AbstractContainerScreenAccessor;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricAbstractContainerScreen;
 import org.daylight.numismaticscalculator.replacements.IAbstractContainerScreen;
 import org.daylight.numismaticscalculator.replacements.ISlot;
@@ -12,12 +12,12 @@ import org.daylight.numismaticscalculator.replacements.SingletonInstances;
 import org.jetbrains.annotations.NotNull;
 
 public class FabricSelectionRenderer {
-    public static void renderSelection(@NotNull DrawContext g, HandledScreen<?> screen) {
+    public static void renderSelection(@NotNull GuiGraphics g, AbstractContainerScreen<?> screen) {
         IAbstractContainerScreen<?> veryAbstractContainerScreen = new FabricAbstractContainerScreen<>(screen);
 
-        if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty() && !screen.getScreenHandler().slots.isEmpty()) {
+        if(UiState.selectionModeActive && UiState.selectionRendered && !UiState.selectionSlotValuesCoins.isEmpty() && !screen.getMenu().slots.isEmpty()) {
 //            System.out.println("Selection render");
-            if(!(screen instanceof HandledScreenAccessor handledScreenAccessor)) return;
+            if(!(screen instanceof AbstractContainerScreenAccessor handledScreenAccessor)) return;
 //            System.out.println("handledScreenAccessor " + handledScreenAccessor.getGuiLeft() + " " + handledScreenAccessor.getGuiTop());
 //            System.out.println(UiState.selectionStartPointSlotIndex + " - " + UiState.selectionEndPointSlotIndex);
             for(Integer slotIndex : UiState.selectionSlotValuesCoins.keySet()) {

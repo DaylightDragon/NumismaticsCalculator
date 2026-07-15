@@ -1,26 +1,26 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Font;
 import org.daylight.numismaticscalculator.replacements.IFont;
 import org.jetbrains.annotations.NotNull;
 
 public class FabricFont implements IFont {
-    private TextRenderer delegate;
-    public FabricFont(TextRenderer delegate) {
+    private Font delegate;
+    public FabricFont(Font delegate) {
         this.delegate = delegate;
     }
 
-    public TextRenderer getDelegate() {
+    public Font getDelegate() {
         return delegate;
     }
 
     @Override
     public int width(@NotNull String text) {
-        return delegate.getWidth(text);
+        return delegate.width(text);
     }
 
     @Override
     public int lineHeight() {
-        return delegate.fontHeight;
+        return delegate.lineHeight;
     }
 }

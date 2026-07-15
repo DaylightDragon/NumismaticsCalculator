@@ -1,6 +1,6 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.inventory.Slot;
 import org.daylight.numismaticscalculator.replacements.IItem;
 import org.daylight.numismaticscalculator.replacements.IItemStack;
 import org.daylight.numismaticscalculator.replacements.ISlot;
@@ -17,12 +17,12 @@ public class FabricSlot implements ISlot {
 
     @Override
     public IItem getItemActual() {
-        return new FabricItem(delegate.getStack().getItem());
+        return new FabricItem(delegate.getItem().getItem());
     }
 
     @Override
     public IItemStack getItemStack() {
-        return new FabricItemStack(delegate.getStack());
+        return new FabricItemStack(delegate.getItem());
     }
 
     @Override
@@ -37,6 +37,6 @@ public class FabricSlot implements ISlot {
 
     @Override
     public Class<?> getContainerClass() {
-        return delegate.inventory.getClass();
+        return delegate.container.getClass();
     }
 }

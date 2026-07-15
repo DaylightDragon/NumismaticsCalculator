@@ -1,20 +1,20 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.daylight.numismaticscalculator.replacements.ITextureAtlasSprite;
 
 public class FabricTextureAtlasSprite implements ITextureAtlasSprite {
-    private Sprite delegate;
-    public FabricTextureAtlasSprite(Sprite delegate) {
+    private TextureAtlasSprite delegate;
+    public FabricTextureAtlasSprite(TextureAtlasSprite delegate) {
         this.delegate = delegate;
     }
 
-    public Sprite getDelegate() {
+    public TextureAtlasSprite getDelegate() {
         return delegate;
     }
 
     @Override
     public String asAtlasLocation() {
-        return delegate.getAtlasId().toString();
+        return delegate.atlasLocation().toString();
     }
 }

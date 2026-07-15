@@ -1,50 +1,50 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import org.daylight.numismaticscalculator.fabric.mixins.HandledScreenAccessor;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import org.daylight.numismaticscalculator.fabric.mixins.AbstractContainerScreenAccessor;
 import org.daylight.numismaticscalculator.replacements.*;
 
 public class FabricAbstractContainerScreen<T> implements IAbstractContainerScreen<T> {
-    private HandledScreen<?> delegate;
+    private AbstractContainerScreen<?> delegate;
 
-    public FabricAbstractContainerScreen(HandledScreen<?> delegate) {
+    public FabricAbstractContainerScreen(AbstractContainerScreen<?> delegate) {
         this.delegate = delegate;
     }
 
-    public HandledScreen<?> getDelegate() {
+    public AbstractContainerScreen<?> getDelegate() {
         return delegate;
     }
 
     @Override
     public int getGuiLeft() {
-        if(delegate instanceof HandledScreenAccessor handledScreenAccessor) {
+        if(delegate instanceof AbstractContainerScreenAccessor handledScreenAccessor) {
 //            System.out.println("handledScreenAccessor " + handledScreenAccessor.getGuiLeft() + " " + handledScreenAccessor.getGuiTop());
             return handledScreenAccessor.getGuiLeft();
         }
-        return delegate.getNavigationFocus().getLeft();
+        return delegate.getRectangle().left();
     }
 
     @Override
     public int getGuiTop() {
-        if(delegate instanceof HandledScreenAccessor handledScreenAccessor) {
+        if(delegate instanceof AbstractContainerScreenAccessor handledScreenAccessor) {
             return handledScreenAccessor.getGuiTop();
         }
-        return delegate.getNavigationFocus().getTop();
+        return delegate.getRectangle().top();
     }
 
     @Override
     public int countSlots() {
-        return delegate.getScreenHandler().slots.size();
+        return delegate.getMenu().slots.size();
     }
 
     @Override
     public IAbstractContainerMenu getMenu() {
-        return new FabricAbstractContainerMenu(delegate.getScreenHandler());
+        return new FabricAbstractContainerMenu(delegate.getMenu());
     }
 
     @Override
     public ISlot getSlotUnderMouse() {
-        if(delegate instanceof HandledScreenAccessor handledScreenAccessor) {
+        if(delegate instanceof AbstractContainerScreenAccessor handledScreenAccessor) {
             return new FabricSlot(handledScreenAccessor.invokeGetSlotAt(SingletonInstances.INPUT_UTILS.getMouseX(), SingletonInstances.INPUT_UTILS.getMouseY()));
         }
         return null;
@@ -62,7 +62,7 @@ public class FabricAbstractContainerScreen<T> implements IAbstractContainerScree
 
     @Override
     public IAbstractContainerScreen<?> getAsAbstractContainerScreen() {
-        return new FabricAbstractContainerScreen<>((HandledScreen<?>) delegate);
+        return new FabricAbstractContainerScreen<>(delegate);
     }
 
     @Override
@@ -77,6 +77,6 @@ public class FabricAbstractContainerScreen<T> implements IAbstractContainerScree
 
     @Override
     public boolean isAbstractContainerScreen() {
-        return delegate instanceof HandledScreen<?>;
+        return delegate instanceof AbstractContainerScreen<?>;
     }
 }

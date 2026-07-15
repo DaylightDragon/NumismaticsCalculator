@@ -2,15 +2,16 @@ package org.daylight.numismaticscalculator.fabric.replacements;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.daylight.numismaticscalculator.UiState;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricItem;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricTextureAtlasSprite;
@@ -25,25 +26,25 @@ import java.util.function.Consumer;
 
 public class FabricCoinValues implements ICoinValues {
     public static final Map<Item, Integer> ITEM_TO_VALUE = new Object2IntOpenHashMap<>();
-    public static final Map<Integer, Identifier> VALUE_TO_IDENTIFIER = new Int2ObjectOpenHashMap<>();
+    public static final Map<Integer, ResourceLocation> VALUE_TO_IDENTIFIER = new Int2ObjectOpenHashMap<>();
     public static final Map<CoinTypes, Integer> TYPE_TO_VALUE = new HashMap<>();
     public static final Map<Integer, CoinTypes> VALUE_TO_COIN_TYPE = new HashMap<>();
     public static final Map<CoinTypes, Consumer<Integer>> TYPE_TO_SET_MAIN = new HashMap<>();
     public static final Map<CoinTypes, Consumer<Integer>> TYPE_TO_SET_RETURN = new HashMap<>();
-    private static final Map<String, Sprite> NAME_TO_SPRITE = new HashMap<>();
+    private static final Map<String, TextureAtlasSprite> NAME_TO_SPRITE = new HashMap<>();
 
-    private static final List<Identifier> numismaticsCoinIds = List.of(
-            Identifier.of("numismatics", "spur"),
-            Identifier.of("numismatics", "bevel"),
-            Identifier.of("numismatics", "sprocket"),
-            Identifier.of("numismatics", "cog"),
-            Identifier.of("numismatics", "crown"),
-            Identifier.of("numismatics", "sun")
+    private static final List<ResourceLocation> numismaticsCoinIds = List.of(
+            ResourceLocation.fromNamespaceAndPath("numismatics", "spur"),
+            ResourceLocation.fromNamespaceAndPath("numismatics", "bevel"),
+            ResourceLocation.fromNamespaceAndPath("numismatics", "sprocket"),
+            ResourceLocation.fromNamespaceAndPath("numismatics", "cog"),
+            ResourceLocation.fromNamespaceAndPath("numismatics", "crown"),
+            ResourceLocation.fromNamespaceAndPath("numismatics", "sun")
     );
 
     public static void init() {
-        for (Identifier id : numismaticsCoinIds) {
-            Item item = Registries.ITEM.get(id);
+        for (ResourceLocation id : numismaticsCoinIds) {
+            Item item = BuiltInRegistries.ITEM.get(id);
             if (item != null) {
                 int value = switch (id.getPath()) {
                     case "spur" -> 1;
@@ -88,22 +89,22 @@ public class FabricCoinValues implements ICoinValues {
         TYPE_TO_SET_RETURN.put(CoinTypes.SUN, value -> UiState.conversionSunOverpay = value);
     }
 
-    private static final Identifier BLOCK_ATLAS = Identifier.of("minecraft", "textures/atlas/blocks.png");
-    private static final Identifier MISSINGNO = Identifier.of("minecraft", "missingno");
+    private static final ResourceLocation BLOCK_ATLAS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/atlas/blocks.png");
+    private static final ResourceLocation MISSINGNO = ResourceLocation.fromNamespaceAndPath("minecraft", "missingno");
 
-    public static Sprite getMissingNo() {
-        return MinecraftClient.getInstance()
-                .getSpriteAtlas(BLOCK_ATLAS)
+    public static TextureAtlasSprite getMissingNo() {
+        return Minecraft.getInstance()
+                .getTextureAtlas(BLOCK_ATLAS)
                 .apply(MISSINGNO);
     }
 
-    private static Sprite getCoinSprite(String itemName) {
-        Item item = Registries.ITEM.get(Identifier.of("numismatics", itemName));
+    private static TextureAtlasSprite getCoinSprite(String itemName) {
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("numismatics", itemName));
         if (item == null) {
             return null;
         }
-        BakedModel model = MinecraftClient.getInstance().getItemRenderer().getModel(new ItemStack(item), null, null, 0);
-        List<BakedQuad> quads = model.getQuads(null, null, Random.create());
+        BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(new ItemStack(item), null, null, 0);
+        List<BakedQuad> quads = model.getQuads(null, null, RandomSource.create());
         if (!quads.isEmpty()) {
             return quads.get(0).getSprite();
         }
@@ -116,7 +117,7 @@ public class FabricCoinValues implements ICoinValues {
         if (NAME_TO_SPRITE.containsKey(name)) {
             return new FabricTextureAtlasSprite(NAME_TO_SPRITE.get(name));
         }
-        Sprite sprite = getCoinSprite(name);
+        TextureAtlasSprite sprite = getCoinSprite(name);
         if (sprite != null) {
             NAME_TO_SPRITE.put(name, sprite);
             return new FabricTextureAtlasSprite(sprite);

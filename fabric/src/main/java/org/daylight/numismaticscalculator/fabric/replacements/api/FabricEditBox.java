@@ -1,9 +1,9 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.replacements.IEditBox;
 import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
 import org.jetbrains.annotations.NotNull;
@@ -12,16 +12,16 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class FabricEditBox implements IEditBox {
-    private final TextFieldWidget delegate;
+    private final EditBox delegate;
     private boolean allowOnlyNumeric;
 
-    public FabricEditBox(TextRenderer font, int x, int y, int width, int height, Text component) {
-        this.delegate = new TextFieldWidget(font, x, y, width, 20, component);
+    public FabricEditBox(Font font, int x, int y, int width, int height, Component component) {
+        this.delegate = new EditBox(font, x, y, width, 20, component);
         delegate.setWidth(width);
 //        delegate.set
     }
 
-    public TextFieldWidget getDelegate() {
+    public EditBox getDelegate() {
         return delegate;
     }
 
@@ -45,7 +45,7 @@ public class FabricEditBox implements IEditBox {
 
     @Override
     public void setValue(@NotNull String value) {
-        delegate.setText(cleanInput(value));
+        delegate.setValue(cleanInput(value));
     }
 
     @Override
@@ -67,19 +67,19 @@ public class FabricEditBox implements IEditBox {
     public void insertText(@NotNull String input) {
         input = cleanInput(input);
 
-        String current = delegate.getText();
+        String current = delegate.getValue();
         if (current == null) current = "";
 
-        int cursor = delegate.getCursor();
+        int cursor = delegate.getCursorPosition();
         cursor = Math.max(0, Math.min(cursor, current.length())); // anti out of bounds
 
         String before = current.substring(0, cursor);
         String after = current.substring(cursor);
 
         String newText = before + input + after;
-        delegate.setText(newText);
+        delegate.setValue(newText);
 
-        delegate.setCursor(cursor + input.length(), false);
+        delegate.setCursorPosition(cursor + input.length());
     }
 
     @Override
@@ -99,17 +99,17 @@ public class FabricEditBox implements IEditBox {
 
     @Override
     public void setResponder(Consumer<String> onValueChange) {
-        delegate.setChangedListener(onValueChange);
+        delegate.setResponder(onValueChange);
     }
 
     @Override
     public void deleteChars(int count) {
-        String text = delegate.getText();
+        String text = delegate.getValue();
         if (text == null || text.isEmpty()) {
             return;
         }
 
-        int cursor = delegate.getCursor();
+        int cursor = delegate.getCursorPosition();
         cursor = Math.max(0, Math.min(cursor, text.length()));
         if (cursor <= 0) {
             return;
@@ -131,8 +131,8 @@ public class FabricEditBox implements IEditBox {
             newText = text;
         }
 
-        delegate.setText(newText);
-        delegate.setCursor(start, false);
+        delegate.setValue(newText);
+        delegate.setCursorPosition(start);
     }
 
     @Override
@@ -143,12 +143,12 @@ public class FabricEditBox implements IEditBox {
     @Override
     public void render(@NotNull IGuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if(!(graphics instanceof FabricGuiGraphics fabricGuiGraphics)) throw new IllegalArgumentException();
-        DrawContext drawContext = fabricGuiGraphics.getDelegate();
+        GuiGraphics drawContext = fabricGuiGraphics.getDelegate();
         delegate.render(drawContext, mouseX, mouseY, partialTick);
     }
 
     @Override
     public String getValue() {
-        return delegate.getText();
+        return delegate.getValue();
     }
 }

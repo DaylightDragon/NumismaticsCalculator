@@ -1,6 +1,6 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.daylight.numismaticscalculator.replacements.IAbstractContainerMenu;
 import org.daylight.numismaticscalculator.replacements.ISlot;
 
@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FabricAbstractContainerMenu implements IAbstractContainerMenu {
-    private ScreenHandler delegate;
+    private AbstractContainerMenu delegate;
 
-    public FabricAbstractContainerMenu(ScreenHandler delegate) {
+    public FabricAbstractContainerMenu(AbstractContainerMenu delegate) {
         this.delegate = delegate;
     }
 
-    private ScreenHandler getDelegate() {
+    private AbstractContainerMenu getDelegate() {
         return delegate;
     }
 

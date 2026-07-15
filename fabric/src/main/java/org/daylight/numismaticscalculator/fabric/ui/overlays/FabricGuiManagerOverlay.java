@@ -1,7 +1,7 @@
 package org.daylight.numismaticscalculator.fabric.ui.overlays;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.daylight.numismaticscalculator.fabric.config.ConfigHandler;
 import org.daylight.numismaticscalculator.fabric.replacements.api.FabricScreen;
 import org.daylight.numismaticscalculator.fabric.ui.FabricModSettingsScreenImpl;
@@ -14,7 +14,7 @@ public class FabricGuiManagerOverlay extends IGuiManagerOverlay {
         if(!(screenOriginal instanceof FabricScreen forgeScreen)) throw new IllegalArgumentException();
         Screen screen = forgeScreen.getDelegate();
 
-        return (screen instanceof HandledScreen<?>);
+        return (screen instanceof AbstractContainerScreen<?>);
     }
 
     @Override

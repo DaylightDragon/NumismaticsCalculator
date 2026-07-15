@@ -1,19 +1,19 @@
 package org.daylight.numismaticscalculator.fabric.mixins;
 
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(HandledScreen.class)
-public interface HandledScreenAccessor {
-    @Invoker("getSlotAt")
+@Mixin(AbstractContainerScreen.class)
+public interface AbstractContainerScreenAccessor {
+    @Invoker("findSlot")
     Slot invokeGetSlotAt(double x, double y);
 
-    @Accessor("x")
+    @Accessor("leftPos")
     int getGuiLeft();
 
-    @Accessor("y")
+    @Accessor("topPos")
     int getGuiTop();
 }

@@ -1,17 +1,17 @@
 package org.daylight.numismaticscalculator.fabric.event;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import org.daylight.numismaticscalculator.replacements.SingletonInstances;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FabricInventoryChangeEvents {
-    private static final MinecraftClient MC = MinecraftClient.getInstance();
+    private static final Minecraft MC = Minecraft.getInstance();
     private static long[] lastHashes;
     private static int tickCounter = 0;
     private static final int CHECK_INTERVAL = 10; // every ticks
@@ -31,14 +31,14 @@ public class FabricInventoryChangeEvents {
 
     private static void tick() {
         tickCounter++;
-        ClientPlayerEntity player = MC.player;
+        LocalPlayer player = MC.player;
         if (player == null) return;
 
-        PlayerInventory inventory = player.getInventory();
+        Inventory inventory = player.getInventory();
 
         List<ItemStack> items = new ArrayList<>();
-        items.addAll(inventory.main);
-        items.addAll(inventory.offHand);
+        items.addAll(inventory.items);
+        items.addAll(inventory.offhand);
 
         if (tickCounter < CHECK_INTERVAL && lastHashes != null) return;
         tickCounter = 0;

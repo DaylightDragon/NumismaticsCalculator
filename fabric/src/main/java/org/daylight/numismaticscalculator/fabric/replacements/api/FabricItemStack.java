@@ -1,6 +1,6 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import org.daylight.numismaticscalculator.replacements.IItem;
 import org.daylight.numismaticscalculator.replacements.IItemStack;
 
