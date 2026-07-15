@@ -1,5 +1,34 @@
 {
   "key.categories.numismaticscalculator": "Numismatics Calculator",
   "key.numismaticscalculator.toggle_overlay": "Toggle Calculator Overlay",
-  "key.numismaticscalculator.mod_settings": "Open Settings"
+  "key.numismaticscalculator.mod_settings": "Open Settings",
+
+  "item.numismaticscalculator.coin.tooltip.total_value.inactive": "§7Hold §6§lSHIFT§r§7 to view total value",
+  "item.numismaticscalculator.coin.tooltip.total_value.active": "Value (Total): %s¤",
+
+  "gui.numismaticscalculator.overlay.sumpage.total_available": "Total Available: %s ¤",
+  "gui.numismaticscalculator.overlay.sumpage.selected": "Selected: %s ¤",
+  "gui.numismaticscalculator.overlay.sumpage.select_btn": "Select",
+  "gui.numismaticscalculator.overlay.comvertpage.convert_title": "Convert ¤ to Coins",
+  "gui.numismaticscalculator.overlay.comvertpage.only_available_checkbox": "Only Available",
+  "gui.numismaticscalculator.overlay.comvertpage.value_in_coins_header": "Value in Coins:",
+  "gui.numismaticscalculator.overlay.comvertpage.overpaying_warning": "Overpaying: %s",
+  "gui.numismaticscalculator.overlay.comvertpage.missing_warning": "Missing Amount: %s",
+
+  "gui.numismaticscalculator.overlay.settings.value.true": "True",
+  "gui.numismaticscalculator.overlay.settings.value.false": "False",
+
+  "gui.numismaticscalculator.settings.title": "Calculator Settings",
+  "gui.numismaticscalculator.settings.back": "Back",
+  "gui.numismaticscalculator.settings.option.require_shift_for_total_tooltip": "Require \"Shift\" For Total Value Tooltip",
+  "gui.numismaticscalculator.settings.option.show_control_buttons": "Show Buttons in inventory",
+  "gui.numismaticscalculator.settings.option.overlay_animation_enabled": "Use Overlay Shift Animation",
+  "gui.numismaticscalculator.settings.option.overlay_shift_animation_duration": "Overlay Animation Duration",
+
+  "item.numismaticscalculator.coin.sun": "Sun",
+  "item.numismaticscalculator.coin.crown": "Crown",
+  "item.numismaticscalculator.coin.cog": "Cog",
+  "item.numismaticscalculator.coin.sprocket": "Sprocket",
+  "item.numismaticscalculator.coin.bevel": "Bevel",
+  "item.numismaticscalculator.coin.spur": "Spur"
 }

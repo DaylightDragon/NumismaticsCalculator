@@ -1,24 +1,25 @@
 package org.daylight.numismaticscalculator.ui.elements;
 
+import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.replacements.IFont;
 import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
 import org.daylight.numismaticscalculator.replacements.SingletonInstances;
 import org.jetbrains.annotations.NotNull;
 
 public class UIText extends UIElement {
-    private String text;
+    private @NotNull Component text;
     private final IFont font;
     private float scale;
     private int color;
 
-    public UIText(String text, IFont font, float scale, int color) {
+    public UIText(@NotNull Component text, IFont font, float scale, int color) {
         this.text = text;
         this.font = font;
         this.scale = scale;
         this.color = color;
     }
 
-    public void setText(String text) {
+    public void setText(@NotNull Component text) {
         this.text = text;
     }
 
@@ -28,7 +29,7 @@ public class UIText extends UIElement {
 
     @Override
     public int getPreferredWidth() {
-        return clampWidth((int) (font.width(text) * scale + 10));
+        return clampWidth((int) (font.width(text.getString()) * scale + 10));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class UIText extends UIElement {
         super.render(graphics, mouseX, mouseY, partialTick);
         if(!shouldBeRendered()) return;
 //        graphics.drawString(font, text, x, y, 0xFFFFFF);
-        SingletonInstances.DRAWING_UTILS.drawScaledText(graphics, text, x, y, color, scale, true);
+        SingletonInstances.DRAWING_UTILS.drawScaledText(graphics, text.getString(), x, y, color, scale, true);
     }
 
     @Override

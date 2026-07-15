@@ -2,7 +2,7 @@ package org.daylight.numismaticscalculator.forge.events;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+//import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -63,6 +63,11 @@ public class ScreenEvents {
     }
 
     @SubscribeEvent
+    public void onScreenClose(ScreenEvent.Closing event) {
+        SingletonInstances.CALCULATOR_OVERLAY.disableSelection();
+    }
+
+    @SubscribeEvent
     public void onScreenKey(ScreenEvent.KeyPressed.Post event) {
         if (event.getScreen() instanceof AbstractContainerScreen<?>) {
             InputConstants.Key key = InputConstants.getKey(event.getKeyCode(), event.getScanCode());
@@ -76,8 +81,8 @@ public class ScreenEvents {
     }
 
     // Unused
-    @SubscribeEvent
-    public void onRenderOverlay(RenderGuiOverlayEvent.Post event) {
+//    @SubscribeEvent
+//    public void onRenderOverlay(RenderGuiOverlayEvent.Post event) {
 //        Minecraft mc = Minecraft.getInstance();
 //        if(mc.screen == null) return;
 ////        if (event.getOverlay() != VanillaGuiOverlay.ALL) return;
@@ -93,5 +98,5 @@ public class ScreenEvents {
 //        int y = height / 2 - 20; // пример позиции выше центра
 //
 //        MainWidget.drawWidget(mc, event, x, y);
-    }
+//    }
 }

@@ -17,13 +17,13 @@ public class ForgeModSettingsScreenImpl extends Screen {
     }
 
     public ForgeModSettingsScreenImpl(Screen parent) {
-        super(Component.literal("Calculator Settings"));
+        super(Component.translatable("gui.numismaticscalculator.settings.title"));
         this.parent = parent;
     }
 
     @Override
     protected void init() {
-        this.addRenderableWidget(Button.builder(Component.literal("Back"), (b) -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.numismaticscalculator.settings.back"), (b) -> {
             Minecraft.getInstance().setScreen(parent);
             ConfigHandler.SPEC.save();
         }).bounds(this.width / 2 - 50, this.height - 40, 100, 20).build());
@@ -31,7 +31,7 @@ public class ForgeModSettingsScreenImpl extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(graphics, mouseX, mouseY, partialTick);
     }
