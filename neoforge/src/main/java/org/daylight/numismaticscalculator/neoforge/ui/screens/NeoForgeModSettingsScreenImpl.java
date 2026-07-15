@@ -17,13 +17,13 @@ public class NeoForgeModSettingsScreenImpl extends Screen {
     }
 
     public NeoForgeModSettingsScreenImpl(Screen parent) {
-        super(Component.literal("Calculator Settings"));
+        super(Component.translatable("gui.numismaticscalculator.settings.title"));
         this.parent = parent;
     }
 
     @Override
     protected void init() {
-        this.addRenderableWidget(Button.builder(Component.literal("Back"), (b) -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.numismaticscalculator.settings.back"), (b) -> {
             Minecraft.getInstance().setScreen(parent);
             ConfigHandler.SPEC.save();
         }).bounds(this.width / 2 - 50, this.height - 40, 100, 20).build());

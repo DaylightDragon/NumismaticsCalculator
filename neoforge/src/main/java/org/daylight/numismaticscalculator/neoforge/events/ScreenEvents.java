@@ -62,6 +62,11 @@ public class ScreenEvents {
     }
 
     @SubscribeEvent
+    public void onScreenClose(ScreenEvent.Closing event) {
+        SingletonInstances.CALCULATOR_OVERLAY.disableSelection();
+    }
+
+    @SubscribeEvent
     public void onScreenKey(ScreenEvent.KeyPressed.Post event) {
         if (event.getScreen() instanceof AbstractContainerScreen<?>) {
             InputConstants.Key key = InputConstants.getKey(event.getKeyCode(), event.getScanCode());
