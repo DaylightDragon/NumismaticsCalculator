@@ -29,7 +29,7 @@ side = "BOTH"
 
 [[dependencies.numismaticscalculator]]
 modId = "numismatics"
-type = "required"
+type = "optional"
 versionRange = "[0,)"
 ordering = "NONE"
 side = "CLIENT"
