@@ -1,6 +1,5 @@
 package org.daylight.numismaticscalculator.ui.overlays;
 
-import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.UiState;
 import org.daylight.numismaticscalculator.replacements.*;
 import org.daylight.numismaticscalculator.ui.elements.UIButton;
@@ -45,13 +44,13 @@ public abstract class IGuiManagerOverlay implements IOverlay {
         UIHorizontalLayout horizontalLayout = new UIHorizontalLayout();
         horizontalLayout.setPadding(0);
 
-        UIButton toggleUiBtn = new UIButton(Component.empty(), font, 1.0f, this::toggleMainOverlayState);
+        UIButton toggleUiBtn = new UIButton(SingletonInstances.COMPONENTS.empty(), font, 1.0f, this::toggleMainOverlayState);
         toggleUiBtn.setIcon(SingletonInstances.MOD_RESOURCES.getResourceLocation(IModResources.Type.CURRENCY_ICON), 12, 12);
         toggleUiBtn.setBgColorNormal(0x8878594c);
         toggleUiBtn.setPadding(2, 2);
         horizontalLayout.addElement(toggleUiBtn);
 
-        UIButton openSettingsBtn = new UIButton(Component.empty(), font, 1.0f, this::onOpenSettingsBtnClicked);
+        UIButton openSettingsBtn = new UIButton(SingletonInstances.COMPONENTS.empty(), font, 1.0f, this::onOpenSettingsBtnClicked);
         openSettingsBtn.setIcon(SingletonInstances.MOD_RESOURCES.getResourceLocation(IModResources.Type.GEAR_ICON), 12, 12);
         openSettingsBtn.setBgColorNormal(0x8878594c);
         openSettingsBtn.setPadding(2, 2);

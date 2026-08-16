@@ -1,16 +1,17 @@
 package org.daylight.numismaticscalculator.fabric.replacements.api;
 
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.daylight.numismaticscalculator.replacements.IComponent;
 import org.daylight.numismaticscalculator.replacements.IMutableComponent;
 
-public class FabricComponent implements IComponent {
-    private Text delegate;
-    public FabricComponent(Text delegate) {
+public class FabricMutableComponent implements IMutableComponent {
+    private MutableText delegate;
+    public FabricMutableComponent(MutableText delegate) {
         this.delegate = delegate;
     }
 
-    public Text getDelegate() {
+    public MutableText getDelegate() {
         return delegate;
     }
 
@@ -42,5 +43,18 @@ public class FabricComponent implements IComponent {
     @Override
     public IMutableComponent translatable(String key, Object... args) {
         return new FabricMutableComponent(Text.translatable(key, args));
+    }
+
+
+    @Override
+    public IMutableComponent append(String text) {
+        delegate.append(text);
+        return this;
+    }
+
+    @Override
+    public IMutableComponent append(IComponent component) {
+        delegate.append(((FabricComponent) component).getDelegate());
+        return this;
     }
 }

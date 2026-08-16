@@ -1,17 +1,17 @@
 package org.daylight.numismaticscalculator.forge.replacements.api;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.daylight.numismaticscalculator.replacements.IComponent;
 import org.daylight.numismaticscalculator.replacements.IMutableComponent;
 
-public class ForgeComponent implements IComponent {
-    private final Component delegate;
-
-    public ForgeComponent(Component delegate) {
+public class ForgeMutableComponent implements IMutableComponent {
+    private MutableComponent delegate;
+    public ForgeMutableComponent(MutableComponent delegate) {
         this.delegate = delegate;
     }
 
-    public Component getDelegate() {
+    public MutableComponent getDelegate() {
         return delegate;
     }
 
@@ -43,5 +43,18 @@ public class ForgeComponent implements IComponent {
     @Override
     public IMutableComponent translatable(String key, Object... args) {
         return new ForgeMutableComponent(Component.translatable(key, args));
+    }
+
+
+    @Override
+    public IMutableComponent append(String text) {
+        delegate.append(text);
+        return this;
+    }
+
+    @Override
+    public IMutableComponent append(IComponent component) {
+        delegate.append(((ForgeComponent) component).getDelegate());
+        return this;
     }
 }

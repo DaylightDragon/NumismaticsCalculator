@@ -1,25 +1,25 @@
 package org.daylight.numismaticscalculator.ui.elements;
 
-import net.minecraft.network.chat.Component;
+import org.daylight.numismaticscalculator.replacements.IComponent;
 import org.daylight.numismaticscalculator.replacements.IFont;
 import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
 import org.daylight.numismaticscalculator.replacements.SingletonInstances;
 import org.jetbrains.annotations.NotNull;
 
 public class UIText extends UIElement {
-    private Component text;
+    private IComponent text;
     private final IFont font;
     private float scale;
     private int color;
 
-    public UIText(Component text, IFont font, float scale, int color) {
+    public UIText(IComponent text, IFont font, float scale, int color) {
         this.text = text;
         this.font = font;
         this.scale = scale;
         this.color = color;
     }
 
-    public void setText(Component text) {
+    public void setText(IComponent text) {
         this.text = text;
     }
 

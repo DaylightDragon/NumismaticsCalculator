@@ -1,11 +1,7 @@
 package org.daylight.numismaticscalculator.ui.elements;
 
-import net.minecraft.network.chat.Component;
 import org.daylight.numismaticscalculator.ModColors;
-import org.daylight.numismaticscalculator.replacements.IFont;
-import org.daylight.numismaticscalculator.replacements.IGuiGraphics;
-import org.daylight.numismaticscalculator.replacements.IResourceLocation;
-import org.daylight.numismaticscalculator.replacements.SingletonInstances;
+import org.daylight.numismaticscalculator.replacements.*;
 import org.jetbrains.annotations.NotNull;
 
 public class UIButton extends UIElement {
@@ -23,7 +19,7 @@ public class UIButton extends UIElement {
     private int outlineColor = 0x00000000;
     private int textColor = 0xFFFFFFFF;
 
-    protected Component label;
+    protected IComponent label;
     private IResourceLocation icon;
     private int iconWidth;
     private int iconHeight;
@@ -33,7 +29,7 @@ public class UIButton extends UIElement {
     private int paddingX = 5;    // горизонтальные отступы
     private int paddingY = 6;    // вертикальные отступы
 
-    public UIButton(@NotNull Component label, IFont font, float fontScale, Runnable onClick) {
+    public UIButton(@NotNull IComponent label, IFont font, float fontScale, Runnable onClick) {
         this.label = label;
         this.font = font;
         this.fontScale = fontScale;
@@ -41,7 +37,7 @@ public class UIButton extends UIElement {
         recalcSize();
     }
 
-    public void setLabel(@NotNull Component label) {
+    public void setLabel(@NotNull IComponent label) {
         this.label = label;
         recalcSize();
     }
